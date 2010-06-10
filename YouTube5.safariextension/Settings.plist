@@ -4,7 +4,7 @@
 <array>
 	<dict>
 		<key>DefaultValue</key>
-		<real>18</real>
+		<real>22</real>
 		<key>Key</key>
 		<string>largestFormat</string>
 		<key>Title</key>

@@ -35,6 +35,7 @@
 		<key>Whitelist</key>
 		<array>
 			<string>http://www.youtube.com/watch*</string>
+			<string>http://www.youtube.com/user*</string>
 		</array>
 	</dict>
 	<key>Description</key>

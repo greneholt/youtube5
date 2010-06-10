@@ -4,10 +4,10 @@
 <title>Youtube5</title>
 <script>
 // inspired by http://userscripts.org/scripts/review/25105
-function buildVideo(src, event) {
-    var videoId = src.match(/\&video_id=([^(\&|$)]*)/)[1];
-    var videoTicket = src.match(/\&t=([^(\&|$)]*)/)[1];
-    var videoFormats = src.match(/\&fmt_url_map=([^(\&|$)]*)/)[1];
+function findVideoUrl(pageSrc) {
+    var videoId = pageSrc.match(/\&video_id=([^(\&|$)]*)/)[1];
+    var videoTicket = pageSrc.match(/\&t=([^(\&|$)]*)/)[1];
+    var videoFormats = pageSrc.match(/\&fmt_url_map=([^(\&|$)]*)/)[1];
     
     var validFormats = [18, 22, 37];
     var formats = videoFormats.match(/\d+(?=%7C)/g);
@@ -25,9 +25,7 @@ function buildVideo(src, event) {
         format = availableFormats[availableFormats.length - 1];
     }
     
-    var video = "<video src=\"http://www.youtube.com/get_video?fmt=" + format + "&video_id=" + videoId + "&t=" + videoTicket + "\" width=\"640\" height=\"360\" controls autoplay />";
-	
-	event.target.page.dispatchMessage("injectVideo", video);
+    return "http://www.youtube.com/get_video?fmt=" + format + "&video_id=" + videoId + "&t=" + videoTicket
 }
 
 function loadVideo(event) {
@@ -35,7 +33,8 @@ function loadVideo(event) {
 	req.open('GET', event.message, true);
 	req.onreadystatechange = function(ev) {
 	    if (req.readyState === 4 && req.status === 200) {
-	        buildVideo(req.responseText, event);
+	        var url = findVideoUrl(req.responseText, event);
+			event.target.page.dispatchMessage("injectVideo", url);
 	    }
 	};
 	req.send(null);

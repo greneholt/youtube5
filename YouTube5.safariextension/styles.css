@@ -1,7 +1,5 @@
-#flash-upgrade {
-	display: none;
-}
-
-#watch-player {
-	height: 360px !important;
+#youtube5-player {
+	height: 360px;
+	width: 640px;
+	background: #000 url(loading.gif) no-repeat center center !important;
 }
