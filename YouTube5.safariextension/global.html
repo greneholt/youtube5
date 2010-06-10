@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Youtube5</title>
+<script>
+// inspired by http://userscripts.org/scripts/review/25105
+function buildVideo(src, event) {
+    var videoId = src.match(/\&video_id=([^(\&|$)]*)/)[1];
+    var videoTicket = src.match(/\&t=([^(\&|$)]*)/)[1];
+    var videoFormats = src.match(/\&fmt_url_map=([^(\&|$)]*)/)[1];
+    
+    var validFormats = [18, 22, 37];
+    var formats = videoFormats.match(/\d+(?=%7C)/g);
+    var availableFormats = [18];
+    formats.forEach(function(format) {
+        format = parseInt(format);
+        if (validFormats.indexOf(format) !== -1) {
+            availableFormats.push(format);
+        }
+    });
+    availableFormats.sort();
+    
+    var format = safari.extension.settings.largestFormat;
+    if (availableFormats.indexOf(format) === -1) {
+        format = availableFormats[availableFormats.length - 1];
+    }
+    
+    var video = "<video src=\"http://www.youtube.com/get_video?fmt=" + format + "&video_id=" + videoId + "&t=" + videoTicket + "\" width=\"640\" height=\"360\" controls autoplay />";
+	
+	event.target.page.dispatchMessage("injectVideo", video);
+}
+
+function loadVideo(event) {
+	var req = new XMLHttpRequest();
+	req.open('GET', event.message, true);
+	req.onreadystatechange = function(ev) {
+	    if (req.readyState === 4 && req.status === 200) {
+	        buildVideo(req.responseText, event);
+	    }
+	};
+	req.send(null);
+}
+
+safari.application.addEventListener("message", function(event) {
+	if (event.name == "loadVideo") {
+		loadVideo(event);
+	}
+}, false);
+</script>
+</head>
+<body>
+</body>
+</html>
