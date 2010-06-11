@@ -21,11 +21,26 @@ safari.self.addEventListener("message", function(event) {
     }
 }, false);
 
-(function() {
-    var player = document.getElementById('watch-player');
-    var player5 = document.createElement('div');
-    player5.id = 'youtube5-player';
-    replaceNode(player5, player);
-})();
+var loc = window.location.href;
+var player;
+var videoLocation;
 
-safari.self.tab.dispatchMessage("loadVideo", window.location.href);
+if (/^http:\/\/www.youtube.com\/watch/.test(loc)) {
+    player = document.getElementById('watch-player');
+    videoLocation = loc;
+} else if (/^http:\/\/www.youtube.com\/user/.test(loc)) {
+    player = document.getElementById('playnav-player');
+    var videoId = document.body.innerHTML.match(/playnav\.setVideoId\('([^']*)'\);/)[1];
+    videoLocation = "http://www.youtube.com/watch?v=" + videoId;
+    // kill onclick, it loads a new video using ajax which won't work
+    var thumbs = document.querySelectorAll('a.video-thumb img, a.playnav-item-title');
+    for (var i = 0; i < thumbs.length; i++) {
+        thumbs[i].onclick = null;
+    }
+}
+
+var player5 = document.createElement('div');
+player5.id = 'youtube5-player';
+replaceNode(player5, player);
+
+safari.self.tab.dispatchMessage("loadVideo", videoLocation);
