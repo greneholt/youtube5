@@ -11,9 +11,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>1.2.1</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>4</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Global Page</key>
@@ -32,26 +32,17 @@
 		<array>
 			<string>styles.css</string>
 		</array>
-		<key>Whitelist</key>
-		<array>
-			<string>http://www.youtube.com/watch*</string>
-			<string>http://www.youtube.com/user*</string>
-		</array>
 	</dict>
 	<key>Description</key>
-	<string>Converts videos on YouTube into HTML5 video tags</string>
+	<string>Converts YouTube videos on any site into HTML5 video tags</string>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>Permissions</key>
 	<dict>
 		<key>Website Access</key>
 		<dict>
-			<key>Allowed Domains</key>
-			<array>
-				<string>www.youtube.com</string>
-			</array>
 			<key>Level</key>
-			<string>Some</string>
+			<string>All</string>
 		</dict>
 	</dict>
 	<key>Update Manifest URL</key>

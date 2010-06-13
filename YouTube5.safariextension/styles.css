@@ -1,5 +1,9 @@
-#youtube5-player {
+.youtube5-player {
 	height: 360px;
 	width: 640px;
+	background: #000 !important;
+}
+
+.youtube5-autoplay {
 	background: #000 url(loading.gif) no-repeat center center !important;
 }

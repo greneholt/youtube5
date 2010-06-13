@@ -3,16 +3,48 @@ function replaceNode(insert, replace) {
     parent.replaceChild(insert, replace);
 }
 
-function injectVideo(url) {
-    var video = document.createElement('video');
-    video.src = url;
-    video.width = 640;
-    video.height = 360;
-    video.controls = true;
-    video.autoplay = true;
+function injectVideo(video) {
+    var player = document.getElementById(video.playerId);
+    // every frame in a tab receives the messages, so we have to make sure the player actually exists
+    if (player == null) return;
     
-    var player = document.getElementById('youtube5-player');
-    player.appendChild(video);
+    var videoEl = document.createElement('video');
+    videoEl.src = video.src;
+    videoEl.width = player.scrollWidth;
+    videoEl.height = player.scrollHeight;
+    videoEl.controls = true;
+    if (player.className.indexOf('youtube5-autoplay') !== -1) {
+        videoEl.autoplay = true;
+    } else {
+        videoEl.preload = "none";
+        var cdn = Math.ceil(Math.random()*4);
+        videoEl.poster = "http://i" + cdn + ".ytimg.com/vi/" + video.id + "/hqdefault.jpg";
+    }
+    
+    player.appendChild(videoEl);
+}
+
+function buildPlayer(videoId, replace, autoplay) {
+    var player = document.createElement('div');
+    player.className = 'youtube5-player';
+    if (autoplay) {
+        player.className += ' youtube5-autoplay';
+    }
+    player.id = 'youtube5-player-' + videoId;
+    
+    var width = replace.scrollWidth;
+    // players normally include extra height for their controls, we don't need that height
+    var height = width/(16/9);
+    player.style.width = width + 'px';
+    player.style.height = height + 'px';
+    
+    var video = {
+        id: videoId,
+        playerId: player.id
+    };
+    
+    replaceNode(player, replace);
+    safari.self.tab.dispatchMessage("loadVideo", video);
 }
 
 safari.self.addEventListener("message", function(event) {
@@ -22,25 +54,18 @@ safari.self.addEventListener("message", function(event) {
 }, false);
 
 var loc = window.location.href;
-var player;
-var videoLocation;
 
 if (/^http:\/\/www.youtube.com\/watch/.test(loc)) {
-    player = document.getElementById('watch-player');
-    videoLocation = loc;
-} else if (/^http:\/\/www.youtube.com\/user/.test(loc)) {
-    player = document.getElementById('playnav-player');
-    var videoId = document.body.innerHTML.match(/playnav\.setVideoId\('([^']*)'\);/)[1];
-    videoLocation = "http://www.youtube.com/watch?v=" + videoId;
-    // kill onclick, it loads a new video using ajax which won't work
-    var thumbs = document.querySelectorAll('a.video-thumb img, a.playnav-item-title');
-    for (var i = 0; i < thumbs.length; i++) {
-        thumbs[i].onclick = null;
+    var videoId = loc.match(/v=([^&]*)/)[1];
+    var player = document.getElementById('watch-player');
+    buildPlayer(videoId, player, true);
+} else {
+    var params = document.querySelectorAll('object param[name=movie]');
+    for (var i = 0; i < params.length; i++) {
+        var param = params[i];
+        var match = param.value.match(/^http:\/\/www.youtube.com\/v\/([^&]*)/);
+        if (match !== null) {
+            buildPlayer(match[1], param.parentNode);
+        }
     }
 }
-
-var player5 = document.createElement('div');
-player5.id = 'youtube5-player';
-replaceNode(player5, player);
-
-safari.self.tab.dispatchMessage("loadVideo", videoLocation);
