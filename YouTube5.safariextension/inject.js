@@ -74,7 +74,7 @@ if (/^http:\/\/www.youtube.com\/watch/.test(loc)) {
     var player = document.getElementById('watch-player');
     buildPlayer(videoId, player, true);
 } else {
-    var params = document.querySelectorAll('object param[name=movie]');
+    var params = document.querySelectorAll('object param[name=movie], object param[name=src]');
     for (var i = 0; i < params.length; i++) {
         var param = params[i];
         var match = param.value.match(/^http:\/\/www.youtube.com\/v\/([^&]*)/);
