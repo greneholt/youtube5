@@ -35,6 +35,13 @@ function injectVideo(video) {
         videoEl.poster = "http://i" + cdn + ".ytimg.com/vi/" + video.id + "/hqdefault.jpg";
     }
     
+    videoEl.addEventListener('loadedmetadata', function(event) {
+        var aspectRatio = videoEl.videoWidth/videoEl.videoHeight;
+        var height = Math.round(videoEl.width/aspectRatio);
+        player.style.height = height + 'px';
+        videoEl.height = height;
+    });
+    
     player.appendChild(videoEl);
 }
 
@@ -48,7 +55,7 @@ function buildPlayer(videoId, replace, autoplay) {
     
     var width = replace.scrollWidth;
     // players normally include extra height for their controls, we don't need that height
-    var height = width/(16/9);
+    var height = Math.round(width/(16/9));
     player.style.width = width + 'px';
     player.style.height = height + 'px';
     
