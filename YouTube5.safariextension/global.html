@@ -1,8 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>YouTube5</title>
-<script>
+<!DOCTYPE html><html><head><title>YouTube5</title><script>
+
 /*
 YouTube5 Copyright 2010 Connor McKay
 
@@ -27,7 +24,7 @@ function findVideoSrc(pageSrc) {
     var formats = videoFormats.match(/\d+(?=%7C)/g);
     var availableFormats = [18];
     formats.forEach(function(format) {
-        format = parseInt(format);
+        format = parseInt(format, 10);
         if (validFormats.indexOf(format) !== -1) {
             availableFormats.push(format);
         }
@@ -35,33 +32,30 @@ function findVideoSrc(pageSrc) {
     
     var format = safari.extension.settings.largestFormat;
     if (availableFormats.indexOf(format) === -1) {
-		availableFormats.sort();
+        availableFormats.sort();
         format = availableFormats[availableFormats.length - 1];
     }
     
-    return "http://www.youtube.com/get_video?fmt=" + format + "&asv=2&video_id=" + videoId + "&t=" + videoTicket
+    return "http://www.youtube.com/get_video?fmt=" + format + "&asv=2&video_id=" + videoId + "&t=" + videoTicket;
 }
 
 function loadVideo(event) {
-	var video = event.message;
-	var req = new XMLHttpRequest();
-	req.open('GET', 'http://www.youtube.com/watch?v=' + video.id, true);
-	req.onreadystatechange = function(ev) {
-	    if (req.readyState === 4 && req.status === 200) {
-	        video.src = findVideoSrc(req.responseText);
-			event.target.page.dispatchMessage("injectVideo", video);
-	    }
-	};
-	req.send(null);
+    var video = event.message;
+    var req = new XMLHttpRequest();
+    req.open('GET', 'http://www.youtube.com/watch?v=' + video.id, true);
+    req.onreadystatechange = function(ev) {
+        if (req.readyState === 4 && req.status === 200) {
+            video.src = findVideoSrc(req.responseText);
+            event.target.page.dispatchMessage("injectVideo", video);
+        }
+    };
+    req.send(null);
 }
 
 safari.application.addEventListener("message", function(event) {
-	if (event.name == "loadVideo") {
-		loadVideo(event);
-	}
+    if (event.name == "loadVideo") {
+        loadVideo(event);
+    }
 }, false);
-</script>
-</head>
-<body>
-</body>
-</html>
+
+</script></head><body></body></html>

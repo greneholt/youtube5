@@ -20,7 +20,7 @@ function replaceNode(insert, replace) {
 function injectVideo(video) {
     var player = document.getElementById(video.playerId);
     // every frame in a tab receives the messages, so we have to make sure the player actually exists
-    if (player == null) return;
+    if (player === null) return;
     
     var videoEl = document.createElement('video');
     videoEl.src = video.src;
