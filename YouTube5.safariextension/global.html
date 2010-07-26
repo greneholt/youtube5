@@ -39,7 +39,7 @@ function findVideoSrc(pageSrc) {
         format = availableFormats[availableFormats.length - 1];
     }
     
-    return "http://www.youtube.com/get_video?fmt=" + format + "&video_id=" + videoId + "&t=" + videoTicket
+    return "http://www.youtube.com/get_video?fmt=" + format + "&asv=2&video_id=" + videoId + "&t=" + videoTicket
 }
 
 function loadVideo(event) {
