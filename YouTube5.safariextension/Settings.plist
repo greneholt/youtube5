@@ -4,24 +4,64 @@
 <array>
 	<dict>
 		<key>DefaultValue</key>
-		<real>22</real>
+		<string>720p</string>
 		<key>Key</key>
-		<string>largestFormat</string>
+		<string>youTubeFormat</string>
 		<key>Title</key>
-		<string>Largest video format to load</string>
+		<string>Default YouTube Format</string>
 		<key>Titles</key>
 		<array>
-			<string>360p</string>
-			<string>720p</string>
 			<string>1080p</string>
+			<string>720p</string>
+			<string>360p</string>
 		</array>
 		<key>Type</key>
 		<string>PopUpButton</string>
 		<key>Values</key>
 		<array>
-			<real>18</real>
-			<real>22</real>
-			<real>37</real>
+			<string>1080p</string>
+			<string>720p</string>
+			<string>360p</string>
+		</array>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<string>HD</string>
+		<key>Key</key>
+		<string>vimeoFormat</string>
+		<key>Title</key>
+		<string>Default Vimeo Format</string>
+		<key>Titles</key>
+		<array>
+			<string>HD</string>
+			<string>SD</string>
+		</array>
+		<key>Type</key>
+		<string>PopUpButton</string>
+		<key>Values</key>
+		<array>
+			<string>HD</string>
+			<string>SD</string>
+		</array>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<string>High</string>
+		<key>Key</key>
+		<string>facebookFormat</string>
+		<key>Title</key>
+		<string>Default Facebook Format</string>
+		<key>Titles</key>
+		<array>
+			<string>High</string>
+			<string>Low</string>
+		</array>
+		<key>Type</key>
+		<string>PopUpButton</string>
+		<key>Values</key>
+		<array>
+			<string>High</string>
+			<string>Low</string>
 		</array>
 	</dict>
 </array>
