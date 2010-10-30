@@ -2,14 +2,14 @@ var players = {};
 
 document.addEventListener('beforeload', function(event) {
 	// for some reason the url doesn't stay in the event when its passed to the global page, so we have to set it as the message
-	var result = safari.self.tab.canLoad(event, event.url);
+	var response = safari.self.tab.canLoad(event, event.url);
 	
-	if (result === 'video') {
+	if (response.hasVideo) {
 		event.preventDefault();
 		
 		var playerId = Math.floor(Math.random()*1000000000);
 		
-		players[playerId] = newPlayer(event.target, event.target.scrollWidth, event.target.scrollHeight);
+		players[playerId] = newPlayer(event.target, event.target.scrollWidth, event.target.scrollHeight, response.settings);
 		var flashvars = event.target.getAttribute('flashvars');
 		if (!flashvars) {
 			if (flashvars = event.target.querySelector('param[name=flashvars]')) {

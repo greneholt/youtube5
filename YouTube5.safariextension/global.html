@@ -101,14 +101,25 @@ var vimeoMeta = function(clipId, xml) {
 var canLoad = function(event) {
 	url = event.message;
 	
+	response = {};
+	
 	if (/^http:\/\/www\.youtube\.com\/(?:v|embed)\//i.test(url) ||
 		/^http:\/\/s\.ytimg\.com\/yt\/swf\/watch/i.test(url) ||
 		/^http:\/\/assets\.vimeo\.com\/flash\/moog/i.test(url) ||
 		/^\/moogaloop_local/i.test(url) ||
 		/vimeo\.com\/moogaloop/i.test(url) ||
 		/^http:\/\/([a-z]+\.)?static\.ak\.fbcdn\.net\/rsrc\.php\/.*\.swf/i.test(url)) {
-		event.message = 'video';
+		response.hasVideo = true;
+		
+		// Injected scripts can't access safari.extension.settings. Therefore, pass whatever settings we need at this time.
+		response.settings = {
+		  alwaysShowControls: safari.extension.settings.alwaysShowControls
+		};
+	} else {
+    response.hasVideo = false;
 	}
+	
+	event.message = response;
 };
 
 var loadYouTubeVideo = function(playerId, videoId, autoplay, event, flashvars) {

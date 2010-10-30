@@ -30,7 +30,7 @@ body {
     border-top: 1px solid #555;
 }
 
-.youtube5player .youtube5controls.youtube5pause, .youtube5player:hover .youtube5controls {
+.youtube5player .youtube5controls.youtube5pause, .youtube5player:hover .youtube5controls, .youtube5player .youtube5controls-always {
 	opacity: 0.8;
 }
 

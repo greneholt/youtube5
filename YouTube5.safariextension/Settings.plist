@@ -64,5 +64,15 @@
 			<string>Low</string>
 		</array>
 	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>alwaysShowControls</string>
+		<key>Title</key>
+		<string>Always show playback controls</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
 </array>
 </plist>

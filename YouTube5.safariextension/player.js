@@ -18,16 +18,26 @@ var formatTime = function(seconds) {
 	return m + ':' + s;
 };
 
-var newPlayer = function(replace, width, height) {
+var newPlayer = function(replace, width, height, settings) {
 	var self = {};
 	
-	self.width = width;
-	self.height = height;
+	self.CONTROLS_HEIGHT = 25; // Height of controls as defined in CSS
+	
+	self.settings = settings; // Only contains settings explicitly set in global.html canLoad()
+	
+	self.videoWidth = width;
+	self.videoHeight = height;
+	self.playerWidth = width;
+	if (!self.settings.alwaysShowControls) {
+		self.playerHeight = height;
+	} else {
+		self.playerHeight = height+self.CONTROLS_HEIGHT;
+	}
 	
 	self.frame = document.createElement('iframe');
 	self.frame.frameBorder = 0;
-	self.frame.width = self.width;
-	self.frame.height = self.height;
+	self.frame.width = self.playerWidth;
+	self.frame.height = self.playerHeight;
 	self.frame.addEventListener('load', function() {
 		var stylesheet = create('link', self.frame.contentDocument.head);
 		stylesheet.type = 'text/css';
@@ -35,8 +45,8 @@ var newPlayer = function(replace, width, height) {
 		stylesheet.href = safari.extension.baseURI + 'player.css';
 	
 		self.player = create('div', self.frame.contentDocument.body, 'youtube5player');
-		self.player.style.width = self.width + 'px';
-		self.player.style.height = self.height + 'px';
+		self.player.style.width = self.playerWidth + 'px';
+		self.player.style.height = self.playerHeight + 'px';
 	}, true);
 	
 	replace.parentNode.replaceChild(self.frame, replace);
@@ -47,23 +57,28 @@ var newPlayer = function(replace, width, height) {
 	};
 	
 	self.updateSize = function() {
-		var realAspectRatio = self.width/self.height;
+		var realAspectRatio = self.videoWidth/self.videoHeight;
 		var nativeAspectRatio = self.video.videoWidth/self.video.videoHeight;
 		
 		var width, height;
 		
 		// the player is wider than necessary, so fit by height
 		if (realAspectRatio > nativeAspectRatio) {
-			width = Math.round(self.height*nativeAspectRatio);
-			height = self.height;
+			width = Math.round(self.videoHeight*nativeAspectRatio);
+			height = self.videoHeight;
 		} else { // taller than necessary
-			width = self.width;
-			height = Math.round(self.width/nativeAspectRatio);
+			width = self.videoWidth;
+			height = Math.round(self.videoWidth/nativeAspectRatio);
 		}
 		self.video.width = width;
 		self.video.height = height;
 		self.player.style.width = width + 'px';
-		self.player.style.height = height + 'px';
+		if (!self.settings.alwaysShowControls) {
+			self.player.style.height = height + 'px';
+		} else {
+			self.player.style.height = (height+self.CONTROLS_HEIGHT) + 'px';
+		}
+
 	};
 	
 	self.updateTime = function() {
@@ -164,8 +179,8 @@ var newPlayer = function(replace, width, height) {
 		
 		self.video = create('video', self.player);
 		self.video.src = meta.formats[meta.useFormat];
-		self.video.width = self.width;
-		self.video.height = self.height;
+		self.video.width = self.videoWidth;
+		self.video.height = self.videoHeight;
 		
 		if (self.meta.autoplay) {
 			self.video.autoplay = true;
@@ -255,6 +270,10 @@ var newPlayer = function(replace, width, height) {
 			self.controls.className = 'youtube5controls youtube5play';
 		}
 		
+		if (self.settings.alwaysShowControls) {
+			self.controls.className += ' youtube5controls-always';
+		}
+		
 		self.playPause = create('div', self.controls, 'youtube5play-pause');
 		self.timeElapsed = create('div', self.controls, 'youtube5time-elapsed');
 		self.fullscreen = create('div', self.controls, 'youtube5fullscreen');
@@ -310,11 +329,13 @@ var newPlayer = function(replace, width, height) {
 		self.video.addEventListener('volumechange', self.updateVolumeSlider, true);
 		
 		self.video.addEventListener('play', function() {
-			self.controls.className = 'youtube5controls youtube5play';
+			self.controls.className = self.controls.className.replace(/\byoutube5pause\b/g, '');
+			self.controls.className += ' youtube5play';
 		}, true);
 
 		self.video.addEventListener('pause', function() {
-			self.controls.className = 'youtube5controls youtube5pause';
+			self.controls.className = self.controls.className.replace(/\byoutube5play\b/g, '');
+			self.controls.className += ' youtube5pause';
 		}, true);
 	};
 	
