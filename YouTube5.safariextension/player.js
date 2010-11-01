@@ -11,6 +11,10 @@ var formatTime = function(seconds) {
 	var m = Math.floor(seconds / 60);
 	var s = Math.floor(seconds % 60);
 	
+	if (m < 10) {
+		m = '0' + m;
+	}
+	
 	if (s < 10) {
 		s = '0' + s;
 	}
@@ -70,7 +74,7 @@ var newPlayer = function(replace, width, height) {
 		var remaining = self.video.duration - self.video.currentTime;
 		
 		self.timeElapsed.textContent = formatTime(self.video.currentTime);
-		self.timeRemaining.textContent = formatTime(remaining);
+		self.timeRemaining.textContent = '-' + formatTime(remaining);
 	};
 	
 	self.updateLoaded = function() {
