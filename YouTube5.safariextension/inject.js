@@ -5,8 +5,9 @@ document.addEventListener('beforeload', function(event) {
 	var result = safari.self.tab.canLoad(event, event.url);
 
 	if (result === 'video') {
-        	if (!event.target.parentNode) return;
-
+		// sometimes both <embed> and <object> will trigger a beforeload event, even after one of the two has been removed
+		if (!event.target.parentNode) return;
+		
 		event.preventDefault();
 		
 		var playerId = Math.floor(Math.random()*1000000000);
