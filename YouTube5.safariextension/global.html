@@ -30,6 +30,11 @@ var youTubeMeta = function(text, flashvars) {
 	
 	var data = parseUrlEncoded(text);
 	
+	if (data.errorcode && !flashvars.fmt_url_map) {
+		meta.error = data.reason;
+		return meta;
+	}
+	
 	var youTubeFormats = { 18: '360p', 22: '720p', 37: '1080p' };
 	
 	meta.formats = {};
@@ -73,19 +78,27 @@ var youTubeMeta = function(text, flashvars) {
 
 var loadYouTubeVideo = function(playerId, videoId, autoplay, event, flashvars) {
 	var req = new XMLHttpRequest();
-    req.open('GET', 'http://www.youtube.com/get_video_info?&video_id=' + videoId + '&el=embedded&ps=default&eurl=http%3A%2F%2Fwww%2Egoogle%2Ecom%2F&hl=en_US', true);
-    req.onreadystatechange = function(ev) {
-        if (req.readyState === 4 && req.status === 200) {
-            var meta = youTubeMeta(req.responseText, flashvars);
+	req.open('GET', 'http://www.youtube.com/get_video_info?&video_id=' + videoId + '&el=embedded&ps=default&eurl=http%3A%2F%2Fwww%2Egoogle%2Ecom%2F&hl=en_US', true);
+	req.onreadystatechange = function(ev) {
+		if (req.readyState === 4 && req.status === 200) {
+			var meta = youTubeMeta(req.responseText, flashvars);
 			meta.autoplay = autoplay;
-            event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
-        }
-    };
-    req.send(null);
+			event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
+		} else if (req.readyState === 4 && req.status === 404) {
+			var meta = { error: '404 Error loading YouTube video' };
+			event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
+		}
+	};
+	req.send(null);
 };
 
 var vimeoMeta = function(clipId, xml) {
 	var meta = {};
+	
+	if (xml.querySelector('error')) {
+		meta.error = xml.querySelector('error title').textContent + '<br />' + xml.querySelector('error message').textContent;
+		return meta;
+	}
 	
 	meta.formats = {};
 	
@@ -113,15 +126,18 @@ var vimeoMeta = function(clipId, xml) {
 
 var loadVimeoVideo = function(playerId, clipId, autoplay, event) {
 	var req = new XMLHttpRequest();
-    req.open('GET', 'http://vimeo.com/moogaloop/load/clip:' + clipId + '/local/', true);
-    req.onreadystatechange = function(ev) {
-        if (req.readyState === 4 && req.status === 200) {
-            var meta = vimeoMeta(clipId, req.responseXML);
+	req.open('GET', 'http://vimeo.com/moogaloop/load/clip:' + clipId + '/local/', true);
+	req.onreadystatechange = function(ev) {
+		if (req.readyState === 4 && req.status === 200) {
+			var meta = vimeoMeta(clipId, req.responseXML);
 			meta.autoplay = autoplay;
-            event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
-        }
-    };
-    req.send(null);
+			event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
+		} else if (req.readyState === 4 && req.status === 404) {
+			var meta = { error: '404 Error loading Vimeo video' };
+			event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
+		}
+	};
+	req.send(null);
 };
 
 var loadFacebookVideo = function(playerId, data, event) {
@@ -188,11 +204,14 @@ var loadVideo = function(event) {
 	} else if (/^http:\/\/([a-z]+\.)?static\.ak\.fbcdn\.net\/rsrc.php\/zh\/r\/newa_5lrU0z.swf/i.test(url)) {
 		var data = parseUrlEncoded(flashvars);
 		loadFacebookVideo(playerId, data, event);
+	} else {
+		var meta = { error: 'Unknown video URL<br />' + url };
+		event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
 	}
 };
 
 safari.application.addEventListener("message", function(event) {
-    if (event.name == 'canLoad') {
+	if (event.name == 'canLoad') {
 		canLoad(event);
 	} else if (event.name == 'loadVideo') {
 		loadVideo(event);

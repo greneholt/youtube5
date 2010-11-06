@@ -38,7 +38,7 @@ var newPlayer = function(replace, width, height) {
 		stylesheet.rel = 'stylesheet';
 		stylesheet.href = safari.extension.baseURI + 'player.css';
 	
-		self.player = create('div', self.frame.contentDocument.body, 'youtube5player');
+		self.player = create('div', self.frame.contentDocument.body, 'youtube5player loading');
 		self.player.style.width = self.width + 'px';
 		self.player.style.height = self.height + 'px';
 	}, true);
@@ -166,6 +166,13 @@ var newPlayer = function(replace, width, height) {
 		
 		self.meta = meta;
 		
+		if (self.meta.error) {
+			self.player.className = 'youtube5player error';
+			self.error = create('div', self.player, 'youtube5error');
+			self.error.innerHTML = self.meta.error;
+			return;
+		}
+		
 		self.video = create('video', self.player);
 		self.video.src = meta.formats[meta.useFormat];
 		self.video.width = self.width;
@@ -252,6 +259,8 @@ var newPlayer = function(replace, width, height) {
 	};
 	
 	self.createControls = function() {
+		self.player.className = 'youtube5player';
+		
 		self.controls = create('div', self.player, 'youtube5controls');
 		
 		// if the video is already playing, we need to set the right classname
