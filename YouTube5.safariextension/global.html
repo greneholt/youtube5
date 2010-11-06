@@ -25,12 +25,12 @@ var parseUrlEncoded = function(text) {
 	return data;
 }
 
-var youTubeFormats = { 18: '360p', 22: '720p', 37: '1080p' }
-
 var youTubeMeta = function(text, flashvars) {
 	var meta = {};
 	
 	var data = parseUrlEncoded(text);
+	
+	var youTubeFormats = { 18: '360p', 22: '720p', 37: '1080p' };
 	
 	meta.formats = {};
 	// use the flashvars if the video info couldn't be retreived
@@ -71,6 +71,19 @@ var youTubeMeta = function(text, flashvars) {
 	return meta;
 };
 
+var loadYouTubeVideo = function(playerId, videoId, autoplay, event, flashvars) {
+	var req = new XMLHttpRequest();
+    req.open('GET', 'http://www.youtube.com/get_video_info?&video_id=' + videoId + '&el=embedded&ps=default&eurl=http%3A%2F%2Fwww%2Egoogle%2Ecom%2F&hl=en_US', true);
+    req.onreadystatechange = function(ev) {
+        if (req.readyState === 4 && req.status === 200) {
+            var meta = youTubeMeta(req.responseText, flashvars);
+			meta.autoplay = autoplay;
+            event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
+        }
+    };
+    req.send(null);
+};
+
 var vimeoMeta = function(clipId, xml) {
 	var meta = {};
 	
@@ -96,32 +109,6 @@ var vimeoMeta = function(clipId, xml) {
 	meta.from = 'Vimeo';
 	
 	return meta;
-};
-
-var canLoad = function(event) {
-	url = event.message;
-	
-	if (/^http:\/\/www\.youtube\.com\/(?:v|embed)\//i.test(url) ||
-		/^http:\/\/s\.ytimg\.com\/yt\/swf\/watch/i.test(url) ||
-		/^http:\/\/assets\.vimeo\.com\/flash\/moog/i.test(url) ||
-		/^\/moogaloop_local/i.test(url) ||
-		/vimeo\.com\/moogaloop/i.test(url) ||
-		/^http:\/\/([a-z]+\.)?static\.ak\.fbcdn\.net\/rsrc\.php\/.*\.swf/i.test(url)) {
-		event.message = 'video';
-	}
-};
-
-var loadYouTubeVideo = function(playerId, videoId, autoplay, event, flashvars) {
-	var req = new XMLHttpRequest();
-    req.open('GET', 'http://www.youtube.com/get_video_info?&video_id=' + videoId + '&el=embedded&ps=default&eurl=http%3A%2F%2Fwww%2Egoogle%2Ecom%2F&hl=en_US', true);
-    req.onreadystatechange = function(ev) {
-        if (req.readyState === 4 && req.status === 200) {
-            var meta = youTubeMeta(req.responseText, flashvars);
-			meta.autoplay = autoplay;
-            event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
-        }
-    };
-    req.send(null);
 };
 
 var loadVimeoVideo = function(playerId, clipId, autoplay, event) {
@@ -165,7 +152,17 @@ var loadFacebookVideo = function(playerId, data, event) {
 	meta.autoplay = true;
 	
 	event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
-}
+};
+
+var canLoad = function(event) {
+	url = event.message;
+	
+	if ((safari.extension.settings.enableYouTube && (/^http:\/\/www\.youtube\.com\/(?:v|embed)\//i.test(url) ||	/^http:\/\/s\.ytimg\.com\/yt\/swf\/watch/i.test(url))) ||
+		(safari.extension.settings.enableVimeo && (/^http:\/\/assets\.vimeo\.com\/flash\/moog/i.test(url) || /^\/moogaloop_local/i.test(url) || /vimeo\.com\/moogaloop/i.test(url))) ||
+		(safari.extension.settings.enableFacebook && /^http:\/\/([a-z]+\.)?static\.ak\.fbcdn\.net\/rsrc.php\/zh\/r\/newa_5lrU0z.swf/i.test(url))) {
+		event.message = 'video';
+	}
+};
 
 var loadVideo = function(event) {
 	var url = event.message.url;
@@ -178,7 +175,7 @@ var loadVideo = function(event) {
 		loadYouTubeVideo(playerId, videoId, autoplay, event);
 	} else if (/^http:\/\/s.ytimg.com\/yt\/swf\/watch/i.test(url)) {
 		var data = parseUrlEncoded(flashvars);
-		loadYouTubeVideo(playerId, data.video_id, true, event, data);
+		loadYouTubeVideo(playerId, data.video_id, safari.extension.settings.youTubeAutoplay, event, data);
 	} else if (/^http:\/\/assets\.vimeo\.com\/flash\/moog/i.test(url)) {
 		var data = parseUrlEncoded(flashvars);
 		loadVimeoVideo(playerId, data.clip_id, false, event);
@@ -188,7 +185,7 @@ var loadVideo = function(event) {
 	} else if (/^\/moogaloop_local/i.test(url)) {
 		var data = parseUrlEncoded(flashvars);
 		loadVimeoVideo(playerId, data.clip_id, false, event);
-	} else if (/^http:\/\/([a-z]+\.)?static\.ak\.fbcdn\.net\/rsrc\.php\/.*\.swf/i.test(url)) {
+	} else if (/^http:\/\/([a-z]+\.)?static\.ak\.fbcdn\.net\/rsrc.php\/zh\/r\/newa_5lrU0z.swf/i.test(url)) {
 		var data = parseUrlEncoded(flashvars);
 		loadFacebookVideo(playerId, data, event);
 	}
