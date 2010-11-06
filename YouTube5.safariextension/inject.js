@@ -3,8 +3,11 @@ var players = {};
 document.addEventListener('beforeload', function(event) {
 	// for some reason the url doesn't stay in the event when its passed to the global page, so we have to set it as the message
 	var response = safari.self.tab.canLoad(event, event.url);
-	
+
 	if (response.hasVideo) {
+		// sometimes both <embed> and <object> will trigger a beforeload event, even after one of the two has been removed
+		if (!event.target.parentNode) return;
+		
 		event.preventDefault();
 		
 		var playerId = Math.floor(Math.random()*1000000000);

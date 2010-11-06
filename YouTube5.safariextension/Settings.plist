@@ -3,6 +3,32 @@
 <plist version="1.0">
 <array>
 	<dict>
+		<key>Title</key>
+		<string>YouTube Options</string>
+		<key>Type</key>
+		<string>Group</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<true/>
+		<key>Key</key>
+		<string>enableYouTube</string>
+		<key>Title</key>
+		<string>Enable for YouTube videos</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<true/>
+		<key>Key</key>
+		<string>youTubeAutoplay</string>
+		<key>Title</key>
+		<string>Autoplay videos on YouTube.com?</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
 		<key>DefaultValue</key>
 		<string>720p</string>
 		<key>Key</key>
@@ -25,6 +51,22 @@
 		</array>
 	</dict>
 	<dict>
+		<key>Title</key>
+		<string>Vimeo Options</string>
+		<key>Type</key>
+		<string>Group</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<true/>
+		<key>Key</key>
+		<string>enableVimeo</string>
+		<key>Title</key>
+		<string>Enable for Vimeo videos</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
 		<key>DefaultValue</key>
 		<string>HD</string>
 		<key>Key</key>
@@ -43,6 +85,22 @@
 			<string>HD</string>
 			<string>SD</string>
 		</array>
+	</dict>
+	<dict>
+		<key>Title</key>
+		<string>Facebook Video Options</string>
+		<key>Type</key>
+		<string>Group</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<true/>
+		<key>Key</key>
+		<string>enableFacebook</string>
+		<key>Title</key>
+		<string>Enable for Facebook videos</string>
+		<key>Type</key>
+		<string>CheckBox</string>
 	</dict>
 	<dict>
 		<key>DefaultValue</key>

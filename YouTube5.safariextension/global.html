@@ -1,13 +1,13 @@
-<!DOCTYPE html><html><head><title>Video5</title><script>
+<!DOCTYPE html><html><head><title>YouTube5</title><script>
 /*
-Video5 Copyright 2010 Connor McKay
+YouTube5 Copyright 2010 Connor McKay
 
-Video5 is free software: you can redistribute it and/or modify
+YouTube5 is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Video5 is distributed in the hope that it will be useful,
+YouTube5 is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
@@ -25,12 +25,17 @@ var parseUrlEncoded = function(text) {
 	return data;
 }
 
-var youTubeFormats = { 18: '360p', 22: '720p', 37: '1080p' }
-
 var youTubeMeta = function(text, flashvars) {
 	var meta = {};
 	
 	var data = parseUrlEncoded(text);
+	
+	if (data.errorcode && !flashvars.fmt_url_map) {
+		meta.error = data.reason;
+		return meta;
+	}
+	
+	var youTubeFormats = { 18: '360p', 22: '720p', 37: '1080p' };
 	
 	meta.formats = {};
 	// use the flashvars if the video info couldn't be retreived
@@ -71,8 +76,29 @@ var youTubeMeta = function(text, flashvars) {
 	return meta;
 };
 
+var loadYouTubeVideo = function(playerId, videoId, autoplay, event, flashvars) {
+	var req = new XMLHttpRequest();
+	req.open('GET', 'http://www.youtube.com/get_video_info?&video_id=' + videoId + '&el=embedded&ps=default&eurl=http%3A%2F%2Fwww%2Egoogle%2Ecom%2F&hl=en_US', true);
+	req.onreadystatechange = function(ev) {
+		if (req.readyState === 4 && req.status === 200) {
+			var meta = youTubeMeta(req.responseText, flashvars);
+			meta.autoplay = autoplay;
+			event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
+		} else if (req.readyState === 4 && req.status === 404) {
+			var meta = { error: '404 Error loading YouTube video' };
+			event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
+		}
+	};
+	req.send(null);
+};
+
 var vimeoMeta = function(clipId, xml) {
 	var meta = {};
+	
+	if (xml.querySelector('error')) {
+		meta.error = xml.querySelector('error title').textContent + '<br />' + xml.querySelector('error message').textContent;
+		return meta;
+	}
 	
 	meta.formats = {};
 	
@@ -98,54 +124,20 @@ var vimeoMeta = function(clipId, xml) {
 	return meta;
 };
 
-var canLoad = function(event) {
-	url = event.message;
-	
-	response = {};
-	
-	if (/^http:\/\/www\.youtube\.com\/(?:v|embed)\//i.test(url) ||
-		/^http:\/\/s\.ytimg\.com\/yt\/swf\/watch/i.test(url) ||
-		/^http:\/\/assets\.vimeo\.com\/flash\/moog/i.test(url) ||
-		/^\/moogaloop_local/i.test(url) ||
-		/vimeo\.com\/moogaloop/i.test(url) ||
-		/^http:\/\/([a-z]+\.)?static\.ak\.fbcdn\.net\/rsrc\.php\/.*\.swf/i.test(url)) {
-		response.hasVideo = true;
-		
-		// Injected scripts can't access safari.extension.settings. Therefore, pass whatever settings we need at this time.
-		response.settings = {
-		  alwaysShowControls: safari.extension.settings.alwaysShowControls
-		};
-	} else {
-    response.hasVideo = false;
-	}
-	
-	event.message = response;
-};
-
-var loadYouTubeVideo = function(playerId, videoId, autoplay, event, flashvars) {
-	var req = new XMLHttpRequest();
-    req.open('GET', 'http://www.youtube.com/get_video_info?&video_id=' + videoId + '&el=embedded&ps=default&eurl=http%3A%2F%2Fwww%2Egoogle%2Ecom%2F&hl=en_US', true);
-    req.onreadystatechange = function(ev) {
-        if (req.readyState === 4 && req.status === 200) {
-            var meta = youTubeMeta(req.responseText, flashvars);
-			meta.autoplay = autoplay;
-            event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
-        }
-    };
-    req.send(null);
-};
-
 var loadVimeoVideo = function(playerId, clipId, autoplay, event) {
 	var req = new XMLHttpRequest();
-    req.open('GET', 'http://vimeo.com/moogaloop/load/clip:' + clipId + '/local/', true);
-    req.onreadystatechange = function(ev) {
-        if (req.readyState === 4 && req.status === 200) {
-            var meta = vimeoMeta(clipId, req.responseXML);
+	req.open('GET', 'http://vimeo.com/moogaloop/load/clip:' + clipId + '/local/', true);
+	req.onreadystatechange = function(ev) {
+		if (req.readyState === 4 && req.status === 200) {
+			var meta = vimeoMeta(clipId, req.responseXML);
 			meta.autoplay = autoplay;
-            event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
-        }
-    };
-    req.send(null);
+			event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
+		} else if (req.readyState === 4 && req.status === 404) {
+			var meta = { error: '404 Error loading Vimeo video' };
+			event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
+		}
+	};
+	req.send(null);
 };
 
 var loadFacebookVideo = function(playerId, data, event) {
@@ -176,7 +168,28 @@ var loadFacebookVideo = function(playerId, data, event) {
 	meta.autoplay = true;
 	
 	event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
-}
+};
+
+var canLoad = function(event) {
+	url = event.message;
+	
+	var response = {};
+	
+	if ((safari.extension.settings.enableYouTube && (/^http:\/\/www\.youtube\.com\/(?:v|embed)\//i.test(url) ||	/^http:\/\/s\.ytimg\.com\/yt\/swf\/watch/i.test(url))) ||
+		(safari.extension.settings.enableVimeo && (/^http:\/\/assets\.vimeo\.com\/flash\/moog/i.test(url) || /^\/moogaloop_local/i.test(url) || /vimeo\.com\/moogaloop/i.test(url))) ||
+		(safari.extension.settings.enableFacebook && /^http:\/\/([a-z]+\.)?static\.ak\.fbcdn\.net\/rsrc.php\/zh\/r\/newa_5lrU0z.swf/i.test(url))) {
+		response.hasVideo = true;
+		
+		// Injected scripts can't access safari.extension.settings. Therefore, pass whatever settings we need at this time.
+		response.settings = {
+		  alwaysShowControls: safari.extension.settings.alwaysShowControls
+		};
+	} else {
+    response.hasVideo = false;
+	}
+	
+	event.message = response;
+};
 
 var loadVideo = function(event) {
 	var url = event.message.url;
@@ -189,7 +202,7 @@ var loadVideo = function(event) {
 		loadYouTubeVideo(playerId, videoId, autoplay, event);
 	} else if (/^http:\/\/s.ytimg.com\/yt\/swf\/watch/i.test(url)) {
 		var data = parseUrlEncoded(flashvars);
-		loadYouTubeVideo(playerId, data.video_id, true, event, data);
+		loadYouTubeVideo(playerId, data.video_id, safari.extension.settings.youTubeAutoplay, event, data);
 	} else if (/^http:\/\/assets\.vimeo\.com\/flash\/moog/i.test(url)) {
 		var data = parseUrlEncoded(flashvars);
 		loadVimeoVideo(playerId, data.clip_id, false, event);
@@ -199,14 +212,17 @@ var loadVideo = function(event) {
 	} else if (/^\/moogaloop_local/i.test(url)) {
 		var data = parseUrlEncoded(flashvars);
 		loadVimeoVideo(playerId, data.clip_id, false, event);
-	} else if (/^http:\/\/([a-z]+\.)?static\.ak\.fbcdn\.net\/rsrc\.php\/.*\.swf/i.test(url)) {
+	} else if (/^http:\/\/([a-z]+\.)?static\.ak\.fbcdn\.net\/rsrc.php\/zh\/r\/newa_5lrU0z.swf/i.test(url)) {
 		var data = parseUrlEncoded(flashvars);
 		loadFacebookVideo(playerId, data, event);
+	} else {
+		var meta = { error: 'Unknown video URL<br />' + url };
+		event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
 	}
 };
 
 safari.application.addEventListener("message", function(event) {
-    if (event.name == 'canLoad') {
+	if (event.name == 'canLoad') {
 		canLoad(event);
 	} else if (event.name == 'loadVideo') {
 		loadVideo(event);
