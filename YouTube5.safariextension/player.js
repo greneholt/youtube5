@@ -29,19 +29,13 @@ var newPlayer = function(replace, width, height, settings) {
 	
 	self.settings = settings; // Only contains settings explicitly set in global.html canLoad()
 	
-	self.videoWidth = width;
-	self.videoHeight = height;
-	self.playerWidth = width;
-	if (!self.settings.alwaysShowControls) {
-		self.playerHeight = height;
-	} else {
-		self.playerHeight = height+self.CONTROLS_HEIGHT;
-	}
+	self.width = width;
+	self.height = height;
 	
 	self.frame = document.createElement('iframe');
 	self.frame.frameBorder = 0;
-	self.frame.width = self.playerWidth;
-	self.frame.height = self.playerHeight;
+	self.frame.width = self.width;
+	self.frame.height = self.height;
 	self.frame.addEventListener('load', function() {
 		var stylesheet = create('link', self.frame.contentDocument.head);
 		stylesheet.type = 'text/css';
@@ -49,8 +43,8 @@ var newPlayer = function(replace, width, height, settings) {
 		stylesheet.href = safari.extension.baseURI + 'player.css';
 	
 		self.player = create('div', self.frame.contentDocument.body, 'youtube5player loading');
-		self.player.style.width = self.playerWidth + 'px';
-		self.player.style.height = self.playerHeight + 'px';
+		self.player.style.width = self.width + 'px';
+		self.player.style.height = self.height + 'px';
 	}, true);
 	
 	replace.parentNode.replaceChild(self.frame, replace);
@@ -61,26 +55,35 @@ var newPlayer = function(replace, width, height, settings) {
 	};
 	
 	self.updateSize = function() {
-		var realAspectRatio = self.videoWidth/self.videoHeight;
-		var nativeAspectRatio = self.video.videoWidth/self.video.videoHeight;
+		var realAspectRatio = self.width/self.height;
+		var nativeAspectRatio = self.video.width/self.video.height;
 		
 		var width, height;
 		
 		// the player is wider than necessary, so fit by height
 		if (realAspectRatio > nativeAspectRatio) {
-			width = Math.round(self.videoHeight*nativeAspectRatio);
-			height = self.videoHeight;
+			width = Math.round(self.height*nativeAspectRatio);
+			height = self.height;
 		} else { // taller than necessary
-			width = self.videoWidth;
-			height = Math.round(self.videoWidth/nativeAspectRatio);
+			width = self.width;
+			height = Math.round(self.width/nativeAspectRatio);
 		}
-		self.video.width = width;
-		self.video.height = height;
-		self.player.style.width = width + 'px';
-		if (!self.settings.alwaysShowControls) {
+		
+		if (self.settings.alwaysShowControls) {
+			// make video element smaller so as to fit the always-on controls into the player
+			self.video.height = (height - self.CONTROLS_HEIGHT);
+			self.video.width = (width - Math.round(self.CONTROLS_HEIGHT*nativeAspectRatio));
+			
 			self.player.style.height = height + 'px';
+			// match player (and controls) width to video width so it doesn't look weird;
+			// this has the side effect of making the whole player less wide than it originally was
+			self.player.style.width = (width - Math.round(self.CONTROLS_HEIGHT*nativeAspectRatio)) + 'px';
 		} else {
-			self.player.style.height = (height+self.CONTROLS_HEIGHT) + 'px';
+			self.video.height = height;
+			self.video.width = width;
+			
+			self.player.style.height = height + 'px';
+			self.player.style.width = width + 'px';
 		}
 
 	};
@@ -190,8 +193,8 @@ var newPlayer = function(replace, width, height, settings) {
 		
 		self.video = create('video', self.player);
 		self.video.src = meta.formats[meta.useFormat];
-		self.video.width = self.videoWidth;
-		self.video.height = self.videoHeight;
+		self.video.width = self.width;
+		self.video.height = self.height;
 		
 		if (self.meta.autoplay) {
 			self.video.autoplay = true;
