@@ -174,7 +174,7 @@ var canLoad = function(event) {
 	url = event.message;
 	
 	if ((safari.extension.settings.enableYouTube && (/^http:\/\/www\.youtube\.com\/(?:v|embed)\//i.test(url) ||	/^http:\/\/s\.ytimg\.com\/yt\/swf\/watch/i.test(url))) ||
-		(safari.extension.settings.enableVimeo && (/^http:\/\/assets\.vimeo\.com\/flash\/moog/i.test(url) || /^\/moogaloop_local/i.test(url) || /vimeo\.com\/moogaloop/i.test(url))) ||
+		(safari.extension.settings.enableVimeo && (/^http:\/\/assets\.vimeo\.com\/flash\/moog/i.test(url) || /^\/moogaloop_local/i.test(url) || /vimeo\.com\/moogaloop/i.test(url)) || /^http:\/\/player\.vimeo\.com\/video/i.test(url)) ||
 		(safari.extension.settings.enableFacebook && /^http:\/\/([a-z]+\.)?static\.ak\.fbcdn\.net\/rsrc.php\/zh\/r\/newa_5lrU0z.swf/i.test(url))) {
 		event.message = 'video';
 	}
@@ -196,6 +196,9 @@ var loadVideo = function(event) {
 		var data = parseUrlEncoded(flashvars);
 		loadVimeoVideo(playerId, data.clip_id, false, event);
 	} else if (m = url.match(/vimeo\.com\/moogaloop.swf?.*clip_id=(\d+)/i)) {
+		var clipId = m[1];
+		loadVimeoVideo(playerId, clipId, false, event);
+	} else if (m = url.match(/^http:\/\/player\.vimeo\.com\/video\/(\d+)/i)) {
 		var clipId = m[1];
 		loadVimeoVideo(playerId, clipId, false, event);
 	} else if (/^\/moogaloop_local/i.test(url)) {
