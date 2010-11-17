@@ -42,7 +42,7 @@ var youTubeMeta = function(text, flashvars) {
 	(data.fmt_url_map || flashvars.fmt_url_map).split(',').forEach(function(format) {
 		var pair = format.split('|');
 		if (youTubeFormats[pair[0]]) {
-			meta.formats[youTubeFormats[pair[0]]] = pair[1];
+			meta.formats[youTubeFormats[pair[0]]] = pair[1] + "&app=youtube_mobile";
 		}
 	});
 	
