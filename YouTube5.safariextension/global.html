@@ -173,7 +173,7 @@ var loadFacebookVideo = function(playerId, data, event) {
 var canLoad = function(event) {
 	url = event.message;
 	
-	if ((safari.extension.settings.enableYouTube && (/^http:\/\/www\.youtube\.com\/(?:v|embed)\//i.test(url) || /^http:\/\/s\.ytimg\.com\/yt\/swfbin\/watch/i.test(url))) ||
+	if ((safari.extension.settings.enableYouTube && (/^http:\/\/www\.youtube\.com\/(?:v|embed)\//i.test(url) || /^http:\/\/s\.ytimg\.com\/yt\/swf(?:bin)?\/watch/i.test(url))) ||
 		(safari.extension.settings.enableVimeo && (/^http:\/\/assets\.vimeo\.com\/flash\/moog/i.test(url) || /vimeo\.com\/moogaloop\.swf/i.test(url) || /^\/moogaloop_local/i.test(url) || /^http:\/\/player.vimeo.com\/video\//.test(url))) || 
 		(safari.extension.settings.enableFacebook && /^http:\/\/([a-z]+\.)?static\.ak\.fbcdn\.net\/rsrc.php\/zh\/r\/newa_5lrU0z.swf/i.test(url))) {
 		event.message = 'video';
@@ -189,7 +189,7 @@ var loadVideo = function(event) {
 		var videoId = m[1];
 		var autoplay = /autoplay=1/.test(m[2]);
 		loadYouTubeVideo(playerId, videoId, autoplay, event);
-	} else if (/^http:\/\/s.ytimg.com\/yt\/swfbin\/watch/i.test(url)) {
+	} else if (/^http:\/\/s.ytimg.com\/yt\/swf(?:bin)?\/watch/i.test(url)) {
 		var data = parseUrlEncoded(flashvars);
 		loadYouTubeVideo(playerId, data.video_id, safari.extension.settings.youTubeAutoplay, event, data);
 	} else if (/^http:\/\/assets\.vimeo\.com\/flash\/moog/i.test(url)) {
