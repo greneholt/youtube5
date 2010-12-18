@@ -13,6 +13,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 */
 
+// currently only used for YouTube videos
+var in_SSL_mode = ("https:" === window.location.protocol),
+		protocol = (in_SSL_mode ? "https" : "http");
+
 var parseUrlEncoded = function(text) {
 	var data = {};
 	
@@ -48,7 +52,7 @@ var youTubeMeta = function(text, flashvars) {
 	
 	// 360p is always available, even if it isn't listed
 	if (!meta.formats['360p']) {
-		meta.formats['360p'] = 'http://www.youtube.com/get_video?fmt=18&asv=2&video_id=' + data.video_id + '&t=' + (data.token || data.t);
+		meta.formats['360p'] = protocol + '://www.youtube.com/get_video?fmt=18&asv=2&video_id=' + data.video_id + '&t=' + (data.token || data.t);
 	}
 	
 	var defaultFormat = safari.extension.settings.youTubeFormat;
@@ -69,8 +73,8 @@ var youTubeMeta = function(text, flashvars) {
 	}
 	meta.title = data.title;
 	meta.author = data.author;
-	meta.authorLink = 'http://www.youtube.com/user/' + data.author;
-	meta.link = 'http://www.youtube.com/watch?v=' + data.video_id;
+	meta.authorLink = protocol + '://www.youtube.com/user/' + data.author;
+	meta.link = protocol + '://www.youtube.com/watch?v=' + data.video_id;
 	meta.from = 'YouTube';
 	
 	return meta;
@@ -78,7 +82,7 @@ var youTubeMeta = function(text, flashvars) {
 
 var loadYouTubeVideo = function(playerId, videoId, autoplay, event, flashvars) {
 	var req = new XMLHttpRequest();
-	req.open('GET', 'http://www.youtube.com/get_video_info?&video_id=' + videoId + '&el=embedded&ps=default&eurl=http%3A%2F%2Fwww%2Egoogle%2Ecom%2F&hl=en_US', true);
+	req.open('GET', protocol + '://www.youtube.com/get_video_info?&video_id=' + videoId + '&el=embedded&ps=default&eurl=http%3A%2F%2Fwww%2Egoogle%2Ecom%2F&hl=en_US', true);
 	req.onreadystatechange = function(ev) {
 		if (req.readyState === 4 && req.status === 200) {
 			var meta = youTubeMeta(req.responseText, flashvars);
@@ -173,7 +177,7 @@ var loadFacebookVideo = function(playerId, data, event) {
 var canLoad = function(event) {
 	url = event.message;
 	
-	if ((safari.extension.settings.enableYouTube && (/^http:\/\/www\.youtube\.com\/(?:v|embed)\//i.test(url) || /^http:\/\/s\.ytimg\.com\/yt\/swf(?:bin)?\/watch/i.test(url))) ||
+	if ((safari.extension.settings.enableYouTube && (/^http(s)?:\/\/www\.youtube\.com\/(?:v|embed)\//i.test(url) || /^http(s)?:\/\/s\.ytimg\.com\/yt\/swf(?:bin)?\/watch/i.test(url))) ||
 		(safari.extension.settings.enableVimeo && (/^http:\/\/assets\.vimeo\.com\/flash\/moog/i.test(url) || /vimeo\.com\/moogaloop\.swf/i.test(url) || /^\/moogaloop_local/i.test(url) || /^http:\/\/player.vimeo.com\/video\//.test(url))) || 
 		(safari.extension.settings.enableFacebook && /^http:\/\/([a-z]+\.)?static\.ak\.fbcdn\.net\/rsrc.php\/zh\/r\/newa_5lrU0z.swf/i.test(url))) {
 		event.message = 'video';
@@ -185,11 +189,11 @@ var loadVideo = function(event) {
 	var playerId = event.message.playerId;
 	var flashvars = event.message.flashvars;
 	
-	if (m = url.match(/^http:\/\/www\.youtube\.com\/(?:v|embed)\/([^\?&]+)([\?&].+)?/i)) {
+	if (m = url.match(/^http(s)?:\/\/www\.youtube\.com\/(?:v|embed)\/([^\?&]+)([\?&].+)?/i)) {
 		var videoId = m[1];
 		var autoplay = /autoplay=1/.test(m[2]);
 		loadYouTubeVideo(playerId, videoId, autoplay, event);
-	} else if (/^http:\/\/s.ytimg.com\/yt\/swf(?:bin)?\/watch/i.test(url)) {
+	} else if (/^http(s)?:\/\/s.ytimg.com\/yt\/swf(?:bin)?\/watch/i.test(url)) {
 		var data = parseUrlEncoded(flashvars);
 		loadYouTubeVideo(playerId, data.video_id, safari.extension.settings.youTubeAutoplay, event, data);
 	} else if (/^http:\/\/assets\.vimeo\.com\/flash\/moog/i.test(url)) {
