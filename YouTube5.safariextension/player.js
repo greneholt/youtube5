@@ -270,7 +270,13 @@ var newPlayer = function(replace, width, height) {
 		
 		self.playPause = create('div', self.controls, 'youtube5play-pause');
 		self.timeElapsed = create('div', self.controls, 'youtube5time-elapsed');
-		self.fullscreen = create('div', self.controls, 'youtube5fullscreen');
+
+		self.progress = create('div', self.controls, 'youtube5progress');
+		self.loaded = create('div', self.progress, 'youtube5loaded');
+		self.played = create('div', self.progress, 'youtube5played');
+
+		self.timeRemaining = create('div', self.controls, 'youtube5time-remaining');
+
 		self.volume = create('div', self.controls, 'youtube5volume');
 		create('div', self.volume, 'youtube5volume-indicator');
 		self.volumePopup = create('div', self.volume, 'youtube5volume-popup');
@@ -283,10 +289,8 @@ var newPlayer = function(replace, width, height) {
 		self.volumeSlider.value = 100;
 
 		self.volumeMute = create('div', self.volumePopup, 'youtube5volume-mute');
-		self.timeRemaining = create('div', self.controls, 'youtube5time-remaining');
-		self.progress = create('div', self.controls, 'youtube5progress');
-		self.loaded = create('div', self.progress, 'youtube5loaded');
-		self.played = create('div', self.progress, 'youtube5played');
+
+		self.fullscreen = create('div', self.controls, 'youtube5fullscreen');
 
 		self.position = create('input', self.progress, 'youtube5position');
 		self.position.type = 'range';
