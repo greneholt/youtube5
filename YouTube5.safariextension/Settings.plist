@@ -30,7 +30,7 @@
 	</dict>
 	<dict>
 		<key>DefaultValue</key>
-		<string>720p</string>
+		<string>360p</string>
 		<key>Key</key>
 		<string>youTubeFormat</string>
 		<key>Title</key>
@@ -40,6 +40,7 @@
 			<string>1080p</string>
 			<string>720p</string>
 			<string>360p</string>
+			<string>240p FLV</string>
 		</array>
 		<key>Type</key>
 		<string>PopUpButton</string>
@@ -48,6 +49,7 @@
 			<string>1080p</string>
 			<string>720p</string>
 			<string>360p</string>
+			<string>240p FLV</string>
 		</array>
 	</dict>
 	<dict>
@@ -68,7 +70,7 @@
 	</dict>
 	<dict>
 		<key>DefaultValue</key>
-		<string>HD</string>
+		<string>SD</string>
 		<key>Key</key>
 		<string>vimeoFormat</string>
 		<key>Title</key>
@@ -121,6 +123,12 @@
 			<string>High</string>
 			<string>Low</string>
 		</array>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<real>1</real>
+		<key>Key</key>
+		<string>volume</string>
 	</dict>
 </array>
 </plist>

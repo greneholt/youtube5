@@ -1,3 +1,9 @@
-#watch-video #watch-player {
+#watch-video #watch-player, .mvp_player, #player.mvp_player {
 	background: transparent !important;
+	border: none !important;
+}
+
+/* Hide Vimeo overlay */
+.q.f .ae {
+	display: none !important;
 }

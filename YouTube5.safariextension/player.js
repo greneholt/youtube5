@@ -28,6 +28,12 @@ var newPlayer = function(replace, width, height) {
 	self.width = width;
 	self.height = height;
 	
+	self.originalPlayer = replace;
+	
+	self.revert = function() {
+		self.frame.parentNode.replaceChild(self.originalPlayer, self.frame);
+	};
+	
 	self.frame = document.createElement('iframe');
 	self.frame.frameBorder = 0;
 	self.frame.width = self.width;
@@ -41,7 +47,11 @@ var newPlayer = function(replace, width, height) {
 		self.player = create('div', self.frame.contentDocument.body, 'youtube5player loading');
 		self.player.style.width = self.width + 'px';
 		self.player.style.height = self.height + 'px';
-	}, true);
+		
+		self.useOriginal = create('div', self.player, 'youtube5use-original');
+		self.useOriginal.innerHTML = '&crarr; Use original player';
+		self.useOriginal.addEventListener('click', self.revert, false);
+	}, false);
 	
 	replace.parentNode.replaceChild(self.frame, replace);
 	
@@ -108,14 +118,15 @@ var newPlayer = function(replace, width, height) {
 	self.seek = function() {
 		self.video.currentTime = self.position.value / 1000 * self.video.duration;
 		self.updatePlayed();
+		self.hideOverlay();
 	};
 	
 	self.showOverlay = function() {
-		self.player.className = 'youtube5player youtube5overlayed';
+		self.player.className = self.player.className + ' youtube5overlayed';
 	};
 	
 	self.hideOverlay = function() {
-		self.player.className = 'youtube5player';
+		self.player.className = self.player.className.replace(/\byoutube5overlayed\b/, '');
 	};
 	
 	self.playOrPause = function() {
@@ -130,6 +141,10 @@ var newPlayer = function(replace, width, height) {
 		self.video.muted = volume < 0.02;
 		self.video.volume = volume;
 		self.updateVolumeIndicator();
+		
+		if (self.meta.volumeCallback) {
+			self.meta.volumeCallback(volume);
+		}
 	};
 	
 	self.changeQuality = function(event) {
@@ -151,13 +166,14 @@ var newPlayer = function(replace, width, height) {
 		self.updateSize();
 		self.createControls();
 		self.updateTime();
+		self.setVolume(self.meta.volume);
 		
-		self.video.removeEventListener('loadedmetadata', self.initVideo, true);
+		self.video.removeEventListener('loadedmetadata', self.initVideo, false);
 		self.video.addEventListener('loadedmetadata', function() {
 			self.updateSize();
 			self.seek();
 			self.updateTime();
-		}, true);
+		}, false);
 	};
 	
 	self.injectVideo = function(meta) {
@@ -216,7 +232,7 @@ var newPlayer = function(replace, width, height) {
 			link.textContent = name;
 			link.href = self.meta.formats[name];
 			link.target = '_parent';
-			link.addEventListener('click', self.changeQuality, true);
+			link.addEventListener('click', self.changeQuality, false);
 			
 			if (meta.useFormat == name) {
 				format.className = 'youtube5current-format';
@@ -238,24 +254,30 @@ var newPlayer = function(replace, width, height) {
 				self.player.style.backgroundSize = null;
 				self.video.play();
 				self.player.removeChild(self.playLarge);
-			}, true);
+			}, false);
 		}
 		
-		self.video.addEventListener('loadedmetadata', self.initVideo, true);
+		self.video.addEventListener('loadedmetadata', self.initVideo, false);
 		
-		self.info.addEventListener('click', self.showOverlay, true);
+		self.info.addEventListener('click', self.showOverlay, false);
+		
+		self.overlay.addEventListener('click', function(event) {
+			if (event.target == self.overlay) {
+				self.playOrPause();
+			}
+		}, false);
 		
 		self.replay.addEventListener('click', function() {
 			self.video.play();
 			self.player.className = 'youtube5player';
-		}, true);
+		}, false);
 		
-		self.closeOverlay.addEventListener('click', self.hideOverlay, true);
+		self.closeOverlay.addEventListener('click', self.hideOverlay, false);
 		
 		self.video.addEventListener('ended', function() {
 			self.video.pause();
 			self.player.className = 'youtube5player youtube5overlayed youtube5replay';
-		}, true);
+		}, false);
 	};
 	
 	self.createControls = function() {
@@ -294,41 +316,41 @@ var newPlayer = function(replace, width, height) {
 		self.position.max = 1000;
 		self.position.value = 0;
 		
-		self.playPause.addEventListener('click', self.playOrPause, true);
+		self.playPause.addEventListener('click', self.playOrPause, false);
 		
 		self.fullscreen.addEventListener('click', function() {
 			self.video.webkitEnterFullScreen();
-		}, true);
+		}, false);
 
 		self.volumeSlider.addEventListener('change', function() {
 			self.setVolume(self.volumeSlider.value / 100);
-		}, true);
+		}, false);
 
 		self.volumeMax.addEventListener('click', function() {
 			self.setVolume(1);
 			self.updateVolumeSlider();
-		}, true);
+		}, false);
 
 		self.volumeMute.addEventListener('click', function() {
 			self.setVolume(0);
 			self.updateVolumeSlider();
-		}, true);
+		}, false);
 		
-		self.position.addEventListener('change', self.seek, true);
+		self.position.addEventListener('change', self.seek, false);
 		
-		self.video.addEventListener('progress', self.updateLoaded, true);
+		self.video.addEventListener('progress', self.updateLoaded, false);
 		
-		self.video.addEventListener('timeupdate', self.updatePosition, true);
+		self.video.addEventListener('timeupdate', self.updatePosition, false);
 		
-		self.video.addEventListener('volumechange', self.updateVolumeSlider, true);
+		self.video.addEventListener('volumechange', self.updateVolumeSlider, false);
 		
 		self.video.addEventListener('play', function() {
 			self.controls.className = 'youtube5controls youtube5play';
-		}, true);
+		}, false);
 
 		self.video.addEventListener('pause', function() {
 			self.controls.className = 'youtube5controls youtube5pause';
-		}, true);
+		}, false);
 	};
 	
 	return self;

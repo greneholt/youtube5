@@ -14,6 +14,30 @@ body {
 	background: #000 url(loading.gif) no-repeat center center;
 }
 
+.youtube5player div {
+	cursor: default;
+}
+
+.youtube5player .youtube5use-original {
+	position: absolute;
+	opacity: 0;
+	left: 10px;
+	bottom: 35px;
+	font: 12px Helvetica, sans-serif;
+	cursor: pointer;
+	color: #ccc;
+	-webkit-transition: opacity 0.3s ease-in-out;
+	z-index: 500;
+}
+
+.youtube5player .youtube5use-original:hover {
+	color: #fff;
+}
+
+.youtube5player.loading .youtube5use-original, .youtube5player.youtube5overlayed .youtube5use-original {
+	opacity: 1;
+}
+
 .youtube5player.error {
 	padding: 25% 0 0 0;
 }
@@ -28,10 +52,6 @@ body {
 
 .youtube5player .youtube5error a {
 	color: #ddd;
-}
-
-.youtube5player div {
-	cursor: default;
 }
 
 .youtube5player video {
@@ -50,7 +70,7 @@ body {
     border-top: 1px solid #555;
 }
 
-.youtube5player .youtube5controls.youtube5pause, .youtube5player:hover .youtube5controls {
+.youtube5player .youtube5controls.youtube5pause, .youtube5player:hover .youtube5controls, .youtube5player.youtube5overlayed .youtube5controls {
 	opacity: 0.8;
 }
 
