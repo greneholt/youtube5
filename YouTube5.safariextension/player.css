@@ -34,15 +34,18 @@ body {
 	color: #fff;
 }
 
-.youtube5player.loading .youtube5use-original, .youtube5player.youtube5overlayed .youtube5use-original {
+.youtube5player.loading .youtube5use-original, .youtube5player.youtube5overlayed .youtube5use-original, .youtube5player.error .youtube5use-original {
 	opacity: 1;
 }
-
+/*
 .youtube5player.error {
 	padding: 25% 0 0 0;
-}
+}*/
 
 .youtube5player .youtube5error {
+	position: absolute;
+	top: 40%;
+	width: 100%;
 	color: #bbb;
 	background-color: #222;
 	padding: 10px;
