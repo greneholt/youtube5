@@ -3,6 +3,11 @@
 	border: none !important;
 }
 
+/* Hide youtube "Update Flash version" banner */
+#flash10-promo-div {
+	display: none !important;
+}
+
 /* Hide Vimeo overlay */
 .q.f .ae {
 	display: none !important;
