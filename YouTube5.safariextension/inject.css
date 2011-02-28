@@ -3,7 +3,7 @@
 	border: none !important;
 }
 
-/* Hide Vimeo overlay */
-.r.bi .aa {
+/* Hide Vimeo overlay and YouTube flash warning */
+.r.bi .aa, #flash10-promo-div {
 	display: none !important;
 }

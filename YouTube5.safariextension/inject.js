@@ -6,6 +6,14 @@ if (!/youtube\.com\/leanback/.test(document.location.href)) {
 		
 		event.target.youtube5checked = true;
 		
+		if (/^https?:\/\/([a-z]+\.)?static\.ak\.fbcdn\.net\/rsrc.php\/v1\/y-\/r\/iWcHxgYLL1s\.js/i.test(event.url)) {
+			event.preventDefault();
+			var s = document.createElement('script');
+			s.src = safari.extension.baseURI + 'fbswffix.js';
+			s.type = 'text/javascript';
+			event.target.parentNode.replaceChild(s, event.target);
+		}
+		
 		// for some reason the url doesn't stay in the event when its passed to the global page, so we have to set it as the message
 		var result = safari.self.tab.canLoad(event, event.url);
 		

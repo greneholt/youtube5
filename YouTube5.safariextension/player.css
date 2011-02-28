@@ -250,7 +250,7 @@ body {
 .youtube5player .youtube5formats {
 	float: right;
 	padding: 0;
-	margin: 30px 15px;
+	margin-right: 15px;
 	background-color: #222;
 	text-align: center;
 }
