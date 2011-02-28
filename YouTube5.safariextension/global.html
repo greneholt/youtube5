@@ -81,8 +81,8 @@ var youTubeMeta = function(text, flashvars) {
 	}
 	meta.title = data.title;
 	meta.author = data.author;
-	meta.authorLink = 'http://www.youtube.com/user/' + data.author;
-	meta.link = 'http://www.youtube.com/watch?v=' + data.video_id;
+	meta.authorLink = 'https://www.youtube.com/user/' + data.author;
+	meta.link = 'https://www.youtube.com/watch?v=' + data.video_id;
 	meta.from = 'YouTube';
 	
 	return meta;
@@ -90,7 +90,7 @@ var youTubeMeta = function(text, flashvars) {
 
 var loadYouTubeVideo = function(playerId, videoId, autoplay, event, flashvars) {
 	var req = new XMLHttpRequest();
-	req.open('GET', 'http://www.youtube.com/get_video_info?&video_id=' + videoId + '&el=embedded&ps=default&eurl=http%3A%2F%2Fwww%2Egoogle%2Ecom%2F&hl=en_US', true);
+	req.open('GET', 'https://www.youtube.com/get_video_info?&video_id=' + videoId + '&el=embedded&ps=default&eurl=http%3A%2F%2Fwww%2Egoogle%2Ecom%2F&hl=en_US', true);
 	req.onreadystatechange = function(ev) {
 		if (req.readyState === 4 && req.status === 200) {
 			var meta = youTubeMeta(req.responseText, flashvars);
@@ -176,7 +176,7 @@ var loadFacebookVideo = function(playerId, data, event) {
 	
 	meta.poster = data.thumb_url;
 	meta.title = data.video_title;
-	meta.link = 'http://www.facebook.com/video/video.php?v=' + data.video_id;
+	meta.link = 'https://www.facebook.com/video/video.php?v=' + data.video_id;
 	meta.author = data.video_owner_name;
 	meta.authorLink = data.video_owner_href;
 	meta.from = 'Facebook';
