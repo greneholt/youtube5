@@ -70,7 +70,7 @@
 	</dict>
 	<dict>
 		<key>DefaultValue</key>
-		<string>SD</string>
+		<string>HD</string>
 		<key>Key</key>
 		<string>vimeoFormat</string>
 		<key>Title</key>

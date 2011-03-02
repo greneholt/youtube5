@@ -190,7 +190,7 @@ var canLoad = function(event) {
 	
 	if ((safari.extension.settings.enableYouTube && (/^https?:\/\/www\.youtube\.com\/(?:v|embed)\//i.test(url) || /^https?:\/\/s\.ytimg\.com\/yt\/swf(?:bin)?\/watch/i.test(url))) ||
 		(safari.extension.settings.enableVimeo && (/^https?:\/\/assets\.vimeo\.com\/flash\/moog/i.test(url) || /vimeo\.com\/moogaloop\.swf/i.test(url) || /\/moogaloop/i.test(url) || /^https?:\/\/player.vimeo.com\/video\//.test(url))) || 
-		(safari.extension.settings.enableFacebook && /^https?:\/\/([a-z]+\.)?static\.ak\.fbcdn\.net\/rsrc.php\/v1\/yf\/r\/wn29KX6UvhD\.swf/i.test(url))) {
+		(safari.extension.settings.enableFacebook && /^https?:\/\/([a-z\-\.]+)?static\.ak\.facebook\.com\/rsrc.php\/v1\/yf\/r\/wn29KX6UvhD\.swf/i.test(url))) {
 		event.message = 'video';
 	}
 };
@@ -219,7 +219,7 @@ var loadVideo = function(event) {
 	} else if (m = url.match(/^https?:\/\/player.vimeo.com\/video\/(\d+)/i)) {
 		var clipId = m[1];
 		loadVimeoVideo(playerId, clipId, false, event);
-	} else if (/^https?:\/\/([a-z]+\.)?static\.ak\.fbcdn\.net\/rsrc.php\/v1\/yf\/r\/wn29KX6UvhD\.swf/i.test(url)) {
+	} else if (/^https?:\/\/([a-z\-\.]+)?static\.ak\.facebook\.com\/rsrc.php\/v1\/yf\/r\/wn29KX6UvhD\.swf/i.test(url)) {
 		var data = parseUrlEncoded(flashvars);
 		loadFacebookVideo(playerId, data, event);
 	} else {
