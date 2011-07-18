@@ -130,5 +130,45 @@
 		<key>Key</key>
 		<string>volume</string>
 	</dict>
+	<dict>
+		<key>Title</key>
+		<string>Yandex.Video Options</string>
+		<key>Type</key>
+		<string>Group</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<true/>
+		<key>Key</key>
+		<string>enableYandexVideo</string>
+		<key>Title</key>
+		<string>Enable for Yandex.Video videos</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<string>HD (H.264) FLV</string>
+		<key>Key</key>
+		<string>yandexVideoFormat</string>
+		<key>Title</key>
+		<string>Default Yandex.Video Format</string>
+		<key>Titles</key>
+		<array>
+			<string>HD (H.264) FLV</string>
+			<string>Medium (H.264) FLV</string>
+			<string>Low (H.264) FLV</string>
+			<string>Low FLV</string>
+		</array>
+		<key>Type</key>
+		<string>PopUpButton</string>
+		<key>Values</key>
+		<array>
+			<string>HD (H.264) FLV</string>
+			<string>Medium (H.264) FLV</string>
+			<string>Low (H.264) FLV</string>
+			<string>Low FLV</string>
+		</array>
+	</dict>
 </array>
 </plist>
