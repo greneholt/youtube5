@@ -241,13 +241,26 @@ var yandexVideoMeta = function(data, xml) {
 	return meta;
 }
 
-var loadYandexVideo = function(playerId, data, event) {
+var loadYandexVideo = function(playerId, event, domain, login, storageDirectory) {
+	var data = {};
+	data.domain           = domain;
+	data.login            = login;
+	data.storageDirectory = storageDirectory;
+	data.siteUrl          = 'http://video.' + domain + '/';
+	data.clipStorageUrl   = 'http://streaming.video.' + domain + '/get/';
+	data.storageUrl       = 'http://flv.video.' + domain + '/get/';
+	data.getTokenUrl      = 'http://static.video.' + domain + '/get-token/';
+
+	if (domain == 'yandex-team.ru') {
+		data.storageUrl = 'http://static.video.yandex-team.ru/get/';
+	}
+
 	var req = new XMLHttpRequest();
 	var getTokenUrl = data.getTokenUrl + data.login + '/' + data.storageDirectory;
 	req.open('GET', getTokenUrl, true);
 	req.onreadystatechange = function(ev) {
 		if (req.readyState === 4 && req.status === 200) {
-			data.token = /\<token\>([^\s]+)\<\/token\>/.exec(req.responseText)[1];
+			data.token = req.responseXML.querySelector('token').textContent;
 
 			var getMetadataUrl = data.storageUrl + data.login + '/' + data.storageDirectory + '/0h.xml';
 			var req2 = new XMLHttpRequest();
@@ -270,14 +283,29 @@ var loadYandexVideo = function(playerId, data, event) {
 	req.send(null);
 }
 
+var isYandexVideoUrl = function(url) {
+	return (safari.extension.settings.enableYandexVideo &&
+		 (/^http\:\/\/static\.video\.yandex(\-team)?\.ru\/(.+)\/(.+)\/(.+)\/$/i.test(url) ||
+		  /^http\:\/\/video\.(yandex(?:\-team)?\.ru)\/users\/(.+)\/view\/(.+)(?:\/)?$/i.test(url)));
+}
+
 var canLoad = function(event) {
 	url = event.message;
 	
 	if ((safari.extension.settings.enableYouTube && (/^https?:\/\/www\.youtube(?:\-nocookie)?\.com\/(?:v|embed)\//i.test(url) || /^https?:\/\/s\.ytimg\.com\/yt\/swf(?:bin)?\/watch/i.test(url))) ||
 		(safari.extension.settings.enableVimeo && (/^https?:\/\/assets\.vimeo\.com\/flash\/moog/i.test(url) || /vimeo\.com\/moogaloop\.swf/i.test(url) || /\/moogaloop/i.test(url) || /^https?:\/\/player.vimeo.com\/video\//.test(url))) || 
 		(safari.extension.settings.enableFacebook && /^https?:\/\/([a-z\-\.]+)?static\.ak\.facebook\.com\/rsrc.php\/v1\/yf\/r\/wn29KX6UvhD\.swf/i.test(url)) ||
-		(safari.extension.settings.enableYandexVideo && /^http\:\/\/static\.video\.yandex(\-team)?\.ru\/(.+)\/(.+)\/(.+)\/$/i.test(url))) {
+		isYandexVideoUrl(url)) {
 		event.message = 'video';
+	}
+};
+
+var canLoad2 = function(event) {
+	url = event.message.url;
+	console.log('canLoad2: ' + url);
+
+	if (isYandexVideoUrl(url)) {
+		event.target.page.dispatchMessage("doLoad2", event.message);
 	}
 };
 
@@ -308,19 +336,10 @@ var loadVideo = function(event) {
 	} else if (/^https?:\/\/([a-z\-\.]+)?static\.ak\.facebook\.com\/rsrc.php\/v1\/yf\/r\/wn29KX6UvhD\.swf/i.test(url)) {
 		var data = parseUrlEncoded(flashvars);
 		loadFacebookVideo(playerId, data, event);
-	} else if (m = url.match(/^http\:\/\/static\.video\.yandex(\-team)?\.ru\/(.+)\/(.+)\/(.+)\/$/i)) {
-		var domain = m[1];
-		if (domain == undefined) domain = '';
-		domain = 'yandex' + domain + '.ru';
-
-		var data = {};
-		data.login            = m[3];
-		data.storageDirectory = m[4];
-		data.siteUrl          = 'http://video.' + domain + '/';
-		data.clipStorageUrl   = 'http://streaming.video.' + domain + '/get/';
-		data.storageUrl       = 'http://flv.video.' + domain + '/get/';
-		data.getTokenUrl      = 'http://static.video.' + domain + '/get-token/';
-		loadYandexVideo(playerId, data, event);
+	} else if (m = url.match(/^http\:\/\/static\.video\.(yandex(?:\-team)?\.ru)\/(.+)\/(.+)\/(.+)(?:\/)?$/i)) {
+		loadYandexVideo(playerId, event, m[1], m[3], m[4]);
+	} else if (m = url.match(/^http\:\/\/video\.(yandex(?:\-team)?\.ru)\/users\/(.+)\/view\/(.+)(?:\/)?$/i)) {
+		loadYandexVideo(playerId, event, m[1], m[2], event.message.storageDirectory);
 	} else {
 		var meta = { error: 'Unknown video URL<br />' + url };
 		injectVideo(event, playerId, meta);
@@ -334,6 +353,8 @@ var updateVolume = function(event) {
 safari.application.addEventListener("message", function(event) {
 	if (event.name == 'canLoad') {
 		canLoad(event);
+	} else if (event.name == 'canLoad2') {
+		canLoad2(event);
 	} else if (event.name == 'loadVideo') {
 		loadVideo(event);
 	} else if (event.name == 'updateVolume') {

@@ -23,6 +23,10 @@
 	<dict>
 		<key>Scripts</key>
 		<dict>
+			<key>End</key>
+			<array>
+				<string>inject-end.js</string>
+			</array>
 			<key>Start</key>
 			<array>
 				<string>inject.js</string>
