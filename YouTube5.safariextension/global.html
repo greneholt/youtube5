@@ -185,44 +185,45 @@ var loadFacebookVideo = function(playerId, data, event) {
 	injectVideo(event, playerId, meta);
 };
 
-var yandexVideoMeta = function(text, data) {
+var yandexVideoMeta = function(data, xml) {
 	var meta = {};
 	meta.formats = {};
 
-	data.id = /\bid\=\"(\d+)\"/.exec(text)[1];
-	data.title = /\<title\>(.+)\<\/title\>/.exec(text)[1];
+	data.id = xml.querySelector('film').getAttribute('id');
+	data.title = xml.querySelector('title').textContent;
 
-	var yandexVideoFormats = {
-		'flv_low': {
+	var yandexVideoFormats = [
+		{
+			'id': 'flv_low',
 			'description': 'Low FLV',
 			'fileName': '0.flv'
 		},
-		'flv_h264_low': {
+		{
+			'id': 'flv_h264_low',
 			'description': 'Low (H.264) FLV',
 			'fileName': 'm450x334.flv'
 		},
-		'flv_h264_med': {
+		{
+			'id': 'flv_h264_med',
 			'description': 'Medium (H.264) FLV',
 			'fileName': 'medium.flv'
 		},
-		'flv_h264_hd_720p': {
+		{
+			'id': 'flv_h264_hd_720p',
 			'description': 'HD (H.264) FLV',
 			'fileName': 'm1280x720.flv'
 		}
-	};
+	];
 
-	var formats = []
-	if (/\<\/flv_low\>/.exec(text) != null) formats.push('flv_low');
-	if (/\<\/flv_h264_low\>/.exec(text) != null) formats.push('flv_h264_low');
-	if (/\<\/flv_h264_med\>/.exec(text) != null) formats.push('flv_h264_med');
-	if (/\<\/flv_h264_hd_720p\>/.exec(text) != null) formats.push('flv_h264_hd_720p');
+	yandexVideoFormats.forEach(function(format) {
+		if (!xml.querySelector(format.id))
+			return;
 
-	formats.forEach(function(format) {
-		var videoFile = yandexVideoFormats[format].fileName;
+		var videoFile = format.fileName;
 		videoFile = data.clipStorageUrl + data.login + '/' + data.storageDirectory + '/' + videoFile + '?token=' + data.token;
-		meta.formats[yandexVideoFormats[format].description] = videoFile;
+		meta.formats[format.description] = videoFile;
 
-		meta.useFormat = yandexVideoFormats[format].description;
+		meta.useFormat = format.description;
 	});
 
 	var defaultFormat = safari.extension.settings.yandexVideoFormat;
@@ -253,7 +254,7 @@ var loadYandexVideo = function(playerId, data, event) {
 			req2.open('GET', getMetadataUrl, true);
 			req2.onreadystatechange = function(ev2) {
 				if (req2.readyState === 4 && req2.status === 200) {
-					var meta = yandexVideoMeta(req2.responseText, data);
+					var meta = yandexVideoMeta(data, req2.responseXML);
 					injectVideo(event, playerId, meta);
 				} else if (req2.readyState === 4 && req2.status != 200) {
 					var meta = { error: 'Error2 loading Yandex.Video video' };
