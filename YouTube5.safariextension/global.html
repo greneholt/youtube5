@@ -51,9 +51,9 @@ var youTubeMeta = function(text, flashvars) {
 	43 - WebM 480p
 	45 - WebM 720p (HD)
 	*/
-	
+
 	var youTubeFormats = { 5: '240p FLV', 18: '360p', 22: '720p', 37: '1080p' };
-	
+
 	meta.formats = {};
 	// use the flashvars if the video info couldn't be retrieved
 	(flashvars.url_encoded_fmt_stream_map || data.url_encoded_fmt_stream_map).split(',').forEach(function(format){
@@ -203,7 +203,7 @@ var loadVideo = function(event) {
 	if (m = url.match(/^https?:\/\/www\.youtube(?:\-nocookie)?\.com\/(?:v|embed)\/([^\?&]+)([\?&].+)?/i)) {
 		var videoId = m[1];
 		var autoplay = /autoplay=1/.test(m[2]);
-		loadYouTubeVideo(playerId, videoId, autoplay, event, flashvars);
+		loadYouTubeVideo(playerId, videoId, autoplay, event, {});
 	} else if (/^https?:\/\/s.ytimg.com\/yt\/swf(?:bin)?\/watch/i.test(url)) {
 		var data = parseUrlEncoded(flashvars);
 		loadYouTubeVideo(playerId, data.video_id, safari.extension.settings.youTubeAutoplay, event, data);
