@@ -132,6 +132,8 @@ var newPlayer = function(replace, width, height) {
 	self.playOrPause = function() {
 		if (self.video.paused) {
 			self.video.play();
+			if(self.playLarge && self.playLarge.parentNode == self.player)
+				self.player.removeChild(self.playLarge);
 		} else {
 			self.video.pause();
 		}

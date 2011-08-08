@@ -4,6 +4,8 @@
 <dict>
 	<key>Author</key>
 	<string>Connor McKay</string>
+	<key>Builder Version</key>
+	<string>7534.48.3</string>
 	<key>CFBundleDisplayName</key>
 	<string>YouTube5</string>
 	<key>CFBundleIdentifier</key>
