@@ -56,10 +56,10 @@ var youTubeMeta = function(text, flashvars) {
 	
 	meta.formats = {};
 	// use the flashvars if the video info couldn't be retreived
-	(data.fmt_url_map || flashvars.fmt_url_map).split(',').forEach(function(format) {
-		var pair = format.split('|');
-		if (youTubeFormats[pair[0]]) {
-			meta.formats[youTubeFormats[pair[0]]] = pair[1];
+	(flashvars.url_encoded_fmt_stream_map || data.url_encoded_fmt_stream_map).split(',').forEach(function(format){
+		var tmp = parseUrlEncoded(format);
+		if (youTubeFormats[tmp.itag]) {
+			meta.formats[youTubeFormats[tmp.itag]] = tmp.url;
 		}
 	});
 	
