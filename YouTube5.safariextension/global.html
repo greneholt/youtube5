@@ -204,7 +204,7 @@ var loadVideo = function(event) {
 	if (m = url.match(/^https?:\/\/www\.youtube(?:\-nocookie)?\.com\/(?:v|embed)\/([^\?&]+)([\?&].+)?/i)) {
 		var videoId = m[1];
 		var autoplay = /autoplay=1/.test(m[2]);
-		loadYouTubeVideo(playerId, videoId, autoplay, event, flashvars);
+		loadYouTubeVideo(playerId, videoId, autoplay, event, {});
 	} else if (/^https?:\/\/s.ytimg.com\/yt\/swf(?:bin)?\/watch/i.test(url)) {
 		var data = parseUrlEncoded(flashvars);
 		loadYouTubeVideo(playerId, data.video_id, safari.extension.settings.youTubeAutoplay, event, data);
