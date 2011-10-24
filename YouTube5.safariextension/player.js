@@ -31,29 +31,25 @@ var newPlayer = function(replace, width, height) {
 	self.originalPlayer = replace;
 
 	self.revert = function() {
-		self.frame.parentNode.replaceChild(self.originalPlayer, self.frame);
+		self.container.parentNode.replaceChild(self.originalPlayer, self.container);
 	};
 
-	self.frame = document.createElement('iframe');
-	self.frame.frameBorder = 0;
-	self.frame.width = self.width;
-	self.frame.height = self.height;
-	self.frame.addEventListener('load', function() {
-		var stylesheet = create('link', self.frame.contentDocument.head);
-		stylesheet.type = 'text/css';
-		stylesheet.rel = 'stylesheet';
-		stylesheet.href = safari.extension.baseURI + 'player.css';
+	self.container = document.createElement('div');
+	self.container.className = 'youtube5container';
+	self.container.style.width = self.width + 'px';
+	self.container.style.height = self.height + 'px';
 
-		self.player = create('div', self.frame.contentDocument.body, 'youtube5player loading');
-		self.player.style.width = self.width + 'px';
-		self.player.style.height = self.height + 'px';
+	self.player = create('div', self.container, 'youtube5player youtube5loading');
+	self.player.style.width = self.width + 'px';
+	self.player.style.height = self.height + 'px';
 
-		self.useOriginal = create('div', self.player, 'youtube5use-original');
-		self.useOriginal.innerHTML = '&crarr; Use original player';
-		self.useOriginal.addEventListener('click', self.revert, false);
-	}, false);
+	self.info = create('div', self.player, 'youtube5info');
 
-	replace.parentNode.replaceChild(self.frame, replace);
+	self.useOriginal = create('div', self.info, 'youtube5use-original');
+	self.useOriginal.innerHTML = '&crarr; Use original player';
+	self.useOriginal.addEventListener('click', self.revert, false);
+
+	replace.parentNode.replaceChild(self.container, replace);
 
 	self.updatePlayed = function() {
 		var x = self.position.value / 1000 * (self.position.clientWidth - 10) + 10;
@@ -133,6 +129,7 @@ var newPlayer = function(replace, width, height) {
 		if (self.video.paused) {
 			self.video.play();
 			self.removePlayLarge();
+			self.hideOverlay();
 		} else {
 			self.video.pause();
 		}
@@ -199,14 +196,18 @@ var newPlayer = function(replace, width, height) {
 			return;
 		}
 
+		self.video = document.createElement('video');
 		self.video = create('video', self.player);
 		self.video.src = meta.formats[meta.useFormat];
 		self.video.width = self.width;
 		self.video.height = self.height;
 
+		self.player.insertBefore(self.video, self.info);
+
 		if (self.meta.autoplay) {
 			self.video.autoplay = true;
 		} else {
+			self.player.className = 'youtube5player';
 			self.player.style.background = '#000 url(' + meta.poster + ') no-repeat center center';
 			self.player.style.backgroundSize = '100% auto';
 			self.video.preload = 'none';
@@ -214,8 +215,12 @@ var newPlayer = function(replace, width, height) {
 
 		self.overlay = create('div', self.player, 'youtube5overlay');
 
+		if (self.meta.title || self.meta.author) {
+			self.info = create('div', self.player, 'youtube5info');
+		}
+
 		if (self.meta.title) {
-			var title = create('div', self.overlay, 'youtube5title');
+			var title = create('div', self.info, 'youtube5title');
 			var link = create('a', title);
 			link.textContent = self.meta.title;
 			link.href = self.meta.link;
@@ -223,7 +228,7 @@ var newPlayer = function(replace, width, height) {
 		}
 
 		if (self.meta.author) {
-			var author = create('div', self.overlay, 'youtube5author');
+			var author = create('div', self.info, 'youtube5author');
 			author.textContent = 'By ';
 			var link = create('a', author);
 			link.textContent = self.meta.author;
@@ -253,13 +258,14 @@ var newPlayer = function(replace, width, height) {
 		self.closeOverlay = create('div', self.overlay, 'youtube5close-overlay');
 		self.closeOverlay.textContent = 'X';
 
-		self.info = create('div', self.player, 'youtube5info');
-		self.info.textContent = 'i';
+		self.infoButton = create('div', self.player, 'youtube5info-button');
+		self.infoButton.textContent = 'i';
 
 		if (!self.meta.autoplay) {
 			self.playLarge = create('div', self.player, 'youtube5play-large');
 
 			self.playLarge.addEventListener('click', function() {
+				self.player.className = 'youtube5player youtube5loading';
 				self.removePlayLarge();
 				self.video.play();
 			}, false);
@@ -267,13 +273,9 @@ var newPlayer = function(replace, width, height) {
 
 		self.video.addEventListener('loadedmetadata', self.initVideo, false);
 
-		self.info.addEventListener('click', self.showOverlay, false);
+		self.infoButton.addEventListener('click', self.showOverlay, false);
 
-		self.overlay.addEventListener('click', function(event) {
-			if (event.target == self.overlay) {
-				self.playOrPause();
-			}
-		}, false);
+		self.video.addEventListener('click', self.playOrPause, false);
 
 		self.replay.addEventListener('click', function() {
 			self.video.play();

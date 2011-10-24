@@ -34,6 +34,7 @@
 		<key>Stylesheets</key>
 		<array>
 			<string>inject.css</string>
+			<string>player.css</string>
 		</array>
 	</dict>
 	<key>Description</key>

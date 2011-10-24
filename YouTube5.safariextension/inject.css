@@ -1,9 +1,8 @@
 #watch-video #watch-player, .mvp_player, #player.mvp_player {
 	background: transparent !important;
-	border: none !important;
 }
 
 /* Hide Vimeo overlay and YouTube flash warning */
-.r.bi .aa, #flash10-promo-div, #flash-upgrade {
+.r.bi .aa, #flash10-promo-div, #flash-upgrade, .yt-alert-player {
 	display: none !important;
 }
