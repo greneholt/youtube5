@@ -43,9 +43,11 @@ var newPlayer = function(replace, width, height) {
 	self.player.style.width = self.width + 'px';
 	self.player.style.height = self.height + 'px';
 
+	self.overlay = create('div', self.player, 'youtube5overlay');
+
 	self.info = create('div', self.player, 'youtube5info');
 
-	self.useOriginal = create('div', self.info, 'youtube5use-original');
+	self.useOriginal = create('div', self.info, 'youtube5use-original youtube5show-on-waiting');
 	self.useOriginal.innerHTML = '&crarr; Use original player';
 	self.useOriginal.addEventListener('click', self.revert, false);
 
@@ -202,41 +204,37 @@ var newPlayer = function(replace, width, height) {
 		self.video.width = self.width;
 		self.video.height = self.height;
 
-		self.player.insertBefore(self.video, self.info);
+		self.player.insertBefore(self.video, self.overlay);
 
 		if (self.meta.autoplay) {
-			self.video.autoplay = true;
+			self.video.play();
 		} else {
-			self.player.className = 'youtube5player';
+			self.player.className = 'youtube5player youtube5waiting';
 			self.player.style.background = '#000 url(' + meta.poster + ') no-repeat center center';
 			self.player.style.backgroundSize = '100% auto';
 			self.video.preload = 'none';
 		}
 
-		self.overlay = create('div', self.player, 'youtube5overlay');
-
 		if (self.meta.title || self.meta.author) {
-			self.info = create('div', self.player, 'youtube5info');
+			self.about = create('div', self.info, 'youtube5about youtube5show-on-waiting')
 		}
 
 		if (self.meta.title) {
-			var title = create('div', self.info, 'youtube5title');
+			var title = create('div', self.about, 'youtube5title');
 			var link = create('a', title);
 			link.textContent = self.meta.title;
 			link.href = self.meta.link;
-			link.target = '_parent';
 		}
 
 		if (self.meta.author) {
-			var author = create('div', self.info, 'youtube5author');
+			var author = create('div', self.about, 'youtube5author');
 			author.textContent = 'By ';
 			var link = create('a', author);
 			link.textContent = self.meta.author;
 			link.href = self.meta.authorLink;
-			link.target = '_parent';
 		}
 
-		self.formats = create('div', self.overlay, 'youtube5formats');
+		self.formats = create('div', self.info, 'youtube5formats');
 		self.from = create('div', self.formats, 'youtube5from');
 		self.from.textContent = self.meta.from;
 
@@ -246,16 +244,16 @@ var newPlayer = function(replace, width, height) {
 			var link = create('a', format);
 			link.textContent = name;
 			link.href = self.meta.formats[name];
-			link.target = '_parent';
 			link.addEventListener('click', self.changeQuality, false);
 
 			if (meta.useFormat == name) {
 				format.className = 'youtube5current-format';
 			}
 		}
-		self.replay = create('div', self.overlay, 'youtube5replay');
+
+		self.replay = create('div', self.info, 'youtube5replay');
 		self.replay.innerHTML = '&larr; Replay';
-		self.closeOverlay = create('div', self.overlay, 'youtube5close-overlay');
+		self.closeOverlay = create('div', self.info, 'youtube5close-overlay');
 		self.closeOverlay.textContent = 'X';
 
 		self.infoButton = create('div', self.player, 'youtube5info-button');
@@ -275,7 +273,11 @@ var newPlayer = function(replace, width, height) {
 
 		self.infoButton.addEventListener('click', self.showOverlay, false);
 
-		self.video.addEventListener('click', self.playOrPause, false);
+		self.info.addEventListener('click', function(event) {
+			if (event.target == self.info) {
+				self.playOrPause();
+			}
+		}, false);
 
 		self.replay.addEventListener('click', function() {
 			self.video.play();

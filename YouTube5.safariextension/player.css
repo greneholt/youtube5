@@ -233,25 +233,53 @@
 	text-decoration: underline !important;
 }
 
+.youtube5player .youtube5info>* {
+	opacity: 0 !important;
+	visibility: hidden !important;
+	-webkit-transition: opacity 0.3s ease-in-out, background-color 0.3s ease-in-out, visibility 0.3s step-end !important;
+}
+
+.youtube5player.youtube5waiting .youtube5show-on-waiting, .youtube5player.youtube5overlayed .youtube5info>* {
+	opacity: 0.7 !important;
+	visibility: visible !important;
+	-webkit-transition: opacity 0.3s ease-in-out, background-color 0.3s ease-in-out, visibility 0.3s step-start !important;
+}
+
+.youtube5player .youtube5close-overlay {
+	position: absolute !important;
+	top: 0px !important;
+	right: 0px !important;
+	color: #fff !important;
+	border-bottom-left-radius: 5px !important;
+	border-bottom: 1px solid #fff !important;
+	border-left: 1px solid #fff !important;
+	padding: 2px 6px !important;
+	background: #666 !important;
+	font-size: 18px !important;
+	opacity: 0.5 !important;
+	-webkit-transition: opacity 0.3s ease-in-out !important;
+}
+
+.youtube5player .youtube5close-overlay:hover {
+	opacity: 0.7 !important;
+}
+
 /* @group Use Original */
 
 .youtube5player .youtube5use-original {
 	position: absolute !important;
-	opacity: 0 !important;
-	visibility: hidden !important;
 	left: 10px !important;
 	bottom: 35px !important;
 	font: 12px Helvetica, sans-serif !important;
 	cursor: pointer !important;
 	color: #ccc !important;
-	-webkit-transition: opacity 0.3s ease-in-out, visibility 0.3s step-end !important;
 }
 
 .youtube5player .youtube5use-original:hover {
 	color: #fff !important;
 }
 
-.youtube5player.youtube5loading .youtube5use-original, .youtube5player.youtube5overlayed .youtube5use-original, .youtube5player.error .youtube5use-original {
+.youtube5player.youtube5loading .youtube5use-original, .youtube5player.error .youtube5use-original {
 	opacity: 1 !important;
 	visibility: visible !important;
 	-webkit-transition: opacity 0.3s ease-in-out, visibility 0.3s step-start !important;
@@ -259,25 +287,31 @@
 
 /* @end */
 
-/* @group Title and Author */
+/* @group About */
+
+.youtube5player .youtube5about {
+	padding: 10px 0 !important;
+}
+
+.youtube5player.youtube5waiting .youtube5about {
+	background-color: #000 !important;
+}
+
+.youtube5player.youtube5waiting.youtube5overlayed .youtube5about {
+	background-color: transparent !important;
+}
 
 .youtube5player .youtube5title {
-	margin: 10px 25px 5px 10px !important;
+	margin: 0 25px 5px 10px !important;
 	font-size: 18px !important;
 	text-align: left !important;
-	opacity: 0 !important;
-	visibility: hidden !important;
-	-webkit-transition: opacity 0.3s ease-in-out, visibility 0.3s step-end !important;
 }
 
 .youtube5player .youtube5author {
-	margin: 5px 25px 10px 10px !important;
+	margin: 5px 25px 0 10px !important;
 	font-size: 14px !important;
 	color: #aaa !important;
 	text-align: left !important;
-	opacity: 0 !important;
-	visibility: hidden !important;
-	-webkit-transition: opacity 0.3s ease-in-out, visibility 0.3s step-end !important;
 }
 
 /* @end */
@@ -290,9 +324,6 @@
 	margin-right: 15px !important;
 	background-color: #222 !important;
 	text-align: center !important;
-	opacity: 0 !important;
-	visibility: hidden !important;
-	-webkit-transition: opacity 0.3s ease-in-out, visibility 0.3s step-end !important;
 }
 
 .youtube5player .youtube5from {
@@ -336,24 +367,24 @@
 	font-size: 14px !important;
 	cursor: pointer !important;
 	color: #ccc !important;
+}
+
+.youtube5player.youtube5overlayed .youtube5info .youtube5replay {
 	opacity: 0 !important;
 	visibility: hidden !important;
-	-webkit-transition: opacity 0.3s ease-in-out, visibility 0.3s step-end !important;
 }
 
 .youtube5player .youtube5replay:hover {
 	color: #fff !important;
 }
 
-.youtube5player.youtube5replay.youtube5overlayed .youtube5replay {
-	opacity: 1 !important;
+.youtube5player.youtube5replay.youtube5overlayed .youtube5info .youtube5replay {
+	opacity: 0.7 !important;
 	visibility: visible !important;
 	-webkit-transition: opacity 0.3s ease-in-out, visibility 0.3s step-start !important;
 }
 
 /* @end */
-
-
 
 /* @end */
 
@@ -375,25 +406,6 @@
 	opacity: 0.7 !important;
 	visibility: visible !important;
 	-webkit-transition: opacity 0.3s ease-in-out, visibility 0.3s step-start !important;
-}
-
-.youtube5player .youtube5close-overlay {
-	position: absolute !important;
-	top: 0px !important;
-	right: 0px !important;
-	color: #fff !important;
-	border-bottom-left-radius: 5px !important;
-	border-bottom: 1px solid #fff !important;
-	border-left: 1px solid #fff !important;
-	padding: 2px 6px !important;
-	background: #666 !important;
-	font-size: 18px !important;
-	opacity: 0.5 !important;
-	-webkit-transition: opacity 0.3s ease-in-out !important;
-}
-
-.youtube5player .youtube5close-overlay:hover {
-	opacity: 0.7 !important;
 }
 
 /* @end */
