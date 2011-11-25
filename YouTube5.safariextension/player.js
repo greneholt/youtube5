@@ -43,7 +43,8 @@ var newPlayer = function(replace, width, height) {
 	self.player.style.width = self.width + 'px';
 	self.player.style.height = self.height + 'px';
 
-	self.overlay = create('div', self.player, 'youtube5overlay');
+	self.topOverlay = create('div', self.player, 'youtube5top-overlay');
+	self.bottomOverlay = create('div', self.player, 'youtube5bottom-overlay');
 
 	self.info = create('div', self.player, 'youtube5info');
 
@@ -204,7 +205,7 @@ var newPlayer = function(replace, width, height) {
 		self.video.width = self.width;
 		self.video.height = self.height;
 
-		self.player.insertBefore(self.video, self.overlay);
+		self.player.insertBefore(self.video, self.topOverlay);
 
 		if (self.meta.autoplay) {
 			self.video.play();
@@ -215,19 +216,15 @@ var newPlayer = function(replace, width, height) {
 			self.video.preload = 'none';
 		}
 
-		if (self.meta.title || self.meta.author) {
-			self.about = create('div', self.info, 'youtube5about youtube5show-on-waiting')
-		}
-
 		if (self.meta.title) {
-			var title = create('div', self.about, 'youtube5title');
+			var title = create('div', self.info, 'youtube5title youtube5show-on-waiting');
 			var link = create('a', title);
 			link.textContent = self.meta.title;
 			link.href = self.meta.link;
 		}
 
 		if (self.meta.author) {
-			var author = create('div', self.about, 'youtube5author');
+			var author = create('div', self.info, 'youtube5author youtube5show-on-waiting');
 			author.textContent = 'By ';
 			var link = create('a', author);
 			link.textContent = self.meta.author;
