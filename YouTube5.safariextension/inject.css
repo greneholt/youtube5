@@ -1,5 +1,11 @@
 #watch-video #watch-player, .mvp_player, #player.mvp_player {
 	background: transparent !important;
+	box-shadow: none !important;
+	overflow: visible !important;
+}
+
+#watch-player .youtube5player {
+	box-shadow: #777 0px 0px 10px !important;
 }
 
 /* Hide Vimeo overlay and YouTube flash warning */
