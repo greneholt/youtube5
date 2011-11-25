@@ -82,7 +82,7 @@ var youTubeMeta = function(text, flashvars) {
 	}
 	meta.title = data.title;
 	meta.author = data.author;
-	meta.authorLink = 'https://www.youtube(?:\-nocookie)?.com/user/' + data.author;
+	meta.authorLink = 'https://www.youtube.com/user/' + data.author;
 	meta.link = 'https://www.youtube.com/watch?v=' + data.video_id;
 	meta.from = 'YouTube';
 
@@ -189,7 +189,7 @@ var loadFacebookVideo = function(playerId, data, event) {
 var canLoad = function(event) {
 	url = event.message;
 
-	if ((safari.extension.settings.enableYouTube && (/^https?:\/\/www\.youtube(?:\-nocookie)?\.com\/(?:v|embed)\//i.test(url) || /^https?:\/\/s\.ytimg\.com\/yt\/swf(?:bin)?\/watch/i.test(url))) ||
+	if ((safari.extension.settings.enableYouTube && (/^https?:\/\/(?:www\.)?youtube(?:\-nocookie)?\.com\/(?:v|embed)\//i.test(url) || /^https?:\/\/s\.ytimg\.com\/yt\/swf(?:bin)?\/watch/i.test(url))) ||
 		(safari.extension.settings.enableVimeo && (/^https?:\/\/assets\.vimeo\.com\/flash\/moog/i.test(url) || /vimeo\.com\/moogaloop\.swf/i.test(url) || /\/moogaloop/i.test(url) || /^https?:\/\/player.vimeo.com\/video\//.test(url))) ||
 		(safari.extension.settings.enableFacebook && /^https?:\/\/([a-z\-\.]+)?static\.ak\.facebook\.com\/rsrc.php\/v1\/yf\/r\/wn29KX6UvhD\.swf/i.test(url))) {
 		event.message = 'video';
@@ -201,7 +201,7 @@ var loadVideo = function(event) {
 	var playerId = event.message.playerId;
 	var flashvars = event.message.flashvars;
 
-	if (m = url.match(/^https?:\/\/www\.youtube(?:\-nocookie)?\.com\/(?:v|embed)\/([^\?&]+)([\?&].+)?/i)) {
+	if (m = url.match(/^https?:\/\/(?:www\.)?youtube(?:\-nocookie)?\.com\/(?:v|embed)\/([^\?&]+)([\?&].+)?/i)) {
 		var videoId = m[1];
 		var autoplay = /autoplay=1/.test(m[2]);
 		loadYouTubeVideo(playerId, videoId, autoplay, event, flashvars);
