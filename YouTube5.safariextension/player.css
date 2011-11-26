@@ -9,6 +9,8 @@
 	text-transform: none !important;
 	font-style: normal !important;
 	font-variant: normal !important;
+	font-size: inherit !important;
+	font-family: Helvetica, sans-serif !important;
 }
 
 .youtube5container {
@@ -19,7 +21,7 @@
     position: relative !important;
 	margin: 0 auto !important;
 	background-color: #000 !important;
-	overflow: hidden;
+	overflow: hidden !important;
 }
 
 .youtube5player.youtube5loading {
@@ -419,8 +421,8 @@
 	margin-top: -30px !important;
 	width: 60px !important;
 	height: 60px !important;
-	border-radius: 15px !important;
-	border: 3px solid #bbb !important;
+	border-radius: 60px !important;
+	border: 2px solid #bbb !important;
 	-webkit-box-shadow: 0 3px 5px rgba(0,0,0,0.7) !important;
 	opacity: 0.9 !important;
 	background: url(play-large.png) no-repeat 20px center, -webkit-gradient(linear, left top, left bottom, from(#484848), to(#0a0a0a)) !important;
