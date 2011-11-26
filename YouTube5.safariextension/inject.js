@@ -23,7 +23,7 @@ if (!/youtube\.com\/leanback/.test(document.location.href)) {
 
 			var playerId = Math.round(Math.random()*1000000000);
 
-			players[playerId] = newPlayer(event.target, event.target.scrollWidth, event.target.scrollHeight);
+			players[playerId] = newPlayer(event.target, event.target.width, event.target.height);
 			var flashvars = event.target.getAttribute('flashvars');
 			if (!flashvars) {
 				if (flashvars = event.target.querySelector('param[name=flashvars]')) {
@@ -50,8 +50,8 @@ if (!/youtube\.com\/leanback/.test(document.location.href)) {
 	};
 
 	safari.self.addEventListener("message", function(event) {
-	    if (event.name === "injectVideo") {
-	        injectVideo(event);
-	    }
+		if (event.name === "injectVideo") {
+			injectVideo(event);
+		}
 	}, true);
 }

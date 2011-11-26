@@ -181,17 +181,17 @@ var loadFacebookVideo = function(playerId, data, event) {
 	meta.author = data.video_owner_name;
 	meta.authorLink = data.video_owner_href;
 	meta.from = 'Facebook';
-	meta.autoplay = true;
+	meta.autoplay = false;
 
 	injectVideo(event, playerId, meta);
 };
 
 var canLoad = function(event) {
-	url = event.message;
+	var url = event.message;
 
 	if ((safari.extension.settings.enableYouTube && (/^https?:\/\/(?:www\.)?youtube(?:\-nocookie)?\.com\/(?:v|embed)\//i.test(url) || /^https?:\/\/s\.ytimg\.com\/yt\/swf(?:bin)?\/watch/i.test(url))) ||
 		(safari.extension.settings.enableVimeo && (/^https?:\/\/assets\.vimeo\.com\/flash\/moog/i.test(url) || /vimeo\.com\/moogaloop\.swf/i.test(url) || /\/moogaloop/i.test(url) || /^https?:\/\/player.vimeo.com\/video\//.test(url))) ||
-		(safari.extension.settings.enableFacebook && /^https?:\/\/([a-z\-\.]+)?static\.ak\.facebook\.com\/rsrc.php\/v1\/yf\/r\/wn29KX6UvhD\.swf/i.test(url))) {
+		(safari.extension.settings.enableFacebook && /^https?:\/\/([a-z\-\.]+)?static\.ak\.facebook\.com\/rsrc.php\/v1\/yf\/r\/WE6KXRY0dum\.swf/i.test(url))) {
 		event.message = 'video';
 	}
 };
@@ -220,7 +220,7 @@ var loadVideo = function(event) {
 	} else if (m = url.match(/^https?:\/\/player.vimeo.com\/video\/(\d+)/i)) {
 		var clipId = m[1];
 		loadVimeoVideo(playerId, clipId, false, event);
-	} else if (/^https?:\/\/([a-z\-\.]+)?static\.ak\.facebook\.com\/rsrc.php\/v1\/yf\/r\/wn29KX6UvhD\.swf/i.test(url)) {
+	} else if (/^https?:\/\/([a-z\-\.]+)?static\.ak\.facebook\.com\/rsrc.php\/v1\/yf\/r\/WE6KXRY0dum\.swf/i.test(url)) {
 		var data = parseUrlEncoded(flashvars);
 		loadFacebookVideo(playerId, data, event);
 	} else {
