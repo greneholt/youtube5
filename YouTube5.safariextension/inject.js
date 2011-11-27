@@ -23,7 +23,16 @@ if (!/youtube\.com\/leanback/.test(document.location.href)) {
 
 			var playerId = Math.round(Math.random()*1000000000);
 
-			players[playerId] = newPlayer(event.target, event.target.width, event.target.height);
+			// sometimes the scroll dimmensions of the video are zero, so fall back to the designated width and height
+			var width = event.target.scrollWidth;
+			var height = event.target.scrollHeight;
+
+			if (width == 0 || height == 0) {
+				width = event.target.width;
+				height = event.target.height;
+			}
+
+			players[playerId] = newPlayer(event.target, width, height);
 			var flashvars = event.target.getAttribute('flashvars');
 			if (!flashvars) {
 				if (flashvars = event.target.querySelector('param[name=flashvars]')) {

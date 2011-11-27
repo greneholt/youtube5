@@ -4,10 +4,6 @@
 	overflow: visible !important;
 }
 
-#watch-player .youtube5player {
-	box-shadow: #777 0px 0px 10px !important;
-}
-
 /* Hide Vimeo overlay and YouTube flash warning */
 .r.bi .aa, #flash10-promo-div, #flash-upgrade, .yt-alert-player {
 	display: none !important;
