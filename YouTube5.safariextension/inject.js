@@ -39,7 +39,7 @@ if (!/youtube\.com\/leanback/.test(document.location.href)) {
 					flashvars = flashvars.getAttribute('value');
 				}
 			}
-			safari.self.tab.dispatchMessage("loadVideo", { url: event.url, playerId: playerId, flashvars: flashvars });
+			safari.self.tab.dispatchMessage("loadVideo", { url: event.url, location: document.location, playerId: playerId, flashvars: flashvars });
 		}
 	}, true);
 
