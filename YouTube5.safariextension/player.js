@@ -177,6 +177,10 @@ var newPlayer = function(replace, width, height) {
 		self.createControls();
 		self.updateTime();
 		self.setVolume(self.meta.volume);
+		
+		if (self.meta.startTime) {
+			self.video.currentTime = self.meta.startTime;
+		}
 
 		self.video.removeEventListener('loadedmetadata', self.initVideo, false);
 		self.video.addEventListener('loadedmetadata', function() {

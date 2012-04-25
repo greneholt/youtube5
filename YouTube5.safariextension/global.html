@@ -25,20 +25,48 @@ var parseUrlEncoded = function(text) {
 	return data;
 }
 
+var parseLocationSearch = function(location) {
+	return parseUrlEncoded(location.search.replace(/^\?/, ""));
+}
+
+var parseYouTubeTime = function(hash) {
+	var seconds = 0;
+	var match = /(?:#(?:t|time)=)?(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/.exec(hash);
+	if (match) {
+		[3600, 60, 1].forEach(function(timeMultiplier, i) {
+			var timeValue = parseInt(match[i + 1]);
+			if (timeValue)
+				seconds += timeMultiplier * timeValue;
+		});
+	}
+	return seconds;
+}
+
 var injectVideo = function(event, playerId, meta) {
 	meta.volume = safari.extension.settings.volume;
 	event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
 };
 
-var youTubeMeta = function(text, flashvars) {
+var youTubeMeta = function(location, text, flashvars) {
 	var meta = {};
 
 	var data = parseUrlEncoded(text);
+	var urlData = parseLocationSearch(location);
 
 	if (data.errorcode && (!flashvars || !flashvars.url_encoded_fmt_stream_map)) {
 		meta.error = data.reason;
 		return meta;
 	}
+    
+	var hashStartTime = parseYouTubeTime(location.hash);
+	if (hashStartTime)
+		meta.startTime = hashStartTime;
+	else if (urlData.t)
+		meta.startTime = parseYouTubeTime(urlData.t);
+	else if (urlData.time)
+		meta.startTime = parseYouTubeTime(urlData.time);
+	else if (urlData.start)
+		meta.startTime = parseInt(urlData.start);
 
 	/*
 	Format Reference
@@ -94,7 +122,7 @@ var loadYouTubeVideo = function(playerId, videoId, autoplay, event, flashvars) {
 	req.open('GET', 'https://www.youtube.com/get_video_info?&video_id=' + videoId + '&el=embedded&ps=default&eurl=http%3A%2F%2Fwww%2Egoogle%2Ecom%2F&hl=en_US', true);
 	req.onreadystatechange = function(ev) {
 		if (req.readyState === 4 && req.status === 200) {
-			var meta = youTubeMeta(req.responseText, flashvars);
+			var meta = youTubeMeta(event.message.location, req.responseText, flashvars);
 			meta.autoplay = autoplay;
 			injectVideo(event, playerId, meta);
 		} else if (req.readyState === 4 && req.status === 404) {
