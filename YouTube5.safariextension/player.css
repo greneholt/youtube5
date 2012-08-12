@@ -230,6 +230,7 @@
 	color: #fff !important;
 	text-decoration: none !important;
 	border: none !important;
+	background: transparent !important;
 }
 
 .youtube5player .youtube5info a:hover {
