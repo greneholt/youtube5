@@ -5,6 +5,6 @@
 			<stop offset="100%" stop-color="#bdbdbd" stop-opacity="1"/>
 		</linearGradient>
 	</defs>
-	<polygon fill="url(#silver)" points="1,1 10,1 6,4 9,7 7,9 4,6 1,10" stroke="#000000" stroke-opacity="0.2" stroke-width="1" id="arrow" />
+	<polygon fill="url(#silver)" points="1,1 9,1 6,4 9,7 7,9 4,6 1,9" stroke="#000000" stroke-opacity="0.2" stroke-width="1" id="arrow" />
 	<use xlink:href='#arrow' transform="rotate(180,9,9)" />
 </svg>
