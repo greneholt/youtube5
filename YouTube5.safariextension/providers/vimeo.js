@@ -15,14 +15,14 @@ var newVimeo = function() {
 	self.loadVideo = function(url, playerId, flashvars, event) {
 		url = event.message.url;
 
-		if (self.urlPatterns[0].test(url) || self.urlPatterns[2].test(url)) {
-			var data = parseUrlEncoded(flashvars);
-			self.startLoad(playerId, data.clip_id, false, event);
-			return true;
-		}
-		else if ((m = url.match(self.urlPatterns[1])) || (m = url.match(self.urlPatterns[3]))) {
+		if ((m = url.match(self.urlPatterns[1])) || (m = url.match(self.urlPatterns[3]))) {
 			var clipId = m[1];
 			self.startLoad(playerId, clipId, false, event);
+			return true;
+		}
+		else if (self.urlPatterns[0].test(url) || self.urlPatterns[2].test(url)) {
+			var data = parseUrlEncoded(flashvars);
+			self.startLoad(playerId, data.clip_id, false, event);
 			return true;
 		}
 		else {
@@ -30,23 +30,20 @@ var newVimeo = function() {
 		}
 	};
 
-	self.processMeta = function(clipId, xml) {
+	self.processMeta = function(clipId, text) {
 		var meta = {};
 
-		if (xml.querySelector('error')) {
-			meta.error = xml.querySelector('error title').textContent + '<br />' + xml.querySelector('error message').textContent;
-			return meta;
-		}
+		var m = text.match(/clip[0-9_]+ = (\{.*\});/i);
+		var data = eval('(' + m[1] + ')'); // Vimeo doesn't use quotes always, so we can't use JSON.parse
 
 		meta.formats = {};
 
-		var sig = xml.querySelector('request_signature').textContent;
-		var time = xml.querySelector('timestamp').textContent;
+		var sig = data.config.request.signature;
+		var time = data.config.request.timestamp;
 
-		if (xml.querySelector('video isHD').textContent == '1') {
-			meta.formats['HD'] = 'http://player.vimeo.com/play_redirect?clip_id=' + clipId + '&quality=hd&codecs=h264,vp6&type=html5_desktop_local&time=' + time + '&sig=' + sig;
-		}
-		meta.formats['SD'] = 'http://player.vimeo.com/play_redirect?clip_id=' + clipId + '&quality=sd&codecs=h264,vp6&type=html5_desktop_local&time=' + time + '&sig=' + sig;
+		data.config.video.files.h264.forEach(function(format) {
+			meta.formats[format.toUpperCase()] = 'http://player.vimeo.com/play_redirect?quality=' + format + '&codecs=h264&clip_id=' + clipId + '&time=' + time + '&sig=' + sig + '&type=html5_desktop_local';
+		});
 
 		var defaultFormat = safari.extension.settings.vimeoFormat;
 		if (meta.formats[defaultFormat]) {
@@ -55,11 +52,11 @@ var newVimeo = function() {
 			meta.useFormat = 'SD';
 		}
 
-		meta.poster = xml.querySelector('video thumbnail').textContent;
-		meta.title = xml.querySelector('video caption').textContent;
-		meta.author = xml.querySelector('video uploader_display_name').textContent;
-		meta.authorLink = xml.querySelector('video uploader_url').textContent;
-		meta.link = xml.querySelector('video url').textContent;
+		meta.poster = data.config.video.thumbnail;
+		meta.title = data.config.video.title;
+		meta.author = data.config.video.owner.name;
+		meta.authorLink = data.config.video.owner.url;
+		meta.link = data.config.video.url;
 		meta.from = 'Vimeo';
 
 		return meta;
@@ -70,7 +67,7 @@ var newVimeo = function() {
 		req.open('GET', 'http://player.vimeo.com/video/' + clipId, true);
 		req.onreadystatechange = function(ev) {
 			if (req.readyState === 4 && req.status === 200) {
-				var meta = self.processMeta(clipId, req.responseXML);
+				var meta = self.processMeta(clipId, req.responseText);
 				meta.autoplay = autoplay;
 				injectVideo(event, playerId, meta);
 			} else if (req.readyState === 4 && req.status === 404) {
