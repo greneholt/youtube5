@@ -136,6 +136,11 @@ var newPlayer = function(replace, width, height) {
 		}
 	};
 
+	self.popOut = function() {
+		alert('popout');
+
+	};
+
 	self.removePlayLarge = function() {
 		if(self.playLarge) {
 			self.player.style.background = null;
@@ -298,6 +303,7 @@ var newPlayer = function(replace, width, height) {
 		self.playPause = create('div', self.controls, 'youtube5play-pause');
 		self.timeElapsed = create('div', self.controls, 'youtube5time-elapsed');
 		self.fullscreen = create('div', self.controls, 'youtube5fullscreen');
+		self.popout = create('div', self.controls, 'youtube5popout');
 		self.volume = create('div', self.controls, 'youtube5volume');
 		create('div', self.volume, 'youtube5volume-indicator');
 		self.volumePopup = create('div', self.volume, 'youtube5volume-popup');
@@ -322,6 +328,8 @@ var newPlayer = function(replace, width, height) {
 		self.position.value = 0;
 
 		self.playPause.addEventListener('click', self.playOrPause, false);
+
+		self.popout.addEventListener('click', self.popOut, false);
 
 		self.fullscreen.addEventListener('click', function() {
 			self.video.webkitEnterFullScreen();
