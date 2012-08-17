@@ -33,7 +33,7 @@ var newVimeo = function() {
 	self.processMeta = function(clipId, text) {
 		var meta = {};
 
-		var m = text.match(/clip[0-9_]+ = (\{.*\});/i);
+		var m = text.match(/clip[0-9_]+ = (\{[\s\S]*\});/i); // dotall doesn't exist in JS, so use [\s\S]
 		var data = eval('(' + m[1] + ')'); // Vimeo doesn't use quotes always, so we can't use JSON.parse
 
 		meta.formats = {};
