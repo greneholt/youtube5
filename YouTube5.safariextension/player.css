@@ -49,7 +49,9 @@
 
 .youtube5player video {
 	display: block !important;
-	margin: 0 auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    -webkit-object-fit: contain !important;
 }
 
 /* @group Controls */

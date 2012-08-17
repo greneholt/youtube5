@@ -73,8 +73,6 @@ var newPlayer = function(replace, width, height) {
 			width = self.width;
 			height = Math.round(self.width/nativeAspectRatio);
 		}
-		self.video.width = width;
-		self.video.height = height;
 		self.player.style.width = width + 'px';
 		self.player.style.height = height + 'px';
 	};
@@ -202,8 +200,6 @@ var newPlayer = function(replace, width, height) {
 		self.video = document.createElement('video');
 		self.video = create('video', self.player);
 		self.video.src = meta.formats[meta.useFormat];
-		self.video.width = self.width;
-		self.video.height = self.height;
 
 		self.player.insertBefore(self.video, self.topOverlay);
 
