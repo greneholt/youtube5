@@ -123,11 +123,15 @@ var newPlayer = function(replace, width, height) {
 	};
 
 	self.updateLoaded = function() {
+		if (isNaN(self.video.duration)) return;
+
 		var x = self.video.buffered.end(0) / self.video.duration * (self.position.clientWidth - 10) + 10;
 		self.loaded.style.width = x + 'px';
 	};
 
 	self.updatePosition = function() {
+		if (isNaN(self.video.duration)) return;
+
 		self.position.value = self.video.currentTime / self.video.duration * 1000;
 		self.updatePlayed();
 		self.updateTime();
@@ -151,6 +155,8 @@ var newPlayer = function(replace, width, height) {
 	};
 
 	self.seek = function() {
+		if (isNaN(self.video.duration)) return;
+
 		self.video.currentTime = self.position.value / 1000 * self.video.duration;
 		self.updatePlayed();
 		self.hideOverlay();
@@ -294,8 +300,12 @@ var newPlayer = function(replace, width, height) {
 		event.preventDefault();
 
 		var format = event.target.textContent;
-		self.video.autoplay = true;
+		var paused = self.video.paused;
 		self.video.src = self.meta.formats[format];
+		self.video.preload = 'auto';
+		if (!paused) {
+			self.video.play();
+		}
 
 		var nodes = event.target.parentNode.parentNode.childNodes;
 		for (i = 0; i < nodes.length; i++) {
