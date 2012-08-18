@@ -22,11 +22,27 @@ var formatTime = function(seconds) {
 	return m + ':' + s;
 };
 
+var findPosition = function(el) {
+	var left = top = 0;
+	do {
+		left += el.offsetLeft;
+		top += el.offsetTop;
+
+		if (el.offsetParent) {
+			left -= el.offsetParent.scrollLeft;
+			top -= el.offsetParent.scrollTop;
+		}
+	} while (el = el.offsetParent);
+	return [left, top];
+};
+
 var newPlayer = function(replace, width, height) {
 	var self = {};
 
 	self.width = width;
 	self.height = height;
+
+	self.floating = false;
 
 	self.originalPlayer = replace;
 
@@ -42,6 +58,8 @@ var newPlayer = function(replace, width, height) {
 	self.player = create('div', self.container, 'youtube5player youtube5loading');
 	self.player.style.width = self.width + 'px';
 	self.player.style.height = self.height + 'px';
+	self.player.style.position = 'relative';
+	self.player.style.margin = '0 auto';
 
 	self.topOverlay = create('div', self.player, 'youtube5top-overlay');
 	self.bottomOverlay = create('div', self.player, 'youtube5bottom-overlay');
@@ -59,22 +77,22 @@ var newPlayer = function(replace, width, height) {
 		self.played.style.width = x + 'px';
 	};
 
-	self.updateSize = function() {
-		var realAspectRatio = self.width/self.height;
+	self.setPlayerSize = function(width, height) {
+		var realAspectRatio = width/height;
 		var nativeAspectRatio = self.video.videoWidth/self.video.videoHeight;
-
-		var width, height;
 
 		// the player is wider than necessary, so fit by height
 		if (realAspectRatio > nativeAspectRatio) {
-			width = Math.round(self.height*nativeAspectRatio);
-			height = self.height;
+			width = Math.round(height*nativeAspectRatio);
+			height = height;
 		} else { // taller than necessary
-			width = self.width;
-			height = Math.round(self.width/nativeAspectRatio);
+			width = width;
+			height = Math.round(width/nativeAspectRatio);
 		}
 		self.player.style.width = width + 'px';
 		self.player.style.height = height + 'px';
+
+		return [width, height];
 	};
 
 	self.updateTime = function() {
@@ -136,10 +154,97 @@ var newPlayer = function(replace, width, height) {
 		}
 	};
 
-	self.popOut = function() {
-		alert('popout');
+	self.popInOrOut = function() {
+		if (self.floating) {
+			var position = findPosition(self.player);
 
+			self.player.style.left = position[0] + 'px';
+			self.player.style.top = position[1] + 'px';
+			self.player.style.margin = '0 auto';
+
+			self.player.offsetWidth; // force reflow (total hack)
+
+			self.player.style.webkitTransition = 'width 0.5s ease-out, height 0.5s ease-out, left 0.5s ease-out, top 0.5s ease-out';
+
+			self.setPlayerSize(self.width, self.height);
+			self.player.style.left = self.originalPosition[0] + 'px';
+			self.player.style.top = self.originalPosition[1] + 'px';
+
+			self.player.addEventListener('webkitTransitionEnd', self.dockedTransitionComplete, false);
+
+			self.floating = false;
+		} else {
+			self.originalPosition = findPosition(self.player);
+
+			self.player.style.position = 'fixed';
+			self.player.style.left = self.originalPosition[0] + 'px';
+			self.player.style.top = self.originalPosition[1] + 'px';
+			self.player.style.zIndex = 10000;
+			self.player.style.webkitBoxShadow = '0 0 20px #000';
+
+			self.player.offsetWidth; // force reflow (total hack)
+
+			self.player.style.webkitTransition = 'width 0.5s ease-out, height 0.5s ease-out, left 0.5s ease-out, top 0.5s ease-out';
+
+			var newWidth = self.video.videoWidth;
+			var newHeight = self.video.videoHeight;
+
+			var maxWidth = 900;
+			var maxHeight = 700;
+
+			if (newWidth > window.innerWidth) {
+				newWidth = window.innerWidth;
+			} else if (newWidth < maxWidth) {
+				newWidth = maxWidth;
+			}
+
+			if (newHeight > window.innerHeight) {
+				newHeight = window.innerHeight;
+			} else if (newHeight < maxHeight) {
+				newHeight = maxHeight;
+			}
+
+			var size = self.setPlayerSize(newWidth, newHeight);
+			newWidth = size[0];
+			newHeight = size[1];
+
+			self.player.style.left = (window.innerWidth - newWidth) / 2 + 'px';
+			self.player.style.top = (window.innerHeight - newHeight) / 2 + 'px';
+
+			self.player.addEventListener('webkitTransitionEnd', self.floatingTransitionComplete, false);
+
+			self.floating = true;
+		}
 	};
+
+	self.floatingTransitionComplete = function() {
+		self.player.style.webkitTransition = null;
+
+		self.player.style.left = '50%';
+		self.player.style.top = '50%';
+		self.player.style.marginLeft = -self.player.clientWidth/2 + 'px';
+		self.player.style.marginTop = -self.player.clientHeight/2 + 'px';
+
+		self.player.removeEventListener('webkitTransitionEnd', self.floatingTransitionComplete, false);
+
+		self.updatePosition();
+		self.updateLoaded();
+	};
+
+	self.dockedTransitionComplete = function() {
+		self.player.style.webkitTransition = null;
+
+		self.player.style.position = 'relative';
+		self.player.style.left = null;
+		self.player.style.top = null;
+		self.player.style.zIndex = null;
+		self.player.style.webkitBoxShadow = null;
+
+		self.player.removeEventListener('webkitTransitionEnd', self.dockedTransitionComplete, false);
+
+		self.updatePosition();
+		self.updateLoaded();
+	}
 
 	self.removePlayLarge = function() {
 		if(self.playLarge) {
@@ -176,14 +281,14 @@ var newPlayer = function(replace, width, height) {
 	};
 
 	self.initVideo = function() {
-		self.updateSize();
+		self.setPlayerSize(self.width, self.height);
 		self.createControls();
 		self.updateTime();
 		self.setVolume(self.meta.volume);
 
 		self.video.removeEventListener('loadedmetadata', self.initVideo, false);
 		self.video.addEventListener('loadedmetadata', function() {
-			self.updateSize();
+			self.setPlayerSize(self.width, self.height);
 			self.seek();
 			self.updateTime();
 		}, false);
@@ -303,7 +408,7 @@ var newPlayer = function(replace, width, height) {
 		self.playPause = create('div', self.controls, 'youtube5play-pause');
 		self.timeElapsed = create('div', self.controls, 'youtube5time-elapsed');
 		self.fullscreen = create('div', self.controls, 'youtube5fullscreen');
-		self.popout = create('div', self.controls, 'youtube5popout');
+		self.popOut = create('div', self.controls, 'youtube5pop-out');
 		self.volume = create('div', self.controls, 'youtube5volume');
 		create('div', self.volume, 'youtube5volume-indicator');
 		self.volumePopup = create('div', self.volume, 'youtube5volume-popup');
@@ -329,7 +434,7 @@ var newPlayer = function(replace, width, height) {
 
 		self.playPause.addEventListener('click', self.playOrPause, false);
 
-		self.popout.addEventListener('click', self.popOut, false);
+		self.popOut.addEventListener('click', self.popInOrOut, false);
 
 		self.fullscreen.addEventListener('click', function() {
 			self.video.webkitEnterFullScreen();
