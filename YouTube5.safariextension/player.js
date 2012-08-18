@@ -72,7 +72,32 @@ var newPlayer = function(replace, width, height) {
 		self.played.style.width = x + 'px';
 	};
 
-	self.setPlayerSize = function(width, height) {
+	self.updatePlayerSize = function() {
+		var width, height;
+
+		if (self.floating) {
+			width = self.video.videoWidth;
+			height = self.video.videoHeight;
+
+			var minWidth = window.innerWidth * 0.8;
+			var minHeight = window.innerHeight * 0.8;
+
+			if (width > window.innerWidth) {
+				width = window.innerWidth;
+			} else if (width < minWidth) {
+				width = minWidth;
+			}
+
+			if (height > window.innerHeight) {
+				height = window.innerHeight;
+			} else if (height < minHeight) {
+				height = minHeight;
+			}
+		} else {
+			width = self.width;
+			height = self.height;
+		}
+
 		var realAspectRatio = width/height;
 		var nativeAspectRatio = self.video.videoWidth/self.video.videoHeight;
 
@@ -150,25 +175,32 @@ var newPlayer = function(replace, width, height) {
 	};
 
 	self.popInOrOut = function() {
+		var transitionCss = 'width 0.5s ease-out, height 0.5s ease-out, left 0.5s ease-out, top 0.5s ease-out'
+
 		if (self.floating) {
+			self.floating = false;
+
 			var position = findPosition(self.player);
+
+			// setup the starting point of the animation
 
 			self.player.style.left = position[0] + 'px';
 			self.player.style.top = position[1] + 'px';
 			self.player.style.margin = '0 auto';
 
-			self.player.offsetWidth; // force reflow (total hack)
+			self.player.offsetWidth; // Force reflow hack. Makes the animation use the proper start positions.
 
-			self.player.style.webkitTransition = 'width 0.5s ease-out, height 0.5s ease-out, left 0.5s ease-out, top 0.5s ease-out';
+			// enable the transition animation before making changes
+			self.player.style.webkitTransition = transitionCss;
 
-			self.setPlayerSize(self.width, self.height);
+			self.updatePlayerSize();
 			self.player.style.left = self.originalPosition[0] + 'px';
 			self.player.style.top = self.originalPosition[1] + 'px';
 
 			self.player.addEventListener('webkitTransitionEnd', self.dockedTransitionComplete, false);
-
-			self.floating = false;
 		} else {
+			self.floating = true;
+
 			self.originalPosition = findPosition(self.player);
 
 			// when we change its dom position, the video stops playing
@@ -178,34 +210,19 @@ var newPlayer = function(replace, width, height) {
 				self.video.play();
 			}
 
+			// setup the starting point of the animation
 			self.player.style.position = 'absolute';
 			self.player.style.left = self.originalPosition[0] + 'px';
 			self.player.style.top = self.originalPosition[1] + 'px';
+			self.player.style.zIndex = 100000;
 			self.player.style.webkitBoxShadow = '0 0 20px #000';
 
-			self.player.offsetWidth; // force reflow (total hack)
+			self.player.offsetWidth; // Force reflow hack. Makes the animation use the proper start positions.
 
-			self.player.style.webkitTransition = 'width 0.5s ease-out, height 0.5s ease-out, left 0.5s ease-out, top 0.5s ease-out';
+			// enable the transition animation before making changes
+			self.player.style.webkitTransition = transitionCss;
 
-			var newWidth = self.video.videoWidth;
-			var newHeight = self.video.videoHeight;
-
-			var minWidth = window.innerWidth * 0.8;
-			var minHeight = window.innerHeight * 0.8;
-
-			if (newWidth > window.innerWidth) {
-				newWidth = window.innerWidth;
-			} else if (newWidth < minWidth) {
-				newWidth = minWidth;
-			}
-
-			if (newHeight > window.innerHeight) {
-				newHeight = window.innerHeight;
-			} else if (newHeight < minHeight) {
-				newHeight = minHeight;
-			}
-
-			var size = self.setPlayerSize(newWidth, newHeight);
+			var size = self.updatePlayerSize();
 			newWidth = size[0];
 			newHeight = size[1];
 
@@ -213,8 +230,6 @@ var newPlayer = function(replace, width, height) {
 			self.player.style.top = document.body.scrollTop +  (window.innerHeight - newHeight) / 2 + 'px';
 
 			self.player.addEventListener('webkitTransitionEnd', self.floatingTransitionComplete, false);
-
-			self.floating = true;
 		}
 	};
 
@@ -224,7 +239,7 @@ var newPlayer = function(replace, width, height) {
 		self.player.style.webkitTransition = null;
 
 		self.player.style.left = '50%';
-		self.player.style.marginLeft = -self.player.clientWidth/2 + 'px';
+		self.player.style.margin = '0 0 0 ' + -self.player.clientWidth/2 + 'px';
 
 		self.player.removeEventListener('webkitTransitionEnd', self.floatingTransitionComplete, false);
 
@@ -243,9 +258,11 @@ var newPlayer = function(replace, width, height) {
 			self.video.play();
 		}
 
+		// reset all the styles we changed
 		self.player.style.position = 'relative';
 		self.player.style.left = null;
 		self.player.style.top = null;
+		self.player.style.zIndex = null;
 		self.player.style.webkitBoxShadow = null;
 
 		self.player.removeEventListener('webkitTransitionEnd', self.dockedTransitionComplete, false);
@@ -289,14 +306,13 @@ var newPlayer = function(replace, width, height) {
 	};
 
 	self.initVideo = function() {
-		self.setPlayerSize(self.width, self.height);
+		self.updatePlayerSize();
 		self.createControls();
 		self.updateTime();
 		self.setVolume(self.meta.volume);
 
 		self.video.removeEventListener('loadedmetadata', self.initVideo, false);
 		self.video.addEventListener('loadedmetadata', function() {
-			self.setPlayerSize(self.width, self.height);
 			self.seek();
 			self.updateTime();
 		}, false);
