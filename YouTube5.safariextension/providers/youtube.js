@@ -57,7 +57,7 @@ var newYouTube = function() {
 		((flashvars && flashvars.url_encoded_fmt_stream_map) || data.url_encoded_fmt_stream_map).split(',').forEach(function(format) {
 			var tmp = parseUrlEncoded(format);
 			if (youTubeFormats[tmp.itag]) {
-				meta.formats[youTubeFormats[tmp.itag]] = tmp.url;
+				meta.formats[youTubeFormats[tmp.itag]] = tmp.url + "&signature=" + tmp.sig;
 			}
 		});
 
