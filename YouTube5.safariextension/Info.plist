@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>Connor McKay</string>
 	<key>Builder Version</key>
-	<string>8536.25</string>
+	<string>8536.26.14</string>
 	<key>CFBundleDisplayName</key>
 	<string>YouTube5</string>
 	<key>CFBundleIdentifier</key>
@@ -13,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.4.1</string>
+	<string>2.4.2</string>
 	<key>CFBundleVersion</key>
-	<string>25</string>
+	<string>26</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Global Page</key>

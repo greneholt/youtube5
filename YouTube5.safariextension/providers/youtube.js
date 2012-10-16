@@ -3,7 +3,7 @@ var newYouTube = function() {
 
 	self.urlPatterns = [
 		/^https?:\/\/(?:www\.)?youtube(?:\-nocookie)?\.com\/(?:v|embed)\/([^\?&]+)([\?&].+)?/i,
-		/^https?:\/\/s.ytimg.com\/yt\/swf(?:bin)?\/watch/i
+		/^https?:\/\/s.ytimg.com\/yts?\/swf(?:bin)?\/watch/i
 	];
 
 	self.enabled = function() {
