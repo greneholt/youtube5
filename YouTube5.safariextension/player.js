@@ -415,6 +415,13 @@ var newPlayer = function(replace, width, height) {
 				self.playOrPause();
 			}
 		}, false);
+		
+		// FullScreen by DoubleClick
+		self.info.addEventListener('dblclick', function(event) {
+			if (event.target == self.info) {
+				self.video.webkitEnterFullScreen();
+			}
+		}, false);
 
 		self.replay.addEventListener('click', function() {
 			self.video.play();
@@ -430,6 +437,15 @@ var newPlayer = function(replace, width, height) {
 	};
 
 	self.createControls = function() {
+		
+		// Play/Pause by Spacebar
+		document.onkeypress = function(event) {
+			if (event.keyCode==32 && event.target.nodeName=='BODY') {
+				event.preventDefault();
+				self.playOrPause();
+				}
+		}
+		
 		self.player.className = 'youtube5player';
 
 		self.controls = create('div', self.player, 'youtube5controls');
