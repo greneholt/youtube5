@@ -511,17 +511,24 @@ var newPlayer = function(replace, width, height) {
 
 		// keyboard shortcuts
 		document.addEventListener('keypress', function(event) {
+			console.log(event);
 			if (event.target == document.body && focusedPlayer == self) {
-				if (event.keyCode == 32) { // space
+				if (event.keyCode == 32) { // space = play/pause
 					event.preventDefault();
 					self.playOrPause();
+				} else if (event.keyCode == 102) { // f = fullscreen
+					event.preventDefault();
+					self.video.webkitEnterFullScreen();
+				} else if (event.keyCode == 112) { // p = popout
+					event.preventDefault();
+					self.popInOrOut();
 				}
 			}
 		}, false);
 
 		document.addEventListener('keydown', function(event) {
 			if (event.target == document.body && focusedPlayer == self) {
-				if (event.keyCode == 37) { // left arrow
+				if (event.keyCode == 37) { // left arrow = back five seconds
 					event.preventDefault();
 					if (self.video.currentTime > 5) {
 						self.video.currentTime -= 5;
@@ -529,7 +536,7 @@ var newPlayer = function(replace, width, height) {
 						self.video.currentTime = 0;
 					}
 					self.updatePosition();
-				} else if (event.keyCode == 39) { // right arrow
+				} else if (event.keyCode == 39) { // right arrow = forward five seconds
 					event.preventDefault();
 					if (self.video.currentTime < self.video.duration - 5) {
 						self.video.currentTime += 5;
