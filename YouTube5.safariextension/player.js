@@ -31,6 +31,8 @@ var findPosition = function(el) {
 	return [left, top];
 };
 
+var focusedPlayer;
+
 var newPlayer = function(replace, width, height) {
 	var self = {};
 
@@ -172,12 +174,17 @@ var newPlayer = function(replace, width, height) {
 
 	self.playOrPause = function() {
 		if (self.video.paused) {
+			if (self.player.className == 'youtube5player youtube5waiting') {
+				self.player.className = 'youtube5player youtube5loading';
+			}
 			self.video.play();
 			self.removePlayLarge();
 			self.hideOverlay();
 		} else {
 			self.video.pause();
 		}
+		// set the focused player to this one
+		focusedPlayer = self;
 	};
 
 	self.popInOrOut = function() {
@@ -400,9 +407,7 @@ var newPlayer = function(replace, width, height) {
 			self.playLarge = create('div', self.player, 'youtube5play-large');
 
 			self.playLarge.addEventListener('click', function() {
-				self.player.className = 'youtube5player youtube5loading';
-				self.removePlayLarge();
-				self.video.play();
+				self.playOrPause();
 			}, false);
 		}
 
@@ -413,13 +418,6 @@ var newPlayer = function(replace, width, height) {
 		self.info.addEventListener('click', function(event) {
 			if (event.target == self.info) {
 				self.playOrPause();
-			}
-		}, false);
-		
-		// FullScreen by DoubleClick
-		self.info.addEventListener('dblclick', function(event) {
-			if (event.target == self.info) {
-				self.video.webkitEnterFullScreen();
 			}
 		}, false);
 
@@ -437,15 +435,6 @@ var newPlayer = function(replace, width, height) {
 	};
 
 	self.createControls = function() {
-		
-		// Play/Pause by Spacebar
-		document.onkeypress = function(event) {
-			if (event.keyCode==32 && event.target.nodeName=='BODY') {
-				event.preventDefault();
-				self.playOrPause();
-				}
-		}
-		
 		self.player.className = 'youtube5player';
 
 		self.controls = create('div', self.player, 'youtube5controls');
@@ -518,6 +507,18 @@ var newPlayer = function(replace, width, height) {
 
 		self.video.addEventListener('pause', function() {
 			self.controls.className = 'youtube5controls youtube5pause';
+		}, false);
+
+		// keyboard shortcuts
+		document.addEventListener('keypress', function(event) {
+			console.log(event);
+			if (event.target == document.body && focusedPlayer == self) {
+				// play/pause with space
+				if (event.keyCode == 32) {
+					event.preventDefault();
+					self.playOrPause();
+				}
+			}
 		}, false);
 	};
 
