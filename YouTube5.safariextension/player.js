@@ -44,19 +44,23 @@ var newPlayer = function(replace, width, height) {
 	self.originalPlayer = replace;
 
 	self.revert = function() {
-		self.container.parentNode.replaceChild(self.originalPlayer, self.container);
+		self.placeholder.parentNode.replaceChild(self.originalPlayer, self.placeholder);
 	};
 
-	self.container = document.createElement('div');
-	self.container.className = 'youtube5container';
+	self.placeholder = document.createElement('div');
+	self.placeholder.className = 'youtube5placeholder';
+	self.placeholder.style.width = self.width + 'px';
+	self.placeholder.style.height = self.height + 'px';
+
+	self.container = create('div', self.placeholder, 'youtube5container');
 	self.container.style.width = self.width + 'px';
 	self.container.style.height = self.height + 'px';
+	self.container.style.position = 'relative';
+	self.container.style.margin = '0 auto';
 
 	self.player = create('div', self.container, 'youtube5player youtube5loading');
-	self.player.style.width = self.width + 'px';
-	self.player.style.height = self.height + 'px';
-	self.player.style.position = 'relative';
-	self.player.style.margin = '0 auto';
+	self.player.style.width = '100%';
+	self.player.style.height = '100%';
 
 	self.topOverlay = create('div', self.player, 'youtube5top-overlay');
 	self.bottomOverlay = create('div', self.player, 'youtube5bottom-overlay');
@@ -67,7 +71,7 @@ var newPlayer = function(replace, width, height) {
 	self.useOriginal.innerHTML = '&crarr; Use original player';
 	self.useOriginal.addEventListener('click', self.revert, false);
 
-	replace.parentNode.replaceChild(self.container, replace);
+	replace.parentNode.replaceChild(self.placeholder, replace);
 
 	self.updatePlayed = function() {
 		var x = self.position.value / 1000 * (self.position.clientWidth - 10) + 10;
@@ -95,6 +99,9 @@ var newPlayer = function(replace, width, height) {
 			} else if (height < minHeight) {
 				height = minHeight;
 			}
+		} else if (document.webkitIsFullScreen) {
+			width = window.screen.width;
+			height = window.screen.height;
 		} else {
 			width = self.width;
 			height = self.height;
@@ -111,8 +118,8 @@ var newPlayer = function(replace, width, height) {
 			width = width;
 			height = Math.round(width/nativeAspectRatio);
 		}
-		self.player.style.width = width + 'px';
-		self.player.style.height = height + 'px';
+		self.container.style.width = width + 'px';
+		self.container.style.height = height + 'px';
 
 		return [width, height];
 	};
@@ -188,73 +195,83 @@ var newPlayer = function(replace, width, height) {
 	};
 
 	self.popInOrOut = function() {
-		var transitionCss = 'width 0.5s ease-out, height 0.5s ease-out, left 0.5s ease-out, top 0.5s ease-out'
+		if (document.webkitIsFullScreen) return;
+
+		var transitionCss = 'width 0.5s ease-out, height 0.5s ease-out, left 0.5s ease-out, top 0.5s ease-out';
 
 		if (self.floating) {
 			self.floating = false;
 
-			var position = findPosition(self.player);
+			var position = findPosition(self.container);
 
 			// setup the starting point of the animation
 
-			self.player.style.left = position[0] + 'px';
-			self.player.style.top = position[1] + 'px';
-			self.player.style.margin = '0 auto';
+			self.container.style.left = position[0] + 'px';
+			self.container.style.top = position[1] + 'px';
+			self.container.style.margin = '0 auto';
 
-			self.player.offsetWidth; // Force reflow hack. Makes the animation use the proper start positions.
+			self.container.offsetWidth; // Force reflow hack. Makes the animation use the proper start positions.
 
 			// enable the transition animation before making changes
-			self.player.style.webkitTransition = transitionCss;
+			self.container.style.webkitTransition = transitionCss;
 
 			self.updatePlayerSize();
-			self.player.style.left = self.originalPosition[0] + 'px';
-			self.player.style.top = self.originalPosition[1] + 'px';
+			self.container.style.left = self.originalPosition[0] + 'px';
+			self.container.style.top = self.originalPosition[1] + 'px';
 
-			self.player.addEventListener('webkitTransitionEnd', self.dockedTransitionComplete, false);
+			self.container.addEventListener('webkitTransitionEnd', self.dockedTransitionComplete, false);
 		} else {
 			self.floating = true;
 
-			self.originalPosition = findPosition(self.player);
+			self.originalPosition = findPosition(self.container);
 
 			// when we change its dom position, the video stops playing
 			var paused = self.video.paused;
-			document.body.appendChild(self.player);
+			document.body.appendChild(self.container);
 			if (!paused) {
 				self.video.play();
 			}
 
 			// setup the starting point of the animation
-			self.player.style.position = 'absolute';
-			self.player.style.left = self.originalPosition[0] + 'px';
-			self.player.style.top = self.originalPosition[1] + 'px';
-			self.player.style.zIndex = 100000;
-			self.player.style.webkitBoxShadow = '0 0 20px #000';
+			self.container.style.position = 'absolute';
+			self.container.style.left = self.originalPosition[0] + 'px';
+			self.container.style.top = self.originalPosition[1] + 'px';
+			self.container.style.zIndex = 100000;
+			self.container.style.webkitBoxShadow = '0 0 20px #000';
 
-			self.player.offsetWidth; // Force reflow hack. Makes the animation use the proper start positions.
+			self.container.offsetWidth; // Force reflow hack. Makes the animation use the proper start positions.
 
 			// enable the transition animation before making changes
-			self.player.style.webkitTransition = transitionCss;
+			self.container.style.webkitTransition = transitionCss;
 
 			var size = self.updatePlayerSize();
 			newWidth = size[0];
 			newHeight = size[1];
 
-			self.player.style.left = document.body.scrollLeft + (window.innerWidth - newWidth) / 2 + 'px';
-			self.player.style.top = document.body.scrollTop +  (window.innerHeight - newHeight) / 2 + 'px';
+			self.container.style.left = document.body.scrollLeft + (window.innerWidth - newWidth) / 2 + 'px';
+			self.container.style.top = document.body.scrollTop +  (window.innerHeight - newHeight) / 2 + 'px';
 
-			self.player.addEventListener('webkitTransitionEnd', self.floatingTransitionComplete, false);
+			self.container.addEventListener('webkitTransitionEnd', self.floatingTransitionComplete, false);
+		}
+	};
+
+	self.toggleFullScreen = function() {
+		if (document.webkitIsFullScreen) {
+			document.webkitCancelFullScreen();
+		} else {
+			self.player.webkitRequestFullScreen();
 		}
 	};
 
 	self.floatingTransitionComplete = function(event) {
 		if (event.propertyName != 'left') return; // don't allow the animation to be short circuited by other transitions completing
 
-		self.player.style.webkitTransition = null;
+		self.container.style.webkitTransition = null;
 
-		self.player.style.left = '50%';
-		self.player.style.margin = '0 0 0 ' + -self.player.clientWidth/2 + 'px';
+		self.container.style.left = '50%';
+		self.container.style.margin = '0 0 0 ' + -self.container.clientWidth/2 + 'px';
 
-		self.player.removeEventListener('webkitTransitionEnd', self.floatingTransitionComplete, false);
+		self.container.removeEventListener('webkitTransitionEnd', self.floatingTransitionComplete, false);
 
 		self.updatePosition();
 		self.updateLoaded();
@@ -263,22 +280,22 @@ var newPlayer = function(replace, width, height) {
 	self.dockedTransitionComplete = function(event) {
 		if (event.propertyName != 'left') return; // don't allow the animation to be short circuited by other transitions completing
 
-		self.player.style.webkitTransition = null;
+		self.container.style.webkitTransition = null;
 
 		var paused = self.video.paused;
-		self.container.appendChild(self.player);
+		self.placeholder.appendChild(self.container);
 		if (!paused) {
 			self.video.play();
 		}
 
 		// reset all the styles we changed
-		self.player.style.position = 'relative';
-		self.player.style.left = null;
-		self.player.style.top = null;
-		self.player.style.zIndex = null;
-		self.player.style.webkitBoxShadow = null;
+		self.container.style.position = 'relative';
+		self.container.style.left = null;
+		self.container.style.top = null;
+		self.container.style.zIndex = null;
+		self.container.style.webkitBoxShadow = null;
 
-		self.player.removeEventListener('webkitTransitionEnd', self.dockedTransitionComplete, false);
+		self.container.removeEventListener('webkitTransitionEnd', self.dockedTransitionComplete, false);
 
 		self.updatePosition();
 		self.updateLoaded();
@@ -355,6 +372,7 @@ var newPlayer = function(replace, width, height) {
 		self.player.insertBefore(self.video, self.topOverlay);
 
 		if (self.meta.autoplay) {
+			focusedPlayer = this;
 			self.video.play();
 		} else {
 			self.player.className = 'youtube5player youtube5waiting';
@@ -475,9 +493,7 @@ var newPlayer = function(replace, width, height) {
 
 		self.popOut.addEventListener('click', self.popInOrOut, false);
 
-		self.fullscreen.addEventListener('click', function() {
-			self.video.webkitEnterFullScreen();
-		}, false);
+		self.fullscreen.addEventListener('click', self.toggleFullScreen, false);
 
 		self.volumeSlider.addEventListener('change', function() {
 			self.setVolume(self.volumeSlider.value / 100);
@@ -509,16 +525,22 @@ var newPlayer = function(replace, width, height) {
 			self.controls.className = 'youtube5controls youtube5pause';
 		}, false);
 
+		// fullscreen handler
+		document.addEventListener("webkitfullscreenchange", function() {
+		    //self.updatePlayerSize();
+		    self.updatePosition();
+			self.updateLoaded();
+		}, false);
+
 		// keyboard shortcuts
 		document.addEventListener('keypress', function(event) {
-			console.log(event);
 			if (event.target == document.body && focusedPlayer == self) {
 				if (event.keyCode == 32) { // space = play/pause
 					event.preventDefault();
 					self.playOrPause();
 				} else if (event.keyCode == 102) { // f = fullscreen
 					event.preventDefault();
-					self.video.webkitEnterFullScreen();
+					self.toggleFullScreen();
 				} else if (event.keyCode == 112) { // p = popout
 					event.preventDefault();
 					self.popInOrOut();

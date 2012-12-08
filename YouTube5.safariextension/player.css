@@ -13,11 +13,11 @@
 	font-family: Helvetica, sans-serif !important;
 }
 
-.youtube5container {
+.youtube5placeholder {
 	display: inline-block !important;
 }
 
-.youtube5player {
+.youtube5player, .youtube5container {
 	background-color: #000 !important;
 	overflow: hidden !important;
 }
