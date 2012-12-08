@@ -125,7 +125,7 @@ var newPlayer = function(replace, width, height) {
 	};
 
 	self.updateLoaded = function() {
-		if (isNaN(self.video.duration)) return;
+		if (isNaN(self.video.duration) || self.video.buffered.length == 0) return;
 
 		var x = self.video.buffered.end(0) / self.video.duration * (self.position.clientWidth - 10) + 10;
 		self.loaded.style.width = x + 'px';
@@ -511,12 +511,32 @@ var newPlayer = function(replace, width, height) {
 
 		// keyboard shortcuts
 		document.addEventListener('keypress', function(event) {
-			console.log(event);
 			if (event.target == document.body && focusedPlayer == self) {
-				// play/pause with space
-				if (event.keyCode == 32) {
+				if (event.keyCode == 32) { // space
 					event.preventDefault();
 					self.playOrPause();
+				}
+			}
+		}, false);
+
+		document.addEventListener('keydown', function(event) {
+			if (event.target == document.body && focusedPlayer == self) {
+				if (event.keyCode == 37) { // left arrow
+					event.preventDefault();
+					if (self.video.currentTime > 5) {
+						self.video.currentTime -= 5;
+					} else {
+						self.video.currentTime = 0;
+					}
+					self.updatePosition();
+				} else if (event.keyCode == 39) { // right arrow
+					event.preventDefault();
+					if (self.video.currentTime < self.video.duration - 5) {
+						self.video.currentTime += 5;
+					} else {
+						self.video.currentTime = self.video.duration;
+					}
+					self.updatePosition();
 				}
 			}
 		}, false);
