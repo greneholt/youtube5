@@ -31,6 +31,18 @@ var findPosition = function(el) {
 	return [left, top];
 };
 
+var addClass = function(el, className) {
+	el.className += ' ' + className;
+};
+
+var removeClass = function(el, className) {
+	el.className = el.className.replace(new RegExp('\\b' + className + '\\b'), '');
+};
+
+var hasClass = function(el, className) {
+	return el.className.indexOf(className) !== -1;
+}
+
 var focusedPlayer;
 
 var newPlayer = function(replace, width, height) {
@@ -40,8 +52,11 @@ var newPlayer = function(replace, width, height) {
 	self.height = height;
 
 	self.floating = false;
+	self.hovered = false;
 
 	self.originalPlayer = replace;
+
+	self.hoverTimeoutId = null;
 
 	self.revert = function() {
 		self.placeholder.parentNode.replaceChild(self.originalPlayer, self.placeholder);
@@ -62,6 +77,16 @@ var newPlayer = function(replace, width, height) {
 	self.player.style.width = '100%';
 	self.player.style.height = '100%';
 
+	self.player.addEventListener('mousemove', function() {
+		if (!self.hovered) {
+			self.hovered = true;
+			addClass(self.player, 'youtube5hover');
+		} else if (self.hoverTimeoutId != null) {
+			window.clearTimeout(self.hoverTimeoutId);
+		}
+		self.hoverTimeoutId = window.setTimeout(self.unHover, 3000);
+	});
+
 	self.topOverlay = create('div', self.player, 'youtube5top-overlay');
 	self.bottomOverlay = create('div', self.player, 'youtube5bottom-overlay');
 
@@ -72,6 +97,12 @@ var newPlayer = function(replace, width, height) {
 	self.useOriginal.addEventListener('click', self.revert, false);
 
 	replace.parentNode.replaceChild(self.placeholder, replace);
+
+	self.unHover = function() {
+		self.hovered = false;
+		removeClass(self.player, 'youtube5hover');
+		self.hoverTimeoutId = null;
+	};
 
 	self.updatePlayed = function() {
 		var x = self.position.value / 1000 * (self.position.clientWidth - 10) + 10;
@@ -172,17 +203,18 @@ var newPlayer = function(replace, width, height) {
 	};
 
 	self.showOverlay = function() {
-		self.player.className = self.player.className + ' youtube5overlayed';
+		addClass(self.player, 'youtube5overlayed');
 	};
 
 	self.hideOverlay = function() {
-		self.player.className = self.player.className.replace(/\byoutube5overlayed\b/, '');
+		removeClass(self.player, 'youtube5overlayed');
 	};
 
 	self.playOrPause = function() {
 		if (self.video.paused) {
-			if (self.player.className == 'youtube5player youtube5waiting') {
-				self.player.className = 'youtube5player youtube5loading';
+			if (hasClass(self.player, 'youtube5waiting')) {
+				removeClass(self.player, 'youtube5waiting');
+				addClass(self.player, 'youtube5loading');
 			}
 			self.video.play();
 			self.removePlayLarge();
@@ -375,7 +407,8 @@ var newPlayer = function(replace, width, height) {
 			focusedPlayer = this;
 			self.video.play();
 		} else {
-			self.player.className = 'youtube5player youtube5waiting';
+			removeClass(self.player, 'youtube5loading');
+			addClass(self.player, 'youtube5waiting');
 			self.player.style.background = '#000 url(' + meta.poster + ') no-repeat center center';
 			self.player.style.backgroundSize = '100% auto';
 			self.video.preload = 'none';
@@ -441,19 +474,22 @@ var newPlayer = function(replace, width, height) {
 
 		self.replay.addEventListener('click', function() {
 			self.video.play();
-			self.player.className = 'youtube5player';
+			self.hideOverlay();
+			removeClass(self.player, 'youtube5replay');
 		}, false);
 
 		self.closeOverlay.addEventListener('click', self.hideOverlay, false);
 
 		self.video.addEventListener('ended', function() {
 			self.video.pause();
-			self.player.className = 'youtube5player youtube5overlayed youtube5replay';
+			self.showOverlay();
+			addClass(self.player, 'youtube5replay');
 		}, false);
 	};
 
 	self.createControls = function() {
-		self.player.className = 'youtube5player';
+		removeClass(self.player, 'youtube5loading');
+		removeClass(self.player, 'youtube5waiting');
 
 		self.controls = create('div', self.player, 'youtube5controls');
 

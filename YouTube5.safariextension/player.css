@@ -69,7 +69,7 @@
     border-top: 1px solid #555 !important;
 }
 
-.youtube5player .youtube5controls.youtube5pause, .youtube5player:hover .youtube5controls, .youtube5player.youtube5overlayed .youtube5controls {
+.youtube5player .youtube5controls.youtube5pause, .youtube5player.youtube5hover:hover .youtube5controls, .youtube5player.youtube5overlayed .youtube5controls {
 	opacity: 0.8 !important;
 }
 
@@ -466,7 +466,7 @@
 	-webkit-transition: opacity 0.3s ease-in-out, visibility 0.3s step-end !important;
 }
 
-.youtube5player:hover .youtube5info-button {
+.youtube5player.youtube5hover:hover .youtube5info-button {
 	opacity: 0.6 !important;
 }
 
