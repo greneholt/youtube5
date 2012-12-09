@@ -319,6 +319,9 @@
 	padding: 0 !important;
 	margin-right: 15px !important;
 	background-color: #222 !important;
+}
+
+.youtube5player .youtube5formats * {
 	text-align: center !important;
 }
 

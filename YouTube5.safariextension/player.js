@@ -378,11 +378,15 @@ var newPlayer = function(replace, width, height) {
 		}
 
 		self.updatePlayerSize();
+		self.video.removeEventListener('loadedmetadata', self.initVideo, false);
+	};
+
+	self.videoReady = function() {
 		self.createControls();
 		self.updateTime();
 		self.setVolume(self.meta.volume);
 
-		self.video.removeEventListener('loadedmetadata', self.initVideo, false);
+		self.video.removeEventListener('canplay', self.videoReady, false);
 		self.video.addEventListener('loadedmetadata', function() {
 			self.seek();
 			self.updateTime();
@@ -484,6 +488,7 @@ var newPlayer = function(replace, width, height) {
 		}
 
 		self.video.addEventListener('loadedmetadata', self.initVideo, false);
+		self.video.addEventListener('canplay', self.videoReady, false);
 
 		self.infoButton.addEventListener('click', self.showOverlay, false);
 
