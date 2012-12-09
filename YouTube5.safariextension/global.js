@@ -22,7 +22,7 @@ var parseUrlEncoded = function(text) {
 	});
 
 	return data;
-}
+};
 
 var injectVideo = function(event, playerId, meta) {
 	meta.volume = safari.extension.settings.volume;

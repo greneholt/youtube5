@@ -22,6 +22,34 @@ var formatTime = function(seconds) {
 	return m + ':' + s;
 };
 
+var parseUrlEncoded = function(text) {
+	var data = {};
+
+	var pairs = text.split('&');
+	pairs.forEach(function(pair) {
+		pair = pair.split('=');
+		data[pair[0]] = decodeURIComponent(pair[1]).replace(/\+/g, ' ');
+	});
+
+	return data;
+};
+
+var parseTimeCode = function(text) {
+	var seconds = 0;
+
+	var match = /(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/.exec(text);
+	if (match) {
+		[3600, 60, 1].forEach(function(multiplier, i) {
+			var timeValue = parseInt(match[i + 1]);
+			if (timeValue) {
+				seconds += multiplier * timeValue;
+			}
+		});
+	}
+
+	return seconds;
+};
+
 var findPosition = function(el) {
 	var left = top = 0;
 	do {
@@ -57,6 +85,8 @@ var newPlayer = function(replace, width, height) {
 	self.originalPlayer = replace;
 
 	self.hoverTimeoutId = null;
+
+	self.startTime = null;
 
 	self.revert = function() {
 		self.placeholder.parentNode.replaceChild(self.originalPlayer, self.placeholder);
@@ -216,6 +246,7 @@ var newPlayer = function(replace, width, height) {
 				removeClass(self.player, 'youtube5waiting');
 				addClass(self.player, 'youtube5loading');
 			}
+
 			self.video.play();
 			self.removePlayLarge();
 			self.hideOverlay();
@@ -372,6 +403,11 @@ var newPlayer = function(replace, width, height) {
 	};
 
 	self.initVideo = function() {
+		if (self.startTime) {
+			self.video.currentTime = self.startTime;
+			self.startTime = null;
+		}
+
 		self.updatePlayerSize();
 		self.createControls();
 		self.updateTime();
@@ -382,6 +418,23 @@ var newPlayer = function(replace, width, height) {
 			self.seek();
 			self.updateTime();
 		}, false);
+	};
+
+	self.loadTimeCode = function() {
+		var hashData = parseUrlEncoded(document.location.hash.replace(/^#/, ''));
+		var searchData = parseUrlEncoded(document.location.search.replace(/^\?/, ''));
+
+		for (var attr in hashData) {
+			searchData[attr] = hashData[attr];
+		}
+
+		if (searchData.t) {
+			self.startTime = parseTimeCode(searchData.t);
+		} else if (searchData.time) {
+			self.startTime = parseTimeCode(searchData.time);
+		} else if (searchData.start) {
+			self.startTime = parseInt(searchData.start);
+		}
 	};
 
 	self.injectVideo = function(meta) {
@@ -397,6 +450,8 @@ var newPlayer = function(replace, width, height) {
 			return;
 		}
 
+		self.loadTimeCode();
+
 		self.video = document.createElement('video');
 		self.video = create('video', self.player);
 		self.video.src = meta.formats[meta.useFormat];
@@ -405,7 +460,7 @@ var newPlayer = function(replace, width, height) {
 
 		if (self.meta.autoplay) {
 			focusedPlayer = this;
-			self.video.play();
+			self.playOrPause();
 		} else {
 			removeClass(self.player, 'youtube5loading');
 			addClass(self.player, 'youtube5waiting');
@@ -473,7 +528,7 @@ var newPlayer = function(replace, width, height) {
 		}, false);
 
 		self.replay.addEventListener('click', function() {
-			self.video.play();
+			self.playOrPause();
 			self.hideOverlay();
 			removeClass(self.player, 'youtube5replay');
 		}, false);
@@ -606,6 +661,27 @@ var newPlayer = function(replace, width, height) {
 						self.video.currentTime = self.video.duration;
 					}
 					self.updatePosition();
+				}
+			}
+		}, false);
+
+		// timecode link handling
+		document.addEventListener('click', function(event) {
+			if (event.target.nodeName.toLowerCase() == 'a' && focusedPlayer == self) {
+				var match = /^(?:(\d+):)?(\d{1,2}):(\d{2})$/.exec(event.target.textContent);
+				if (match) {
+					event.preventDefault();
+
+					var seconds = 0;
+					[3600, 60, 1].forEach(function(multiplier, i) {
+						var timeValue = parseInt(match[i + 1]);
+						if (timeValue) {
+							seconds += multiplier * timeValue;
+						}
+					});
+
+					self.video.currentTime = seconds;
+					self.container.scrollIntoView();
 				}
 			}
 		}, false);
