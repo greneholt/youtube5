@@ -22,34 +22,6 @@ var formatTime = function(seconds) {
 	return m + ':' + s;
 };
 
-var parseUrlEncoded = function(text) {
-	var data = {};
-
-	var pairs = text.split('&');
-	pairs.forEach(function(pair) {
-		pair = pair.split('=');
-		data[pair[0]] = decodeURIComponent(pair[1]).replace(/\+/g, ' ');
-	});
-
-	return data;
-};
-
-var parseTimeCode = function(text) {
-	var seconds = 0;
-
-	var match = /(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/.exec(text);
-	if (match) {
-		[3600, 60, 1].forEach(function(multiplier, i) {
-			var timeValue = parseInt(match[i + 1]);
-			if (timeValue) {
-				seconds += multiplier * timeValue;
-			}
-		});
-	}
-
-	return seconds;
-};
-
 var findPosition = function(el) {
 	var left = top = 0;
 	do {
@@ -85,8 +57,6 @@ var newPlayer = function(replace, width, height) {
 	self.originalPlayer = replace;
 
 	self.hoverTimeoutId = null;
-
-	self.startTime = null;
 
 	self.revert = function() {
 		self.placeholder.parentNode.replaceChild(self.originalPlayer, self.placeholder);
@@ -403,9 +373,8 @@ var newPlayer = function(replace, width, height) {
 	};
 
 	self.initVideo = function() {
-		if (self.startTime) {
-			self.video.currentTime = self.startTime;
-			self.startTime = null;
+		if (self.meta.startTime) {
+			self.video.currentTime = self.meta.startTime;
 		}
 
 		self.updatePlayerSize();
@@ -420,7 +389,7 @@ var newPlayer = function(replace, width, height) {
 		}, false);
 	};
 
-	self.loadTimeCode = function() {
+	self.loadStartTime = function() {
 		var hashData = parseUrlEncoded(document.location.hash.replace(/^#/, ''));
 		var searchData = parseUrlEncoded(document.location.search.replace(/^\?/, ''));
 
@@ -428,12 +397,9 @@ var newPlayer = function(replace, width, height) {
 			searchData[attr] = hashData[attr];
 		}
 
-		if (searchData.t) {
-			self.startTime = parseTimeCode(searchData.t);
-		} else if (searchData.time) {
-			self.startTime = parseTimeCode(searchData.time);
-		} else if (searchData.start) {
-			self.startTime = parseInt(searchData.start);
+		var startTime = getStartTime(searchData);
+		if (startTime) {
+			self.meta.startTime = startTime;
 		}
 	};
 
@@ -450,7 +416,7 @@ var newPlayer = function(replace, width, height) {
 			return;
 		}
 
-		self.loadTimeCode();
+		self.loadStartTime();
 
 		self.video = document.createElement('video');
 		self.video = create('video', self.player);

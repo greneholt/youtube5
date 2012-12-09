@@ -12,18 +12,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 */
 
-var parseUrlEncoded = function(text) {
-	var data = {};
-
-	var pairs = text.split('&');
-	pairs.forEach(function(pair) {
-		pair = pair.split('=');
-		data[pair[0]] = decodeURIComponent(pair[1]).replace(/\+/g, ' ');
-	});
-
-	return data;
-};
-
 var injectVideo = function(event, playerId, meta) {
 	meta.volume = safari.extension.settings.volume;
 	event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });

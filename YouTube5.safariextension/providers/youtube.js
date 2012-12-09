@@ -2,7 +2,7 @@ var newYouTube = function() {
 	var self = newProvider();
 
 	self.urlPatterns = [
-		/^https?:\/\/(?:www\.)?youtube(?:\-nocookie)?\.com\/(?:v|embed)\/([^\?&]+)([\?&].+)?/i,
+		/^https?:\/\/(?:www\.)?youtube(?:\-nocookie)?\.com\/(?:v|embed)\/([^\?&]+)(?:[\?&](.+))?/i,
 		/^https?:\/\/s.ytimg.com\/yts?\/swf(?:bin)?\/watch/i
 	];
 
@@ -11,15 +11,17 @@ var newYouTube = function() {
 	};
 
 	self.loadVideo = function(url, playerId, flashvars, event) {
-		if (m = url.match(self.urlPatterns[0])) {
-			var videoId = m[1];
-			var autoplay = /autoplay=1/.test(m[2]);
-			self.startLoad(playerId, videoId, autoplay, event, flashvars);
+		var match = url.match(self.urlPatterns[0]);
+
+		if (match) {
+			var videoId = match[1];
+			var params = parseUrlEncoded(match[2]);
+			self.startLoad(playerId, videoId, params.autoplay, getStartTime(params), event, flashvars);
 			return true;
 		}
 		else if (self.urlPatterns[1].test(url)) {
 			var data = parseUrlEncoded(flashvars);
-			self.startLoad(playerId, data.video_id, safari.extension.settings.youTubeAutoplay, event, data);
+			self.startLoad(playerId, data.video_id, safari.extension.settings.youTubeAutoplay, null, event, data);
 			return true;
 		}
 		else {
@@ -86,13 +88,14 @@ var newYouTube = function() {
 		return meta;
 	};
 
-	self.startLoad = function(playerId, videoId, autoplay, event, flashvars) {
+	self.startLoad = function(playerId, videoId, autoplay, startTime, event, flashvars) {
 		var req = new XMLHttpRequest();
 		req.open('GET', 'https://www.youtube.com/get_video_info?&video_id=' + videoId + '&el=embedded&ps=default&eurl=http%3A%2F%2Fwww%2Egoogle%2Ecom%2F&hl=en_US', true);
 		req.onreadystatechange = function(ev) {
 			if (req.readyState === 4 && req.status === 200) {
 				var meta = self.processMeta(req.responseText, flashvars);
 				meta.autoplay = autoplay;
+				meta.startTime = startTime;
 				injectVideo(event, playerId, meta);
 			} else if (req.readyState === 4 && req.status === 404) {
 				var meta = { error: '404 Error loading YouTube video' };

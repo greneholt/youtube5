@@ -32,6 +32,7 @@
 		<dict>
 			<key>Start</key>
 			<array>
+				<string>util.js</string>
 				<string>inject.js</string>
 				<string>player.js</string>
 			</array>
