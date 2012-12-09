@@ -172,9 +172,10 @@ var newPlayer = function(replace, width, height) {
 	self.updatePosition = function() {
 		if (isNaN(self.video.duration)) return;
 
+		// if the time isn't updated, the position element size won't be correct
+		self.updateTime();
 		self.position.value = self.video.currentTime / self.video.duration * 1000;
 		self.updatePlayed();
-		self.updateTime();
 	};
 
 	self.updateVolumeSlider = function() {
@@ -383,7 +384,7 @@ var newPlayer = function(replace, width, height) {
 
 	self.videoReady = function() {
 		self.createControls();
-		self.updateTime();
+		self.updatePosition();
 		self.setVolume(self.meta.volume);
 
 		self.video.removeEventListener('canplay', self.videoReady, false);
