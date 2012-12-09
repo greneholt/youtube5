@@ -53,7 +53,7 @@ var newYouTube = function() {
 		45 - WebM 720p (HD)
 		*/
 
-		var youTubeFormats = { 5: '240p FLV', 18: '360p', 22: '720p', 37: '1080p' };
+		var youTubeFormats = { 5: '240p FLV', 18: '360p', 22: '720p', 37: '1080p', 38: 'Original (4k)' };
 
 		meta.formats = {};
 		((flashvars && flashvars.url_encoded_fmt_stream_map) || data.url_encoded_fmt_stream_map).split(',').forEach(function(format) {
