@@ -37,6 +37,7 @@
 		<string>Default YouTube Format</string>
 		<key>Titles</key>
 		<array>
+			<string>Original (4k)</string>
 			<string>1080p</string>
 			<string>720p</string>
 			<string>360p</string>
@@ -46,6 +47,7 @@
 		<string>PopUpButton</string>
 		<key>Values</key>
 		<array>
+			<string>Original (4k)</string>
 			<string>1080p</string>
 			<string>720p</string>
 			<string>360p</string>
