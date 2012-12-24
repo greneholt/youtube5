@@ -23,16 +23,24 @@
 	overflow: hidden !important;
 }
 
+.youtube5player * {
+	cursor: none !important;
+}
+
+.youtube5player.youtube5hover * {
+	cursor: default !important;
+}
+
+.youtube5player.youtube5hover a {
+	cursor: pointer !important;
+}
+
 .youtube5player.youtube5loading {
 	background: #000 url(loading.gif) no-repeat center center !important;
 }
 
 .youtube5player.youtube5floating {
 	-webkit-transition: width 0.5s ease-out, height 0.5s ease-out, left 0.5s ease-out, top 0.5s ease-out, margin-left 0.5s ease-out, margin-right 0.5s ease-out !important;
-}
-
-.youtube5player div {
-	cursor: default !important;
 }
 
 .youtube5player .youtube5error {

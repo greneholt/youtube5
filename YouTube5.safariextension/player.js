@@ -77,16 +77,6 @@ var newPlayer = function(replace, width, height) {
 	self.player.style.width = '100%';
 	self.player.style.height = '100%';
 
-	self.player.addEventListener('mousemove', function() {
-		if (!self.hovered) {
-			self.hovered = true;
-			addClass(self.player, 'youtube5hover');
-		} else if (self.hoverTimeoutId != null) {
-			window.clearTimeout(self.hoverTimeoutId);
-		}
-		self.hoverTimeoutId = window.setTimeout(self.unHover, 3000);
-	});
-
 	self.topOverlay = create('div', self.player, 'youtube5top-overlay');
 	self.bottomOverlay = create('div', self.player, 'youtube5bottom-overlay');
 
@@ -98,10 +88,31 @@ var newPlayer = function(replace, width, height) {
 
 	replace.parentNode.replaceChild(self.placeholder, replace);
 
+	self.updateHoverTimeout = function() {
+		if (!self.hovered) {
+			self.hovered = true;
+			addClass(self.player, 'youtube5hover');
+		} else if (self.hoverTimeoutId != null) {
+			window.clearTimeout(self.hoverTimeoutId);
+		}
+		self.hoverTimeoutId = window.setTimeout(self.unHover, 2000);
+	};
+
+	self.player.addEventListener('mousemove', self.updateHoverTimeout, false);
+
 	self.unHover = function() {
 		self.hovered = false;
+		// we need to temporarily disable the mousemove event listener because
+		// for some reason safari fires a mousemove event when the cursor is changed.
+		// https://bugs.webkit.org/show_bug.cgi?id=85343
+		self.player.removeEventListener('mousemove', self.updateHoverTimeout, false);
+		window.setTimeout(self.unHoverTransitionComplete, 500);
 		removeClass(self.player, 'youtube5hover');
 		self.hoverTimeoutId = null;
+	};
+
+	self.unHoverTransitionComplete = function() {
+		self.player.addEventListener('mousemove', self.updateHoverTimeout, false);
 	};
 
 	self.updatePlayed = function() {
