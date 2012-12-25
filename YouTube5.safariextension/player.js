@@ -141,9 +141,6 @@ var newPlayer = function(replace, width, height) {
 			} else if (height < minHeight) {
 				height = minHeight;
 			}
-		} else if (document.webkitIsFullScreen) {
-			width = window.screen.width;
-			height = window.screen.height;
 		} else {
 			width = self.width;
 			height = self.height;
@@ -604,8 +601,13 @@ var newPlayer = function(replace, width, height) {
 		}, false);
 
 		// fullscreen handler
-		document.addEventListener("webkitfullscreenchange", function() {
-		    //self.updatePlayerSize();
+		document.addEventListener("webkitfullscreenchange", function(event) {
+			if (document.webkitIsFullScreen) {
+				addClass(self.player, 'youtube5fullscreened');
+			} else {
+				removeClass(self.player, 'youtube5fullscreened');
+			}
+
 		    self.updatePosition();
 			self.updateLoaded();
 		}, false);
