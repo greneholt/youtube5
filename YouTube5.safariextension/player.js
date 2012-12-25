@@ -115,11 +115,6 @@ var newPlayer = function(replace, width, height) {
 		self.player.addEventListener('mousemove', self.updateHoverTimeout, false);
 	};
 
-	self.updatePlayed = function() {
-		var x = self.position.value / 1000 * (self.position.clientWidth - 10) + 10;
-		self.played.style.width = x + 'px';
-	};
-
 	self.updatePlayerSize = function() {
 		var width, height;
 
@@ -170,20 +165,22 @@ var newPlayer = function(replace, width, height) {
 		self.timeRemaining.textContent = '-' + formatTime(remaining);
 	};
 
+	self.updatePlayed = function() {
+		self.played.style.width = self.position.value / 10 + '%';
+	};
+
 	self.updateLoaded = function() {
 		if (isNaN(self.video.duration) || self.video.buffered.length == 0) return;
 
-		var x = self.video.buffered.end(0) / self.video.duration * (self.position.clientWidth - 10) + 10;
-		self.loaded.style.width = x + 'px';
+		self.loaded.style.width = self.video.buffered.end(0) / self.video.duration * 100 + '%';
 	};
 
 	self.updatePosition = function() {
 		if (isNaN(self.video.duration)) return;
 
-		// if the time isn't updated, the position element size won't be correct
-		self.updateTime();
 		self.position.value = self.video.currentTime / self.video.duration * 1000;
 		self.updatePlayed();
+		self.updateTime();
 	};
 
 	self.updateVolumeSlider = function() {
@@ -314,9 +311,6 @@ var newPlayer = function(replace, width, height) {
 		self.container.style.margin = '0 0 0 ' + -self.container.clientWidth/2 + 'px';
 
 		self.container.removeEventListener('webkitTransitionEnd', self.floatingTransitionComplete, false);
-
-		self.updatePosition();
-		self.updateLoaded();
 	};
 
 	self.dockedTransitionComplete = function(event) {
@@ -338,9 +332,6 @@ var newPlayer = function(replace, width, height) {
 		self.container.style.webkitBoxShadow = null;
 
 		self.container.removeEventListener('webkitTransitionEnd', self.dockedTransitionComplete, false);
-
-		self.updatePosition();
-		self.updateLoaded();
 	}
 
 	self.removePlayLarge = function() {
@@ -537,8 +528,9 @@ var newPlayer = function(replace, width, height) {
 		self.timeElapsed = create('div', self.controls, 'youtube5time-elapsed');
 
 		self.progress = create('div', self.controls, 'youtube5progress');
-		self.loaded = create('div', self.progress, 'youtube5loaded');
-		self.played = create('div', self.progress, 'youtube5played');
+		self.nudge = create('div', self.progress, 'youtube5progressnudge');
+		self.loaded = create('div', self.nudge, 'youtube5loaded');
+		self.played = create('div', self.nudge, 'youtube5played');
 
 		self.position = create('input', self.progress, 'youtube5position');
 		self.position.type = 'range';
@@ -607,9 +599,6 @@ var newPlayer = function(replace, width, height) {
 			} else {
 				removeClass(self.player, 'youtube5fullscreened');
 			}
-
-		    self.updatePosition();
-			self.updateLoaded();
 		}, false);
 
 		// keyboard shortcuts
@@ -637,7 +626,6 @@ var newPlayer = function(replace, width, height) {
 					} else {
 						self.video.currentTime = 0;
 					}
-					self.updatePosition();
 				} else if (event.keyCode == 39) { // right arrow = forward five seconds
 					event.preventDefault();
 					if (self.video.currentTime < self.video.duration - 5) {
@@ -645,7 +633,6 @@ var newPlayer = function(replace, width, height) {
 					} else {
 						self.video.currentTime = self.video.duration;
 					}
-					self.updatePosition();
 				}
 			}
 		}, false);

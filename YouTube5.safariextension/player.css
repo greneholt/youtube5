@@ -114,14 +114,28 @@
     -webkit-box-flex: 1 !important;
 }
 
+/*
+The styling of the loaded and played bars is very complex. They need to always be at least 10px wide,
+and their percentage widths need to line up precisely with the value of the range input for position.
+
+This is accomplished by making their 100% width 5px narrower on each end then the full width, which is
+what the progress nudge container does. They are then adjusted 5px left using negative margins, and given
+left and right padding of 5px for the minimum size.
+*/
+.youtube5player .youtube5progressnudge {
+	position: relative !important;
+	margin: 0 5px !important;
+}
+
 .youtube5player .youtube5loaded {
     position: absolute !important;
     left: 0 !important;
     top: 0 !important;
     background: -webkit-gradient(linear, left top, left bottom, from(#828282), to(#cbcbcb)) !important;
-    border-radius: 20px !important;
+    border-radius: 5px !important;
     height: 10px !important;
-    width: 10px;
+    margin-left: -5px !important;
+    padding: 0 5px !important;
 }
 
 .youtube5player .youtube5played {
@@ -129,9 +143,10 @@
     left: 0 !important;
     top: 0 !important;
     background: -webkit-gradient(linear, left top, left bottom, from(#008ff3), to(#0045f4)) !important;
-    border-radius: 20px !important;
+    border-radius: 5px !important;
     height: 10px !important;
-    width: 10px;
+    margin-left: -5px !important;
+    padding: 0 5px !important;
 }
 
 .youtube5player .youtube5position {
