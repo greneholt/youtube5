@@ -4,7 +4,7 @@ var newVimeo = function() {
 	self.urlPatterns = [
 		/^https?:\/\/assets\.vimeo\.com\/flash\/moog/i,
 		/vimeo\.com\/moogaloop\.swf?.*clip_id=(\d+)/i,
-		/\/moogaloop/i,
+		/vimeo.*\/moogaloop/i,
 		/^https?:\/\/player.vimeo.com\/video\/(\d+)/i
 	];
 
