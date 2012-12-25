@@ -359,7 +359,12 @@ var newPlayer = function(replace, width, height) {
 		var format = event.target.textContent;
 		var paused = self.video.paused;
 		self.video.src = self.meta.formats[format];
-		self.video.preload = 'auto';
+
+		// only load the video if its already been playing
+		if (self.controls) {
+			self.video.preload = 'auto';
+		}
+
 		if (!paused) {
 			self.video.play();
 		}
