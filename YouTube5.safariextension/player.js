@@ -284,8 +284,8 @@ var newPlayer = function(replace, width, height) {
 			self.container.style.webkitTransition = transitionCss;
 
 			var size = self.updatePlayerSize();
-			newWidth = size[0];
-			newHeight = size[1];
+			var newWidth = size[0];
+			var newHeight = size[1];
 
 			self.container.style.left = document.body.scrollLeft + (window.innerWidth - newWidth) / 2 + 'px';
 			self.container.style.top = document.body.scrollTop +  (window.innerHeight - newHeight) / 2 + 'px';

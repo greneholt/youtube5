@@ -16,7 +16,7 @@ var newYouTube = function() {
 		if (match) {
 			var videoId = match[1];
 			var params = parseUrlEncoded(match[2]);
-			self.startLoad(playerId, videoId, params.autoplay, getStartTime(params), event, flashvars);
+			self.startLoad(playerId, videoId, params.autoplay && params.autoplay != '0', getStartTime(params), event, flashvars);
 			return true;
 		}
 		else if (self.urlPatterns[1].test(url)) {
