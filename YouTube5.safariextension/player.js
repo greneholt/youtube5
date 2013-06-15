@@ -23,7 +23,8 @@ var formatTime = function(seconds) {
 };
 
 var findPosition = function(el) {
-	var left = top = 0;
+	var left, top;
+	left = top = 0;
 	do {
 		left += el.offsetLeft;
 		top += el.offsetTop;
@@ -92,7 +93,7 @@ var newPlayer = function(replace, width, height) {
 		if (!self.hovered) {
 			self.hovered = true;
 			addClass(self.player, 'youtube5hover');
-		} else if (self.hoverTimeoutId != null) {
+		} else if (self.hoverTimeoutId !== null) {
 			window.clearTimeout(self.hoverTimeoutId);
 		}
 		self.hoverTimeoutId = window.setTimeout(self.unHover, 2000);
@@ -278,7 +279,7 @@ var newPlayer = function(replace, width, height) {
 			self.container.style.zIndex = 100000;
 			self.container.style.webkitBoxShadow = '0 0 20px #000';
 
-			self.container.offsetWidth; // Force reflow hack. Makes the animation use the proper start positions.
+			var ignore = self.container.offsetWidth; // Force reflow hack. Makes the animation use the proper start positions.
 
 			// enable the transition animation before making changes
 			self.container.style.webkitTransition = transitionCss;
@@ -332,7 +333,7 @@ var newPlayer = function(replace, width, height) {
 		self.container.style.webkitBoxShadow = null;
 
 		self.container.removeEventListener('webkitTransitionEnd', self.dockedTransitionComplete, false);
-	}
+	};
 
 	self.removePlayLarge = function() {
 		if(self.playLarge) {
@@ -341,7 +342,7 @@ var newPlayer = function(replace, width, height) {
 			self.player.removeChild(self.playLarge);
 			self.playLarge = null;
 		}
-	}
+	};
 
 	self.setVolume = function(volume) {
 		self.video.muted = volume < 0.02;
