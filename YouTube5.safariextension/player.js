@@ -609,7 +609,7 @@ var newPlayer = function(replace, width, height) {
 
 		// keyboard shortcuts
 		document.addEventListener('keypress', function(event) {
-			if (event.target == document.body && focusedPlayer == self) {
+			if (event.target == document.body && focusedPlayer == self && !event.shiftKey && !event.altKey && !event.ctrlKey && !event.metaKey) {
 				if (event.keyCode == 32) { // space = play/pause
 					event.preventDefault();
 					self.playOrPause();
@@ -624,20 +624,40 @@ var newPlayer = function(replace, width, height) {
 		}, false);
 
 		document.addEventListener('keydown', function(event) {
-			if (event.target == document.body && focusedPlayer == self) {
+			if (event.target == document.body && focusedPlayer == self && !event.altKey && !event.ctrlKey && !event.metaKey) {
 				if (event.keyCode == 37) { // left arrow = back five seconds
 					event.preventDefault();
-					if (self.video.currentTime > 5) {
-						self.video.currentTime -= 5;
-					} else {
-						self.video.currentTime = 0;
+
+					if (event.shiftKey) {
+						if (self.video.currentTime > 1) {
+							self.video.currentTime -= 1;
+						} else {
+							self.video.currentTime = 0;
+						}
+					}
+					else {
+						if (self.video.currentTime > 5) {
+							self.video.currentTime -= 5;
+						} else {
+							self.video.currentTime = 0;
+						}
 					}
 				} else if (event.keyCode == 39) { // right arrow = forward five seconds
 					event.preventDefault();
-					if (self.video.currentTime < self.video.duration - 5) {
-						self.video.currentTime += 5;
-					} else {
-						self.video.currentTime = self.video.duration;
+
+					if (event.shiftKey) {
+						if (self.video.currentTime < self.video.duration - 1) {
+							self.video.currentTime += 1;
+						} else {
+							self.video.currentTime = self.video.duration;
+						}
+					}
+					else {
+						if (self.video.currentTime < self.video.duration - 5) {
+							self.video.currentTime += 5;
+						} else {
+							self.video.currentTime = self.video.duration;
+						}
 					}
 				}
 			}
