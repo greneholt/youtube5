@@ -21,7 +21,7 @@ var newYouTube = function() {
 		}
 		else if (self.urlPatterns[1].test(url)) {
 			var data = parseUrlEncoded(flashvars);
-			self.startLoad(playerId, data.video_id, safari.extension.settings.youTubeAutoplay, null, event, data);
+			self.startLoad(playerId, data.video_id, safari.extension.settings.youtubeAutoplay, null, event, data);
 			return true;
 		}
 		else {
@@ -53,21 +53,25 @@ var newYouTube = function() {
 		45 - WebM 720p (HD)
 		*/
 
-		var youTubeFormats = { 5: '240p FLV', 18: '360p', 22: '720p', 37: '1080p', 38: 'Original (4k)' };
+		var youtubeFormats = { 5: '240p FLV', 18: '360p', 22: '720p', 37: '1080p', 38: 'Original (4k)' };
 
 		meta.formats = {};
-		((flashvars && flashvars.url_encoded_fmt_stream_map) || data.url_encoded_fmt_stream_map).split(',').forEach(function(format) {
+		(data.url_encoded_fmt_stream_map || (flashvars && flashvars.url_encoded_fmt_stream_map)).split(',').forEach(function(format) {
 			var tmp = parseUrlEncoded(format);
-			if (youTubeFormats[tmp.itag]) {
-				meta.formats[youTubeFormats[tmp.itag]] = tmp.url + "&signature=" + tmp.sig;
+			if (youtubeFormats[tmp.itag]) {
+				var url = tmp.url + '&title=' + encodeURIComponent(data.title);
+				if (tmp.sig) {
+					url += '&signature=' + tmp.sig;
+				}
+				meta.formats[youtubeFormats[tmp.itag]] = url;
 			}
 		});
 
-		var defaultFormat = safari.extension.settings.youTubeFormat;
+		var defaultFormat = safari.extension.settings.youtubeFormat;
 		if (meta.formats[defaultFormat]) {
 			meta.useFormat = defaultFormat;
 		} else {
-			for (format in meta.formats) {
+			for (var format in meta.formats) {
 				if (parseInt(format) < parseInt(defaultFormat) && (!meta.useFormat || parseInt(format) > parseInt(meta.useFormat))) {
 					meta.useFormat = format;
 				} else {
@@ -76,7 +80,13 @@ var newYouTube = function() {
 			}
 		}
 
-		if (data.thumbnail_url) {
+		if (data.iurlmaxres) {
+			meta.poster = data.iurlmaxres;
+		}
+		else if (data.iurlsd) {
+			meta.poster = data.iurlsd;
+		}
+		else if (data.thumbnail_url) {
 			meta.poster = data.thumbnail_url.replace(/default.jpg/, 'hqdefault.jpg');
 		}
 		meta.title = data.title;
@@ -90,7 +100,7 @@ var newYouTube = function() {
 
 	self.startLoad = function(playerId, videoId, autoplay, startTime, event, flashvars) {
 		var req = new XMLHttpRequest();
-		req.open('GET', 'https://www.youtube.com/get_video_info?&video_id=' + videoId + '&el=embedded&ps=default&eurl=http%3A%2F%2Fwww%2Egoogle%2Ecom%2F&hl=en_US', true);
+		req.open('GET', 'https://www.youtube.com/get_video_info?&video_id=' + videoId + '&eurl=http%3A%2F%2Fwww%2Eyoutube%2Ecom%2F', true);
 		req.onreadystatechange = function(ev) {
 			if (req.readyState === 4 && req.status === 200) {
 				var meta = self.processMeta(req.responseText, flashvars);

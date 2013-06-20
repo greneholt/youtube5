@@ -22,7 +22,7 @@
 		<key>DefaultValue</key>
 		<true/>
 		<key>Key</key>
-		<string>youTubeAutoplay</string>
+		<string>youtubeAutoplay</string>
 		<key>Title</key>
 		<string>Autoplay videos on YouTube.com?</string>
 		<key>Type</key>
@@ -32,7 +32,7 @@
 		<key>DefaultValue</key>
 		<string>720p</string>
 		<key>Key</key>
-		<string>youTubeFormat</string>
+		<string>youtubeFormat</string>
 		<key>Title</key>
 		<string>Default YouTube Format</string>
 		<key>Titles</key>

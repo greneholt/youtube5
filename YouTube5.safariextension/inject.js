@@ -1,9 +1,14 @@
 var players = {};
 
 document.addEventListener('beforeload', function(event) {
-	if (event.target.youtube5checked) return;
+	if (event.target.youtube5allowedToLoad) return;
 
-	event.target.youtube5checked = true;
+	if (event.target instanceof HTMLObjectElement || event.target instanceof HTMLEmbedElement) {
+		event.preventDefault();
+	}
+	else {
+		event.target.youtube5allowedToLoad = true;
+	}
 
 	/*
 	Some websites can have flash checking disabled by adding the following to the getRequestParameter function of swfobject.
