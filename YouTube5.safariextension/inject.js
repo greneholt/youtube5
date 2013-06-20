@@ -13,10 +13,15 @@ var getFlashvars = function(el) {
 document.addEventListener('beforeload', function(event) {
 	if (event.target.youtube5allowedToLoad) return;
 
+	var message = {};
+
 	if (event.target instanceof HTMLObjectElement || event.target instanceof HTMLEmbedElement) {
-		event.preventDefault();
+		message.type = 'plugin';
 	}
-	else if (!(event.target instanceof HTMLIFrameElement)) {
+	else if (event.target instanceof HTMLIFrameElement) {
+		message.type = 'iframe';
+	}
+	else {
 		event.target.youtube5allowedToLoad = true;
 		return;
 	}
@@ -27,10 +32,14 @@ document.addEventListener('beforeload', function(event) {
 	if(c=='detectflash')return'false';
 	*/
 
-	// for some reason the url doesn't stay in the event when its passed to the global page, so we have to set it as the message
-	var result = safari.self.tab.canLoad(event, event.url);
+	message.location = window.location.href;
+	message.url = event.url;
+	message.flashvars = getFlashvars(event.target);
 
-	if (result === 'video') {
+	// for some reason the url doesn't stay in the event when its passed to the global page, so we have to set it as the message
+	var result = safari.self.tab.canLoad(event, message);
+
+	if (result == 'video') {
 		// sometimes both <embed> and <object> will trigger a beforeload event, even after one of the two has been removed
 		if (!event.target.parentNode) return;
 
@@ -50,6 +59,9 @@ document.addEventListener('beforeload', function(event) {
 		players[playerId] = newPlayer(event.target, width, height);
 		var flashvars = getFlashvars(event.target);
 		safari.self.tab.dispatchMessage("loadVideo", { url: event.url, playerId: playerId, flashvars: flashvars });
+	}
+	else if (result == 'block') {
+		event.preventDefault();
 	}
 }, true);
 

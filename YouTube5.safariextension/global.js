@@ -61,9 +61,9 @@ var newProvider = function() {
 		return false;
 	};
 
-	self.canLoad = function(url) {
+	self.canLoad = function(message) {
 		return self.urlPatterns.some(function(pattern) {
-			return pattern.test(url);
+			return pattern.test(message.url);
 		});
 	};
 
@@ -75,14 +75,19 @@ var newProvider = function() {
 };
 
 var canLoad = function(event) {
-	var url = event.message;
+	var message = event.message;
 
-	providers.forEach(function(provider) {
-		if (provider.enabled() && provider.canLoad(url)) {
+	for (var i = 0; i < providers.length; i++) {
+		if (providers[i].enabled() && providers[i].canLoad(message)) {
 			event.message = 'video';
-			return true;
+			return;
 		}
-	});
+	}
+
+	if (shouldBlockPluginsOn(message.location)) {
+		event.message = 'block';
+		return;
+	}
 };
 
 var loadVideo = function(event) {
