@@ -110,8 +110,6 @@ var updateVolume = function(event) {
 };
 
 var updateMenu = function(event) {
-	console.log(event.target);
-
 	var url;
 
 	if (event.target instanceof SafariBrowserWindow) {

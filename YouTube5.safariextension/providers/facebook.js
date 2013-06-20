@@ -2,8 +2,14 @@ var newFacebook = function() {
 	var self = newProvider();
 
 	self.urlPatterns = [
-		/^https?:\/\/([a-z\-\.]+)?static\.ak\.facebook\.com\/rsrc.php\/v1\/y2\/r\/5l8_EVv_jyW\.swf/i
+		/\/rsrc.php\/.*\.swf/i
 	];
+
+	self.canLoad = function(message) {
+		return self.urlPatterns.some(function(pattern) {
+			return pattern.test(message.url) && message.flashvars.indexOf('thumbnail_src') !== -1;
+		});
+	};
 
 	self.enabled = function() {
 		return safari.extension.settings.enableFacebook;
@@ -21,29 +27,27 @@ var newFacebook = function() {
 	self.processMeta = function(playerId, data, event) {
 		var meta = {};
 
+		var params = JSON.parse(data.params);
+		var video_data = params.video_data[0];
+
 		meta.formats = {};
-		if (data.highqual_src) {
-			meta.formats['High'] = data.highqual_src;
-			meta.formats['Low'] = data.lowqual_src;
-		} else {
-			meta.formats['Low'] = data.video_src;
+		if (video_data.hd_src) {
+			meta.formats['HD'] = video_data.hd_src;
 		}
+		meta.formats['SD'] = video_data.sd_src;
 
 		var defaultFormat = safari.extension.settings.facebookFormat;
 		if (meta.formats[defaultFormat]) {
 			meta.useFormat = defaultFormat;
 		} else {
-			meta.useFormat = 'Low';
+			meta.useFormat = 'SD';
 		}
 
-
-		meta.poster = data.thumb_url;
-		meta.title = data.video_title;
-		meta.link = 'https://www.facebook.com/video/video.php?v=' + data.video_id;
-		meta.author = data.video_owner_name;
-		meta.authorLink = data.video_owner_href;
+		meta.title = 'Facebook video';
+		meta.poster = video_data.thumbnail_src;;
+		meta.link = params.permalink_url;
 		meta.from = 'Facebook';
-		meta.autoplay = false;
+		meta.autoplay = params.autoplay;
 
 		return meta;
 	};
