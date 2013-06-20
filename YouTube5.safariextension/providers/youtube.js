@@ -7,7 +7,7 @@ var newYouTube = function() {
 	];
 
 	self.enabled = function() {
-		return safari.extension.settings.enableYouTube;
+		return safari.extension.settings.enableYoutube;
 	};
 
 	self.loadVideo = function(url, playerId, flashvars, event) {

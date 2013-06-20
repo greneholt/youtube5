@@ -17,6 +17,39 @@ var injectVideo = function(event, playerId, meta) {
 	event.target.page.dispatchMessage("injectVideo", { playerId: playerId, meta: meta });
 };
 
+var getDomain = function(url) {
+	var match = url.match(/https?:\/\/(?:www.)?([a-z0-9\-.]+)/i);
+	if (match) {
+		return match[1];
+	}
+	else {
+		return '';
+	}
+};
+
+var commaListContains = function(list, needle) {
+	list = list.split(',');
+	for (var i = 0; i < list.length; i++) {
+		if (list[i].trim() == needle) {
+			return true;
+		}
+	}
+	return false;
+};
+
+var shouldBlockPluginsOn = function(url) {
+	var domain = getDomain(url);
+
+	if (safari.extension.settings.pluginBlockingMethod == 'whitelist') {
+		var list = safari.extension.settings.whitelistDomains || '';
+		return !commaListContains(list, domain);
+	}
+	else {
+		var list = safari.extension.settings.blacklistDomains || '';
+		return commaListContains(list, domain);
+	}
+};
+
 var providers = [];
 
 var newProvider = function() {
@@ -71,7 +104,34 @@ var updateVolume = function(event) {
 	safari.extension.settings.volume = event.message;
 };
 
-safari.application.addEventListener("message", function(event) {
+var updateMenu = function(event) {
+	console.log(event.target);
+
+	var url;
+
+	if (event.target instanceof SafariBrowserWindow) {
+		url = event.target.activeTab.url;
+	}
+	else if (event.target instanceof SafariBrowserTab) {
+		url = event.target.url;
+	}
+	else {
+		return; // this should never happen
+	}
+
+	var blockPlugins = shouldBlockPluginsOn(url);
+
+	safari.extension.menus.youtube5.menuItems.forEach(function(item) {
+		if (item.identifier == 'blockDomain') {
+			item.checkedState = blockPlugins ? 1 : 0;
+		}
+	});
+};
+
+safari.application.addEventListener('activate', updateMenu, true);
+safari.application.addEventListener('navigate', updateMenu, true);
+
+safari.application.addEventListener('message', function(event) {
 	if (event.name == 'canLoad') {
 		canLoad(event);
 	} else if (event.name == 'loadVideo') {

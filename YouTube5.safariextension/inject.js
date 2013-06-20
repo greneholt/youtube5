@@ -1,13 +1,24 @@
 var players = {};
 
+var getFlashvars = function(el) {
+	var flashvars = el.getAttribute('flashvars');
+	if (!flashvars) {
+		if (flashvars = el.querySelector('param[name=flashvars]')) {
+			flashvars = flashvars.getAttribute('value');
+		}
+	}
+	return flashvars;
+}
+
 document.addEventListener('beforeload', function(event) {
 	if (event.target.youtube5allowedToLoad) return;
 
 	if (event.target instanceof HTMLObjectElement || event.target instanceof HTMLEmbedElement) {
 		event.preventDefault();
 	}
-	else {
+	else if (!(event.target instanceof HTMLIFrameElement)) {
 		event.target.youtube5allowedToLoad = true;
+		return;
 	}
 
 	/*
@@ -37,12 +48,7 @@ document.addEventListener('beforeload', function(event) {
 		}
 
 		players[playerId] = newPlayer(event.target, width, height);
-		var flashvars = event.target.getAttribute('flashvars');
-		if (!flashvars) {
-			if (flashvars = event.target.querySelector('param[name=flashvars]')) {
-				flashvars = flashvars.getAttribute('value');
-			}
-		}
+		var flashvars = getFlashvars(event.target);
 		safari.self.tab.dispatchMessage("loadVideo", { url: event.url, playerId: playerId, flashvars: flashvars });
 	}
 }, true);
