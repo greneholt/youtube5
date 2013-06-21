@@ -84,7 +84,7 @@ var canLoad = function(event) {
 		}
 	}
 
-	if (shouldBlockPluginsOn(message.location)) {
+	if (message.type == 'plugin' && shouldBlockPluginsOn(message.location)) {
 		event.message = 'block';
 		return;
 	}
