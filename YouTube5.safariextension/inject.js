@@ -22,8 +22,7 @@ document.addEventListener('beforeload', function(event) {
 		message.type = 'iframe';
 	}
 	else {
-		event.target.youtube5allowedToLoad = true;
-		return;
+		message.type = 'resource';
 	}
 
 	/*
@@ -62,6 +61,9 @@ document.addEventListener('beforeload', function(event) {
 	}
 	else if (result == 'block') {
 		event.preventDefault();
+	}
+	else if (result == 'allow') {
+		event.target.youtube5allowedToLoad = true;
 	}
 }, true);
 
