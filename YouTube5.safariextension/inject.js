@@ -56,8 +56,18 @@ document.addEventListener('beforeload', function(event) {
 			height = event.target.height;
 		}
 
-		players[playerId] = newPlayer(event.target, width, height);
+		event.target.youtube5allowedToLoad = true;
+
 		var flashvars = getFlashvars(event.target);
+
+		var replace = event.target;
+
+		// little hack to get around YouTube's flash detection. This moves the YouTube5 player one node up the dom tree, breaking their code and preventing it from being removed.
+		if (replace.parentNode.id === 'player-api') {
+			replace = replace.parentNode;
+		}
+
+		players[playerId] = newPlayer(replace, width, height);
 		safari.self.tab.dispatchMessage("loadVideo", { url: event.url, playerId: playerId, flashvars: flashvars });
 	}
 	else if (result == 'block') {
