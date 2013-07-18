@@ -29,6 +29,41 @@ var newYouTube = function() {
 		}
 	};
 
+	self.signatureDecipher = {
+		timestamp: 15902,
+
+		clone: function(a, b) {
+		    return (a.slice(b));
+		},
+
+		decipher: function(s) {
+		    var t = s.split("");
+		    t = this.clone(t, 2);
+		    t = this.reverse(t);
+		    t = this.clone(t, 3);
+		    t = this.swap(t, 9);
+		    t = this.clone(t, 3);
+		    t = this.swap(t, 43);
+		    t = this.clone(t, 3);
+		    t = this.reverse(t);
+		    t = this.swap(t, 23);
+		    return (t.join(""));
+		},
+
+		swap: function(a, b) {
+		    var t1 = a[0];
+		    var t2 = a[(b % a.length)];
+		    a[0] = t2;
+		    a[b] = t1;
+		    return (a);
+		},
+
+		reverse: function(a) {
+		    a.reverse();
+		    return (a);
+		}
+	};
+
 	self.processMeta = function(text, flashvars) {
 		var meta = {};
 
@@ -61,7 +96,10 @@ var newYouTube = function() {
 			if (youtubeFormats[tmp.itag]) {
 				var url = tmp.url + '&title=' + encodeURIComponent(data.title);
 				if (tmp.sig) {
-					url += '&signature=' + tmp.sig;
+					url += '&signature=' + encodeURIComponent(tmp.sig);
+				}
+				else if (tmp.s) {
+					url += '&signature=' + encodeURIComponent(self.signatureDecipher.decipher(tmp.s));
 				}
 				meta.formats[youtubeFormats[tmp.itag]] = url;
 			}
@@ -100,7 +138,7 @@ var newYouTube = function() {
 
 	self.startLoad = function(playerId, videoId, autoplay, startTime, event, flashvars) {
 		var req = new XMLHttpRequest();
-		req.open('GET', 'https://www.youtube.com/get_video_info?&video_id=' + videoId + '&eurl=http%3A%2F%2Fwww%2Eyoutube%2Ecom%2F', true);
+		req.open('GET', 'https://www.youtube.com/get_video_info?&video_id=' + videoId + '&eurl=http%3A%2F%2Fwww%2Eyoutube%2Ecom%2F&asv=3&sts=' + self.signatureDecipher.timestamp, true);
 		req.onreadystatechange = function(ev) {
 			if (req.readyState === 4 && req.status === 200) {
 				var meta = self.processMeta(req.responseText, flashvars);
