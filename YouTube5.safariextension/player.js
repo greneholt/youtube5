@@ -87,7 +87,19 @@ var newPlayer = function(replace, width, height) {
 	self.useOriginal.innerHTML = '&crarr; Use original player';
 	self.useOriginal.addEventListener('click', self.revert, false);
 
-	replace.parentNode.replaceChild(self.placeholder, replace);
+	var originalParent = replace.parentNode;
+	if (originalParent && !originalParent.getAttribute("data-youtube5-cloned")) {
+		var clonedParent = originalParent.cloneNode(true);
+		originalParent.id = "youtube5-replace-parentNode";
+
+		clonedParent.setAttribute("data-youtube5-cloned", true);
+		clonedParent.style.display = "none";
+
+		// Insert clonedParent after originalParent
+		originalParent.parentNode.insertBefore(clonedParent, originalParent.nextSibling);
+
+		originalParent.replaceChild(self.placeholder, replace);
+	}
 
 	self.updateHoverTimeout = function() {
 		if (!self.hovered) {

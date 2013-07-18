@@ -6,6 +6,10 @@ var newYouTube = function() {
 		/^https?:\/\/s.ytimg.com\/yts?\/swf(?:bin)?\/watch/i
 	];
 
+	self.urlPatternsToBlock = [
+		/^http:\/\/s.ytimg.com\/yts\/jsbin\/html5player-.+\.js$/
+	];
+
 	self.enabled = function() {
 		return safari.extension.settings.enableYoutube;
 	};
