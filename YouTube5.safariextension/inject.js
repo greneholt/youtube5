@@ -63,7 +63,7 @@ document.addEventListener('beforeload', function(event) {
 		var replace = event.target;
 
 		// little hack to get around YouTube's flash detection. This moves the YouTube5 player one node up the dom tree, breaking their code and preventing it from being removed.
-		if (replace.parentNode.id === 'player-api') {
+		if (replace.parentNode.id === 'player-api' || replace.parentNode.id === 'player-api-legacy') {
 			replace = replace.parentNode;
 		}
 
