@@ -1,13 +1,13 @@
 var newYouTube = function() {
 	var self = newProvider();
 
-	self.urlPatterns = [
+	self.videoUrlPatterns = [
 		/^https?:\/\/(?:www\.)?youtube(?:\-nocookie)?\.com\/(?:v|embed)\/([^\?&]+)(?:[\?&](.+))?/i,
 		/^https?:\/\/s.ytimg.com\/yts?\/swf(?:bin)?\/watch/i
 	];
 
-	self.urlPatternsToBlock = [
-		/^https?:\/\/s.ytimg.com\/yts\/jsbin\/html5player-.+\.js$/
+	self.blockScriptUrlPatterns = [
+		/^https?:\/\/s.ytimg.com\/yts?\/jsbin\/html5player-.+\.js$/
 	];
 
 	self.enabled = function() {
@@ -15,7 +15,7 @@ var newYouTube = function() {
 	};
 
 	self.loadVideo = function(url, playerId, flashvars, event) {
-		var match = url.match(self.urlPatterns[0]);
+		var match = url.match(self.videoUrlPatterns[0]);
 
 		if (match) {
 			var videoId = match[1];
@@ -23,7 +23,7 @@ var newYouTube = function() {
 			self.startLoad(playerId, videoId, params.autoplay && params.autoplay != '0', getStartTime(params), event, flashvars);
 			return true;
 		}
-		else if (self.urlPatterns[1].test(url)) {
+		else if (self.videoUrlPatterns[1].test(url)) {
 			var data = parseUrlEncoded(flashvars);
 			self.startLoad(playerId, data.video_id, safari.extension.settings.youtubeAutoplay, null, event, data);
 			return true;

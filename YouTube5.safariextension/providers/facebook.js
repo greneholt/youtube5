@@ -1,12 +1,12 @@
 var newFacebook = function() {
 	var self = newProvider();
 
-	self.urlPatterns = [
+	self.videoUrlPatterns = [
 		/\/rsrc.php\/.*\.swf/i
 	];
 
-	self.canLoad = function(message) {
-		return self.urlPatterns.some(function(pattern) {
+	self.canLoadVideo = function(message) {
+		return self.videoUrlPatterns.some(function(pattern) {
 			return pattern.test(message.url) && message.flashvars.indexOf('thumbnail_src') !== -1;
 		});
 	};
@@ -16,7 +16,7 @@ var newFacebook = function() {
 	};
 
 	self.loadVideo = function(url, playerId, flashvars, event) {
-		if (self.urlPatterns[0].test(url)) {
+		if (self.videoUrlPatterns[0].test(url)) {
 			var data = parseUrlEncoded(flashvars);
 			var meta = self.processMeta(playerId, data, event);
 

@@ -21,8 +21,12 @@ document.addEventListener('beforeload', function(event) {
 	else if (event.target instanceof HTMLIFrameElement) {
 		message.type = 'iframe';
 	}
+	else if (event.target instanceof HTMLScriptElement) {
+		message.type = 'script';
+	}
 	else {
-		message.type = 'resource';
+		event.target.youtube5allowedToLoad = true;
+		return;
 	}
 
 	/*
