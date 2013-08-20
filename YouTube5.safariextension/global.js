@@ -84,7 +84,7 @@ var canLoad = function(event) {
 		}
 	}
 
-	if (message.type == 'plugin' && shouldBlockPluginsOn(message.location)) {
+	if (message.type == 'plugin' && shouldBlockPluginsOn(message.location) && message.location.indexOf('.pdf') === -1) {
 		event.message = 'block';
 		return;
 	}
