@@ -39,3 +39,9 @@ var getStartTime = function(params) {
 		return null;
 	}
 };
+
+var somePattern = function(message, patterns) {
+	return patterns.some(function (pattern) {
+		return pattern.test(message.url);
+	});
+};

@@ -1,7 +1,7 @@
 var newVimeo = function() {
 	var self = newProvider();
 
-	self.urlPatterns = [
+	self.videoUrlPatterns = [
 		/^https?:\/\/assets\.vimeo\.com\/flash\/moog/i,
 		/vimeo\.com\/moogaloop\.swf?.*clip_id=(\d+)/i,
 		/vimeo.*\/moogaloop/i,
@@ -15,12 +15,12 @@ var newVimeo = function() {
 	self.loadVideo = function(url, playerId, flashvars, event) {
 		url = event.message.url;
 
-		if ((m = url.match(self.urlPatterns[1])) || (m = url.match(self.urlPatterns[3]))) {
+		if ((m = url.match(self.videoUrlPatterns[1])) || (m = url.match(self.videoUrlPatterns[3]))) {
 			var clipId = m[1];
 			self.startLoad(playerId, clipId, false, event);
 			return true;
 		}
-		else if (self.urlPatterns[0].test(url) || self.urlPatterns[2].test(url)) {
+		else if (self.videoUrlPatterns[0].test(url) || self.videoUrlPatterns[2].test(url)) {
 			var data = parseUrlEncoded(flashvars);
 			self.startLoad(playerId, data.clip_id, false, event);
 			return true;

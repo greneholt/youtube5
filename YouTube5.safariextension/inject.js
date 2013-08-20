@@ -21,6 +21,9 @@ document.addEventListener('beforeload', function(event) {
 	else if (event.target instanceof HTMLIFrameElement) {
 		message.type = 'iframe';
 	}
+	else if (event.target instanceof HTMLScriptElement) {
+		message.type = 'script';
+	}
 	else {
 		event.target.youtube5allowedToLoad = true;
 		return;
@@ -72,6 +75,9 @@ document.addEventListener('beforeload', function(event) {
 	}
 	else if (result == 'block') {
 		event.preventDefault();
+	}
+	else if (result == 'allow') {
+		event.target.youtube5allowedToLoad = true;
 	}
 }, true);
 

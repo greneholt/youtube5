@@ -55,16 +55,19 @@ var providers = [];
 var newProvider = function() {
 	var self = {};
 
-	self.urlPatterns = [];
+	self.videoUrlPatterns = [];
+	self.blockScriptUrlPatterns = [];
 
 	self.enabled = function() {
 		return false;
 	};
 
-	self.canLoad = function(message) {
-		return self.urlPatterns.some(function(pattern) {
-			return pattern.test(message.url);
-		});
+	self.canLoadVideo = function(message) {
+		return somePattern(message, self.videoUrlPatterns);
+	};
+
+	self.shouldBlockScript = function(message) {
+		return somePattern(message, self.blockScriptUrlPatterns);
 	};
 
 	self.loadVideo = function(url, playerId, flashvars, event) {
@@ -78,7 +81,14 @@ var canLoad = function(event) {
 	var message = event.message;
 
 	for (var i = 0; i < providers.length; i++) {
-		if (providers[i].enabled() && providers[i].canLoad(message)) {
+		if (!providers[i].enabled())
+			continue;
+
+		if (message.type == 'script' && providers[i].shouldBlockScript(message)) {
+			event.message = 'block';
+			return;
+		}
+		else if (providers[i].canLoadVideo(message)) {
 			event.message = 'video';
 			return;
 		}
@@ -88,6 +98,8 @@ var canLoad = function(event) {
 		event.message = 'block';
 		return;
 	}
+
+	event.message = 'allow';
 };
 
 var loadVideo = function(event) {
