@@ -56,15 +56,24 @@ var newProvider = function() {
 	var self = {};
 
 	self.urlPatterns = [];
+	self.urlPatternsToBlock = [];
 
 	self.enabled = function() {
 		return false;
 	};
 
-	self.canLoad = function(message) {
-		return self.urlPatterns.some(function(pattern) {
+	function somePattern(message, patterns) {
+		return patterns.some(function (pattern) {
 			return pattern.test(message.url);
 		});
+	}
+
+	self.canLoad = function(message) {
+		return somePattern(message, self.urlPatterns);
+	};
+
+	self.shouldBlock = function(message) {
+		return somePattern(message, self.urlPatternsToBlock);
 	};
 
 	self.loadVideo = function(url, playerId, flashvars, event) {
@@ -78,7 +87,14 @@ var canLoad = function(event) {
 	var message = event.message;
 
 	for (var i = 0; i < providers.length; i++) {
-		if (providers[i].enabled() && providers[i].canLoad(message)) {
+		if (!providers[i].enabled())
+			continue;
+
+		if (message.type == 'resource' && providers[i].shouldBlock(message)) {
+			event.message = 'block';
+			return;
+		}
+		else if (providers[i].canLoad(message)) {
 			event.message = 'video';
 			return;
 		}
@@ -88,6 +104,8 @@ var canLoad = function(event) {
 		event.message = 'block';
 		return;
 	}
+
+	event.message = 'allow';
 };
 
 var loadVideo = function(event) {
