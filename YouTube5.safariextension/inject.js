@@ -101,3 +101,12 @@ safari.self.addEventListener("message", function(event) {
 		injectVideo(event);
 	}
 }, true);
+
+// Make YouTube load a new page when navigating to a suggested video
+document.addEventListener("DOMContentLoaded", function(event) {
+	if (getDomain(window.location.href) === "youtube.com") {
+		var script = document.createElement("script");
+		script.text = "history.pushState = null;";
+		document.body.appendChild(script);
+	}
+}, true);
