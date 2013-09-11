@@ -62,6 +62,10 @@
 	<dict>
 		<key>Scripts</key>
 		<dict>
+			<key>End</key>
+			<array>
+				<string>end.js</string>
+			</array>
 			<key>Start</key>
 			<array>
 				<string>util.js</string>
