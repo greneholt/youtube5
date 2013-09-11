@@ -132,47 +132,5 @@
 		<key>Key</key>
 		<string>volume</string>
 	</dict>
-	<dict>
-		<key>Title</key>
-		<string>Plugin Blocking</string>
-		<key>Type</key>
-		<string>Group</string>
-	</dict>
-	<dict>
-		<key>DefaultValue</key>
-		<string>blacklist</string>
-		<key>Key</key>
-		<string>pluginBlockingMethod</string>
-		<key>Title</key>
-		<string>Blocking method</string>
-		<key>Titles</key>
-		<array>
-			<string>Blacklist</string>
-			<string>Whitelist</string>
-		</array>
-		<key>Type</key>
-		<string>PopUpButton</string>
-		<key>Values</key>
-		<array>
-			<string>blacklist</string>
-			<string>whitelist</string>
-		</array>
-	</dict>
-	<dict>
-		<key>Key</key>
-		<string>blacklistDomains</string>
-		<key>Title</key>
-		<string>Blacklisted domains</string>
-		<key>Type</key>
-		<string>TextField</string>
-	</dict>
-	<dict>
-		<key>Key</key>
-		<string>whitelistDomains</string>
-		<key>Title</key>
-		<string>Whitelist domains</string>
-		<key>Type</key>
-		<string>TextField</string>
-	</dict>
 </array>
 </plist>
