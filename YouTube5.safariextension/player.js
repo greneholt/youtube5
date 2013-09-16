@@ -67,6 +67,7 @@ var newPlayer = function(replace, width, height) {
 	self.placeholder.className = 'youtube5placeholder';
 	self.placeholder.style.width = self.width + 'px';
 	self.placeholder.style.height = self.height + 'px';
+	self.placeholder.setAttribute('data-clean', 'yes'); // prevent Feedly from stripping style attributes
 
 	self.container = create('div', self.placeholder, 'youtube5container');
 	self.container.style.width = self.width + 'px';
