@@ -40,7 +40,7 @@ document.addEventListener('beforeload', function(event) {
 	message.flashvars = getFlashvars(event.target);
 
 	// for some reason the url doesn't stay in the event when its passed to the global page, so we have to set it as the message
-	var result = safari.self.tab.canLoad(event, message);
+	var result = canLoad(event, message);
 
 	if (result == 'video') {
 		// sometimes both <embed> and <object> will trigger a beforeload event, even after one of the two has been removed
@@ -71,7 +71,7 @@ document.addEventListener('beforeload', function(event) {
 		}
 
 		players[playerId] = newPlayer(replace, width, height);
-		safari.self.tab.dispatchMessage("loadVideo", { url: event.url, playerId: playerId, flashvars: flashvars });
+		loadVideo({ url: event.url, playerId: playerId, flashvars: flashvars });
 	}
 	else if (result == 'block') {
 		event.preventDefault();
@@ -81,13 +81,7 @@ document.addEventListener('beforeload', function(event) {
 	}
 }, true);
 
-var updateVolume = function(volume) {
-	safari.self.tab.dispatchMessage("updateVolume", volume);
-};
-
-var injectVideo = function(event) {
-	var playerId = event.message.playerId;
-	var meta = event.message.meta;
+var injectVideo = function(playerId, meta) {
 	meta.volumeCallback = updateVolume;
 
 	// these messages are sent to iframes as well, so check if the requested video actually belongs to this frame
@@ -95,12 +89,6 @@ var injectVideo = function(event) {
 		players[playerId].injectVideo(meta);
 	}
 };
-
-safari.self.addEventListener("message", function(event) {
-	if (event.name === "injectVideo") {
-		injectVideo(event);
-	}
-}, true);
 
 // Make YouTube load a new page when navigating to a suggested video
 document.addEventListener("DOMContentLoaded", function(event) {

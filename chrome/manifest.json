@@ -1,0 +1,29 @@
+{
+  // Required
+  "manifest_version": 2,
+  "name": "YouTube5",
+  "version": "1.0",
+
+  // Recommended
+  "description": "Yup",
+  //"icons": {...},
+
+  "author": "Connor McKay",
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "css": ["player.css"],
+      "js": ["inject.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "homepage_url": "http://www.verticalforest.com/youtube5-extension/",
+  "permissions": [
+    "storage"
+  ],
+  //"options_page": "aFile.html",
+  "update_url": "http://path/to/updateInfo.xml",
+  "web_accessible_resources": []
+}
