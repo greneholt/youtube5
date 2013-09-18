@@ -5,7 +5,7 @@ EOL = '\n'
 fs = require 'fs'
 coffee = require 'coffee-script'
 async = require 'async'
-wrtench = require 'wrench'
+wrench = require 'wrench'
 
 concat = (opts) ->
   fileList = opts.src
@@ -25,11 +25,18 @@ copy = (src, dest) ->
 
 concat
   src: [
-    'common/util.js'
+    'src/util.js'
     'safari/inject.coffee'
-    'common/player.js'
-    'common/inject.js'
+    'src/player.js'
+    'src/inject.js'
   ]
   dest: 'YouTube5.safariextension/inject.js'
 
-copy 'common/global.js', 'YouTube5.safariextension/global.js'
+concat
+  src: [
+    'src/util.js'
+    'src/global.js'
+  ]
+  dest: 'YouTube5.safariextension/global.js'
+
+wrench.copyDirSyncRecursive 'assets', 'YouTube5.safariextension'
