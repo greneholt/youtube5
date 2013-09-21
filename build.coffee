@@ -16,21 +16,10 @@ if task == 'safari'
     (cb) ->
       async.parallel [
         (cb) ->
-          b.concat [
-              'src/util.js'
-              'safari/inject.coffee'
-              'src/player.js'
-              'src/inject.js'
-            ]
-          , 'build/YouTube5.safariextension/inject.js', cb
+          b.concat '{src/{util,player,inject}.js,safari/inject.coffee}', 'build/YouTube5.safariextension/inject.js', cb
 
         (cb) ->
-          b.concat [
-            'src/util.js'
-            'src/main.js'
-            'safari/main.coffee'
-          ]
-          , 'build/YouTube5.safariextension/main.js', cb
+          b.concat '{src/{util,main,providers/*}.js,safari/main.coffee}', 'build/YouTube5.safariextension/main.js', cb
 
         (cb) ->
           b.globCopy 'assets/*', 'build/YouTube5.safariextension', cb

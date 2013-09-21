@@ -10,18 +10,20 @@ path = require 'path'
 
 module.exports = utils = {}
 
-utils.concat = (fileList, dest, callback) ->
-  async.map fileList, (filePath, cb) ->
-    fs.readFile filePath, FILE_ENCODING, (err, src) ->
-      return cb err if err
-      src = coffee.compile src, {bare: yes} if coffee.helpers.isCoffee(filePath)
-      cb null, src
-  , (err, fileContents) ->
+utils.concat = (pattern, dest, callback) ->
+  glob pattern, (err, matches) ->
     return callback err if err
-    fs.writeFile dest, fileContents.join(EOL), FILE_ENCODING, (err) ->
+    async.map matches, (filePath, cb) ->
+      fs.readFile filePath, FILE_ENCODING, (err, src) ->
+        return cb err if err
+        src = coffee.compile src, {bare: yes} if coffee.helpers.isCoffee(filePath)
+        cb null, src
+    , (err, fileContents) ->
       return callback err if err
-      console.log "Built #{dest}"
-      callback()
+      fs.writeFile dest, fileContents.join(EOL), FILE_ENCODING, (err) ->
+        return callback err if err
+        console.log "Concat #{matches.join(', ')} -> #{dest}"
+        callback()
 
 utils.globCopy = (pattern, destDir, callback) ->
   glob pattern, (err, matches) ->
