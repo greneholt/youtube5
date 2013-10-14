@@ -16,10 +16,10 @@ if task == 'safari'
     (cb) ->
       async.parallel [
         (cb) ->
-          b.concat '{src/{util,player,inject}.js,safari/inject.coffee}', 'build/YouTube5.safariextension/inject.js', cb
+          b.compile '{src/{util,player,inject}.coffee,safari/inject.coffee}', 'build/YouTube5.safariextension/inject.js', cb
 
         (cb) ->
-          b.concat '{src/{util,main,providers/*}.js,safari/main.coffee}', 'build/YouTube5.safariextension/main.js', cb
+          b.compile '{src/{util,main,providers/*}.coffee,safari/main.coffee}', 'build/YouTube5.safariextension/main.js', cb
 
         (cb) ->
           b.globCopy 'assets/*', 'build/YouTube5.safariextension', cb
@@ -31,7 +31,7 @@ if task == 'safari'
 else if task == 'safariback'
   b.globCopy 'build/YouTube5.safariextension/*.plist', 'safari', callback
 else if task == 'chrome'
-  b.concat [
+  b.compile [
       'src/util.js'
       'chrome/inject.coffee'
       'src/player.js'
@@ -39,7 +39,7 @@ else if task == 'chrome'
     ]
   , 'build/chrome/inject.js', callback
 
-  b.concat [
+  b.compile [
     'src/util.js'
     'src/main.js'
     'chrome/main.coffee'
