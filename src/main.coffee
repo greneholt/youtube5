@@ -10,6 +10,10 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+# This file expects the following functions to be defined:
+#   getPreference(name)
+#   setPreference(name, value)
+
 providers = []
 newProvider = ->
   self = {}
@@ -29,7 +33,7 @@ newProvider = ->
 
   self
 
-canLoad = (requestInfo) ->
+getResponseForRequest = (requestInfo) ->
   for provider in providers when provider.enabled()
     if requestInfo.type is 'script' and provider.shouldBlockScript(requestInfo)
       return 'block'

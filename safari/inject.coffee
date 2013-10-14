@@ -1,12 +1,12 @@
-canLoad = (event, requestInfo) ->
+checkResponseForRequest = (event, requestInfo) ->
   safari.self.tab.canLoad event, requestInfo
 
-loadVideo = (playerId, requestInfo) ->
-  safari.self.tab.dispatchMessage "loadVideo",
+loadPlayer = (playerId, requestInfo) ->
+  safari.self.tab.dispatchMessage "loadPlayer",
     playerId: playerId
     requestInfo: requestInfo
 
-updateVolume = (volume) ->
+updateVolumeCallback = (volume) ->
   safari.self.tab.dispatchMessage "updateVolume", volume
 
 safari.self.addEventListener "message", (event) ->

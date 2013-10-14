@@ -1,8 +1,19 @@
+# This file expects the following functions to be defined:
+#   checkResponseForRequest(event, requestInfo) - returns a string response to the request
+#   loadPlayer(playerId, requestInfo) - initiate the process of loading the video
+#   updateVolumeCallback(level) - update the volume preference to the specified value
+
 players = {}
+
 getFlashvars = (el) ->
   flashvars = el.getAttribute("flashvars")
   flashvars = flashvars.getAttribute("value")  if flashvars = el.querySelector("param[name=flashvars]")  unless flashvars
   flashvars
+
+injectVideo = (playerId, meta) ->
+  meta.volumeCallback = updateVolumeCallback
+  # these messages are sent to iframes as well, so check if the requested video actually belongs to this frame
+  players[playerId].injectVideo meta if players[playerId]
 
 document.addEventListener "beforeload", ((event) ->
   return if event.target.youtube5allowedToLoad
@@ -26,11 +37,12 @@ document.addEventListener "beforeload", ((event) ->
   requestInfo.url = event.url
   requestInfo.flashvars = getFlashvars(event.target)
 
-  result = canLoad event, requestInfo
+  result = checkResponseForRequest event, requestInfo
 
   if result is "video"
     # sometimes both <embed> and <object> will trigger a beforeload event, even after one of the two has been removed
-    return  unless event.target.parentNode
+    return unless event.target.parentNode
+
     event.preventDefault()
     playerId = Math.round(Math.random() * 1000000000)
 
@@ -46,19 +58,15 @@ document.addEventListener "beforeload", ((event) ->
 
     # little hack to get around YouTube's flash detection. This moves the YouTube5 player one node up the dom tree, breaking their code and preventing it from being removed.
     replace = replace.parentNode  if replace.parentNode.id is "player-api" or replace.parentNode.id is "player-api-legacy"
+
     players[playerId] = newPlayer(replace, width, height)
-    loadVideo playerId, requestInfo
+    loadPlayer playerId, requestInfo
 
   else if result is "block"
     event.preventDefault()
-  else event.target.youtube5allowedToLoad = true  if result is "allow"
+  else if result is "allow"
+    event.target.youtube5allowedToLoad = true
 ), true
-injectVideo = (playerId, meta) ->
-  meta.volumeCallback = updateVolume
-
-  # these messages are sent to iframes as well, so check if the requested video actually belongs to this frame
-  players[playerId].injectVideo meta  if players[playerId]
-
 
 # Make YouTube load a new page when navigating to a suggested video
 document.addEventListener "DOMContentLoaded", ((event) ->

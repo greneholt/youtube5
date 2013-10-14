@@ -1,13 +1,16 @@
-canLoad = (event, message) ->
-  safari.self.tab.canLoad event, message
+getPreference = (name) ->
+  100
 
-loadVideo = (options) ->
-  safari.self.tab.dispatchMessage "loadVideo", options
+setPreference = (name, value) ->
+  null
 
-updateVolume = (volume) ->
-  safari.self.tab.dispatchMessage "updateVolume", volume
+checkResponseForRequest = (event, requestInfo) ->
+  getResponseForRequest requestInfo
 
-safari.self.addEventListener "message", (event) ->
-  if event.name == "injectVideo"
-    injectVideo event.message.playerId, event.message.meta
-, true
+loadPlayer = (playerId, requestInfo) ->
+  loadVideo requestInfo, (meta) ->
+    meta.volume = 100
+    injectVideo playerId, meta
+
+updateVolumeCallback = (volume) ->
+  updateVolume volume
