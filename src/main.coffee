@@ -16,7 +16,6 @@ injectVideo = (event, playerId, meta) ->
     playerId: playerId
     meta: meta
 
-
 providers = []
 newProvider = ->
   self = {}
@@ -36,16 +35,13 @@ newProvider = ->
 
   self
 
-canLoad = (event) ->
-  message = event.message
+canLoad = (requestInfo) ->
   for provider in providers when provider.enabled()
-    if message.type is "script" and provider.shouldBlockScript(message)
-      event.message = "block"
-      return
-    else if (message.type is "plugin" or message.type is "iframe") and provider.canLoadVideo(message)
-      event.message = "video"
-      return
-  event.message = "allow"
+    if requestInfo.type is 'script' and provider.shouldBlockScript(requestInfo)
+      return 'block'
+    else if (requestInfo.type is 'plugin' or requestInfo.type is 'iframe') and provider.canLoadVideo(requestInfo)
+      return 'video'
+  return 'allow'
 
 loadVideo = (event) ->
   url = event.message.url
@@ -58,13 +54,5 @@ loadVideo = (event) ->
     meta = error: "Unknown video URL<br />" + url
     injectVideo event, playerId, meta
 
-updateVolume = (event) ->
-  setPreference 'volume', event.message
-
-safari.application.addEventListener "message", ((event) ->
-  if event.name is "canLoad"
-    canLoad event
-  else if event.name is "loadVideo"
-    loadVideo event
-  else updateVolume event  if event.name is "updateVolume"
-), true
+updateVolume = (level) ->
+  setPreference 'volume', level
