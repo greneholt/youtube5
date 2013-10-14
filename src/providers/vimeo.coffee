@@ -9,13 +9,13 @@ newVimeo = ->
   self.enabled = ->
     getPreference('enableVimeo')
 
-  self.loadVideo = (url, flashvars, callback) ->
-    if (m = url.match(self.videoUrlPatterns[1])) or (m = url.match(self.videoUrlPatterns[3]))
+  self.loadVideo = (requestInfo, callback) ->
+    if (m = requestInfo.url.match(self.videoUrlPatterns[1])) or (m = requestInfo.url.match(self.videoUrlPatterns[3]))
       clipId = m[1]
       self.startLoad clipId, false, callback
       true
-    else if self.videoUrlPatterns[0].test(url) or self.videoUrlPatterns[2].test(url)
-      data = parseUrlEncoded(flashvars)
+    else if self.videoUrlPatterns[0].test(requestInfo.url) or self.videoUrlPatterns[2].test(requestInfo.url)
+      data = parseUrlEncoded(requestInfo.flashvars)
       self.startLoad data.clip_id, false, callback
       true
     else

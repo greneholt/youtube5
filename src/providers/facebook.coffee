@@ -8,9 +8,9 @@ newFacebook = ->
   self.enabled = ->
     getPreference('enableFacebook')
 
-  self.loadVideo = (url, flashvars, callback) ->
-    if self.videoUrlPatterns[0].test(url)
-      data = parseUrlEncoded(flashvars)
+  self.loadVideo = (requestInfo, callback) ->
+    if self.videoUrlPatterns[0].test(requestInfo.url)
+      data = parseUrlEncoded(requestInfo.flashvars)
       meta = self.processMeta(data, event)
       callback meta
 

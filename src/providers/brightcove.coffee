@@ -4,9 +4,9 @@ newBrightcove = ->
   self.enabled = ->
     getPreference('enableBrightcove')
 
-  self.loadVideo = (url, flashvars, callback) ->
-    if self.videoUrlPatterns[0].test(url)
-      self.startLoad url.replace(/\/viewer\/\w+(?:\.swf)?\?/i, "/viewer/htmlFederated?"), callback
+  self.loadVideo = (requestInfo, callback) ->
+    if self.videoUrlPatterns[0].test(requestInfo.url)
+      self.startLoad requestInfo.url.replace(/\/viewer\/\w+(?:\.swf)?\?/i, "/viewer/htmlFederated?"), callback
       true
     else
       false
@@ -14,12 +14,12 @@ newBrightcove = ->
   self.processMeta = (text) ->
     meta = {}
     m = text.match(/experienceJSON = (\{.*\});/i)
-    data = JSON.parse(m[1])
+    info = JSON.parse(m[1])
     meta.formats = {}
-    if not data.data.programmedContent.videoPlayer or not data.data.programmedContent.videoPlayer.mediaDTO
+    if not info.data.programmedContent.videoPlayer or not info.data.programmedContent.videoPlayer.mediaDTO
       meta = error: "Not a Brightcove video"
       return meta
-    video = data.data.programmedContent.videoPlayer.mediaDTO
+    video = info.data.programmedContent.videoPlayer.mediaDTO
     meta.poster = video.videoStillURL
     meta.title = video.displayName
     meta.author = video.publisherName

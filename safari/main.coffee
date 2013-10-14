@@ -14,15 +14,13 @@ safari.application.addEventListener "message", ((event) ->
   if event.name is "canLoad"
     event.message = canLoad event.message
   else if event.name is "loadVideo"
-    videoInfo = event.message
-    playerId = videoInfo.playerId
-    url = videoInfo.url
-    flashvars = videoInfo.flashvars
+    playerId = event.message.playerId
+    requestInfo = event.message.requestInfo
 
     callback = (meta) ->
       injectVideo event, playerId, meta
 
-    loadVideo url, flashvars, callback
+    loadVideo requestInfo, callback
   else if event.name is "updateVolume"
     updateVolume event.message
 ), true

@@ -8,15 +8,15 @@ newYouTube = ->
   self.enabled = ->
     getPreference('enableYoutube')
 
-  self.loadVideo = (url, flashvars, callback) ->
-    match = url.match(self.videoUrlPatterns[0])
+  self.loadVideo = (requestInfo, callback) ->
+    match = requestInfo.url.match(self.videoUrlPatterns[0])
     if match
       videoId = match[1]
       params = parseUrlEncoded(match[2])
-      self.startLoad videoId, (params.autoplay and params.autoplay isnt "0"), getStartTime(params), flashvars, callback
+      self.startLoad videoId, (params.autoplay and params.autoplay isnt "0"), getStartTime(params), requestInfo.flashvars, callback
       true
-    else if self.videoUrlPatterns[1].test(url)
-      data = parseUrlEncoded(flashvars)
+    else if self.videoUrlPatterns[1].test(requestInfo.url)
+      data = parseUrlEncoded(requestInfo.flashvars)
       self.startLoad data.video_id, getPreference('youtubeAutoplay'), null, data, callback
       true
     else

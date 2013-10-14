@@ -24,7 +24,7 @@ newProvider = ->
   self.shouldBlockScript = (requestInfo) ->
     somePattern requestInfo.url, self.blockScriptUrlPatterns
 
-  self.loadVideo = (url, flashvars, callback) ->
+  self.loadVideo = (requestInfo, callback) ->
     false
 
   self
@@ -37,9 +37,9 @@ canLoad = (requestInfo) ->
       return 'video'
   return 'allow'
 
-loadVideo = (url, flashvars, callback) ->
+loadVideo = (requestInfo, callback) ->
   loaded = providers.some((provider) ->
-    provider.enabled() and provider.loadVideo(url, flashvars, callback)
+    provider.enabled() and provider.loadVideo(requestInfo, callback)
   )
   unless loaded
     meta = error: "Unknown video URL<br />#{url}"

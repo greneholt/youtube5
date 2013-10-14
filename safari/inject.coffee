@@ -1,8 +1,10 @@
 canLoad = (event, requestInfo) ->
   safari.self.tab.canLoad event, requestInfo
 
-loadVideo = (options) ->
-  safari.self.tab.dispatchMessage "loadVideo", options
+loadVideo = (playerId, requestInfo) ->
+  safari.self.tab.dispatchMessage "loadVideo",
+    playerId: playerId
+    requestInfo: requestInfo
 
 updateVolume = (volume) ->
   safari.self.tab.dispatchMessage "updateVolume", volume

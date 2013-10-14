@@ -47,10 +47,7 @@ document.addEventListener "beforeload", ((event) ->
     # little hack to get around YouTube's flash detection. This moves the YouTube5 player one node up the dom tree, breaking their code and preventing it from being removed.
     replace = replace.parentNode  if replace.parentNode.id is "player-api" or replace.parentNode.id is "player-api-legacy"
     players[playerId] = newPlayer(replace, width, height)
-    loadVideo
-      url: event.url
-      playerId: playerId
-      flashvars: flashvars
+    loadVideo playerId, requestInfo
 
   else if result is "block"
     event.preventDefault()
