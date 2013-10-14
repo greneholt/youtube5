@@ -8,16 +8,16 @@ newYouTube = ->
   self.enabled = ->
     getPreference('enableYoutube')
 
-  self.loadVideo = (url, playerId, flashvars, event) ->
+  self.loadVideo = (url, flashvars, callback) ->
     match = url.match(self.videoUrlPatterns[0])
     if match
       videoId = match[1]
       params = parseUrlEncoded(match[2])
-      self.startLoad playerId, videoId, (params.autoplay and params.autoplay isnt "0"), getStartTime(params), event, flashvars
+      self.startLoad videoId, (params.autoplay and params.autoplay isnt "0"), getStartTime(params), flashvars, callback
       true
     else if self.videoUrlPatterns[1].test(url)
       data = parseUrlEncoded(flashvars)
-      self.startLoad playerId, data.video_id, getPreference('youtubeAutoplay'), null, event, data
+      self.startLoad data.video_id, getPreference('youtubeAutoplay'), null, data, callback
       true
     else
       false
@@ -108,7 +108,7 @@ newYouTube = ->
     meta.from = "YouTube"
     meta
 
-  self.startLoad = (playerId, videoId, autoplay, startTime, event, flashvars) ->
+  self.startLoad = (videoId, autoplay, startTime, flashvars, callback) ->
     req = new XMLHttpRequest()
     req.open "GET", "https://www.youtube.com/get_video_info?&video_id=" + videoId + "&eurl=http%3A%2F%2Fwww%2Eyoutube%2Ecom%2F&asv=3&sts=" + self.signatureDecipher.timestamp, true
     req.onreadystatechange = (ev) ->
@@ -116,10 +116,10 @@ newYouTube = ->
         meta = self.processMeta(req.responseText, flashvars)
         meta.autoplay = autoplay
         meta.startTime = startTime
-        injectVideo event, playerId, meta
+        callback meta
       else if req.readyState is 4 and req.status is 404
         meta = error: "404 Error loading YouTube video"
-        injectVideo event, playerId, meta
+        callback meta
 
     req.send null
 

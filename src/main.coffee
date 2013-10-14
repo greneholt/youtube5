@@ -10,12 +10,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-injectVideo = (event, playerId, meta) ->
-  meta.volume = getPreference('volume')
-  event.target.page.dispatchMessage "injectVideo",
-    playerId: playerId
-    meta: meta
-
 providers = []
 newProvider = ->
   self = {}
@@ -24,13 +18,13 @@ newProvider = ->
   self.enabled = ->
     false
 
-  self.canLoadVideo = (message) ->
-    somePattern message.url, self.videoUrlPatterns
+  self.canLoadVideo = (requestInfo) ->
+    somePattern requestInfo.url, self.videoUrlPatterns
 
-  self.shouldBlockScript = (message) ->
-    somePattern message.url, self.blockScriptUrlPatterns
+  self.shouldBlockScript = (requestInfo) ->
+    somePattern requestInfo.url, self.blockScriptUrlPatterns
 
-  self.loadVideo = (url, playerId, flashvars, event) ->
+  self.loadVideo = (url, flashvars, callback) ->
     false
 
   self
@@ -43,16 +37,13 @@ canLoad = (requestInfo) ->
       return 'video'
   return 'allow'
 
-loadVideo = (event) ->
-  url = event.message.url
-  playerId = event.message.playerId
-  flashvars = event.message.flashvars
+loadVideo = (url, flashvars, callback) ->
   loaded = providers.some((provider) ->
-    provider.enabled() and provider.loadVideo(url, playerId, flashvars, event)
+    provider.enabled() and provider.loadVideo(url, flashvars, callback)
   )
   unless loaded
-    meta = error: "Unknown video URL<br />" + url
-    injectVideo event, playerId, meta
+    meta = error: "Unknown video URL<br />#{url}"
+    callback meta
 
 updateVolume = (level) ->
   setPreference 'volume', level

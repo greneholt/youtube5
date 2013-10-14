@@ -26,7 +26,7 @@ document.addEventListener "beforeload", ((event) ->
   requestInfo.url = event.url
   requestInfo.flashvars = getFlashvars(event.target)
 
-  result = canLoad(event, requestInfo)
+  result = canLoad event, requestInfo
 
   if result is "video"
     # sometimes both <embed> and <object> will trigger a beforeload event, even after one of the two has been removed
@@ -41,7 +41,7 @@ document.addEventListener "beforeload", ((event) ->
       width = event.target.width
       height = event.target.height
     event.target.youtube5allowedToLoad = true
-    flashvars = getFlashvars(event.target)
+    flashvars = getFlashvars event.target
     replace = event.target
 
     # little hack to get around YouTube's flash detection. This moves the YouTube5 player one node up the dom tree, breaking their code and preventing it from being removed.

@@ -9,15 +9,14 @@ newVimeo = ->
   self.enabled = ->
     getPreference('enableVimeo')
 
-  self.loadVideo = (url, playerId, flashvars, event) ->
-    url = event.message.url
+  self.loadVideo = (url, flashvars, callback) ->
     if (m = url.match(self.videoUrlPatterns[1])) or (m = url.match(self.videoUrlPatterns[3]))
       clipId = m[1]
-      self.startLoad playerId, clipId, false, event
+      self.startLoad clipId, false, callback
       true
     else if self.videoUrlPatterns[0].test(url) or self.videoUrlPatterns[2].test(url)
       data = parseUrlEncoded(flashvars)
-      self.startLoad playerId, data.clip_id, false, event
+      self.startLoad data.clip_id, false, callback
       true
     else
       false
@@ -45,17 +44,17 @@ newVimeo = ->
     meta.from = "Vimeo"
     meta
 
-  self.startLoad = (playerId, clipId, autoplay, event) ->
+  self.startLoad = (clipId, autoplay, callback) ->
     req = new XMLHttpRequest()
     req.open "GET", "http://player.vimeo.com/video/" + clipId, true
     req.onreadystatechange = (ev) ->
       if req.readyState is 4 and req.status is 200
         meta = self.processMeta(clipId, req.responseText)
         meta.autoplay = autoplay
-        injectVideo event, playerId, meta
+        callback meta
       else if req.readyState is 4 and req.status is 404
         meta = error: "404 Error loading Vimeo video"
-        injectVideo event, playerId, meta
+        callback meta
 
     req.send null
 

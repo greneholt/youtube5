@@ -1,21 +1,20 @@
 newFacebook = ->
   self = newProvider()
   self.videoUrlPatterns = [/\/rsrc.php\/.*\.swf/i]
-  self.canLoadVideo = (message) ->
+  self.canLoadVideo = (requestInfo) ->
     self.videoUrlPatterns.some (pattern) ->
-      pattern.test(message.url) and message.flashvars.indexOf("thumbnail_src") isnt -1
-
+      pattern.test(requestInfo.url) and requestInfo.flashvars.indexOf("thumbnail_src") isnt -1
 
   self.enabled = ->
     getPreference('enableFacebook')
 
-  self.loadVideo = (url, playerId, flashvars, event) ->
+  self.loadVideo = (url, flashvars, callback) ->
     if self.videoUrlPatterns[0].test(url)
       data = parseUrlEncoded(flashvars)
-      meta = self.processMeta(playerId, data, event)
-      injectVideo event, playerId, meta
+      meta = self.processMeta(data, event)
+      callback meta
 
-  self.processMeta = (playerId, data, event) ->
+  self.processMeta = (data, event) ->
     meta = {}
     params = JSON.parse(data.params)
     video_data = params.video_data[0]
