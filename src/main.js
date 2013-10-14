@@ -30,11 +30,11 @@ var newProvider = function() {
 	};
 
 	self.canLoadVideo = function(message) {
-		return somePattern(message, self.videoUrlPatterns);
+		return somePattern(message.url, self.videoUrlPatterns);
 	};
 
 	self.shouldBlockScript = function(message) {
-		return somePattern(message, self.blockScriptUrlPatterns);
+		return somePattern(message.url, self.blockScriptUrlPatterns);
 	};
 
 	self.loadVideo = function(url, playerId, flashvars, event) {
@@ -55,7 +55,7 @@ var canLoad = function(event) {
 			event.message = 'block';
 			return;
 		}
-		else if (providers[i].canLoadVideo(message)) {
+		else if ((message.type == 'plugin' || message.type == 'iframe') && providers[i].canLoadVideo(message)) {
 			event.message = 'video';
 			return;
 		}

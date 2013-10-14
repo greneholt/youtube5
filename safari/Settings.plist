@@ -132,5 +132,21 @@
 		<key>Key</key>
 		<string>volume</string>
 	</dict>
+	<dict>
+		<key>Title</key>
+		<string>Brightcove</string>
+		<key>Type</key>
+		<string>Group</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<true/>
+		<key>Key</key>
+		<string>enableBrightcove</string>
+		<key>Title</key>
+		<string>Enable for Brightcove</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
 </array>
 </plist>

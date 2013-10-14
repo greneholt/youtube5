@@ -42,7 +42,7 @@ var getStartTime = function(params) {
 
 var somePattern = function(message, patterns) {
 	return patterns.some(function (pattern) {
-		return pattern.test(message.url);
+		return pattern.test(message);
 	});
 };
 

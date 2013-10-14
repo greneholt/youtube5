@@ -28,6 +28,8 @@ if task == 'safari'
           b.globCopy 'safari/*.{html,plist}', 'build/YouTube5.safariextension', cb
       ], cb
     ], callback
+else if task == 'safariback'
+  b.globCopy 'build/YouTube5.safariextension/*.plist', 'safari', callback
 else if task == 'chrome'
   b.concat [
       'src/util.js'
