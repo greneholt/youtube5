@@ -52,6 +52,8 @@ utils.globRm = (pattern, callback) ->
         cb()
     , callback
 
+# eventally switch to this: https://npmjs.org/package/mkdirp
+
 utils.mkdirRecursive = (dir, mode, callback) ->
   dir = path.normalize(dir)
   if typeof mode == 'function'
