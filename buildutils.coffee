@@ -17,7 +17,13 @@ utils.compile = (pattern, dest, callback) ->
       fs.readFile filePath, FILE_ENCODING, cb
     , (err, fileContents) ->
       return callback err if err
-      jsSource = coffee.compile fileContents.join(EOL), {bare: yes}
+      coffeeSource = fileContents.join(EOL)
+      try
+        jsSource = coffee.compile coffeeSource, {bare: yes}
+      catch err
+        useColors = process.stdout.isTTY and !process.env.NODE_DISABLE_COLORS;
+        message = coffee.helpers.prettyErrorMessage err, '[COMBINED]', coffeeSource, useColors
+        return callback new SyntaxError(message)
       fs.writeFile dest, jsSource, FILE_ENCODING, (err) ->
         return callback err if err
         console.log "Concat #{matches.join(', ')} -> #{dest}"

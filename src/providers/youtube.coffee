@@ -6,18 +6,18 @@ newYouTube = ->
   ]
   self.blockScriptUrlPatterns = [/^https?:\/\/s.ytimg.com\/yts?\/jsbin\/html5player-.+\.js$/]
   self.enabled = ->
-    safari.extension.settings.enableYoutube
+    getPreference('enableYoutube')
 
   self.loadVideo = (url, playerId, flashvars, event) ->
     match = url.match(self.videoUrlPatterns[0])
     if match
       videoId = match[1]
       params = parseUrlEncoded(match[2])
-      self.startLoad playerId, videoId, params.autoplay and params.autoplay isnt "0", getStartTime(params), event, flashvars
+      self.startLoad playerId, videoId, (params.autoplay and params.autoplay isnt "0"), getStartTime(params), event, flashvars
       true
     else if self.videoUrlPatterns[1].test(url)
       data = parseUrlEncoded(flashvars)
-      self.startLoad playerId, data.video_id, safari.extension.settings.youtubeAutoplay, null, event, data
+      self.startLoad playerId, data.video_id, getPreference('youtubeAutoplay'), null, event, data
       true
     else
       false
@@ -57,20 +57,19 @@ newYouTube = ->
     if data.errorcode and (not flashvars or not flashvars.url_encoded_fmt_stream_map)
       meta.error = data.reason
       return meta
-    
-    #
-    #		Format Reference
-    #
-    #		5 - FLV 240p
-    #		18 - MP4 360p
-    #		22 - MP4 720p (HD)
-    #		34 - FLV 360p
-    #		35 - FLV 480p
-    #		37 - MP4 1080p (HD)
-    #		38 - MP4 Original (HD)
-    #		43 - WebM 480p
-    #		45 - WebM 720p (HD)
-    #		
+
+		# Format Reference
+
+		# 5 - FLV 240p
+		# 18 - MP4 360p
+		# 22 - MP4 720p (HD)
+		# 34 - FLV 360p
+		# 35 - FLV 480p
+		# 37 - MP4 1080p (HD)
+		# 38 - MP4 Original (HD)
+		# 43 - WebM 480p
+		# 45 - WebM 720p (HD)
+
     youtubeFormats =
       5: "240p FLV"
       18: "360p"
@@ -88,7 +87,7 @@ newYouTube = ->
         else url += "&signature=" + encodeURIComponent(self.signatureDecipher.decipher(tmp.s))  if tmp.s
         meta.formats[youtubeFormats[tmp.itag]] = url
 
-    defaultFormat = safari.extension.settings.youtubeFormat
+    defaultFormat = getPreference('youtubeFormat')
     if meta.formats[defaultFormat]
       meta.useFormat = defaultFormat
     else

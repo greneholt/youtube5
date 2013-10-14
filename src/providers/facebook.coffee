@@ -7,7 +7,7 @@ newFacebook = ->
 
 
   self.enabled = ->
-    safari.extension.settings.enableFacebook
+    getPreference('enableFacebook')
 
   self.loadVideo = (url, playerId, flashvars, event) ->
     if self.videoUrlPatterns[0].test(url)
@@ -22,7 +22,7 @@ newFacebook = ->
     meta.formats = {}
     meta.formats["HD"] = video_data.hd_src  if video_data.hd_src
     meta.formats["SD"] = video_data.sd_src
-    defaultFormat = safari.extension.settings.facebookFormat
+    defaultFormat = getPreference('facebookFormat')
     if meta.formats[defaultFormat]
       meta.useFormat = defaultFormat
     else

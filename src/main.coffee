@@ -11,7 +11,7 @@
 # GNU General Public License for more details.
 
 injectVideo = (event, playerId, meta) ->
-  meta.volume = safari.extension.settings.volume
+  meta.volume = getPreference('volume')
   event.target.page.dispatchMessage "injectVideo",
     playerId: playerId
     meta: meta
@@ -38,17 +38,13 @@ newProvider = ->
 
 canLoad = (event) ->
   message = event.message
-  i = 0
-
-  while i < providers.length
-    continue  unless providers[i].enabled()
-    if message.type is "script" and providers[i].shouldBlockScript(message)
+  for provider in providers when provider.enabled()
+    if message.type is "script" and provider.shouldBlockScript(message)
       event.message = "block"
       return
-    else if (message.type is "plugin" or message.type is "iframe") and providers[i].canLoadVideo(message)
+    else if (message.type is "plugin" or message.type is "iframe") and provider.canLoadVideo(message)
       event.message = "video"
       return
-    i++
   event.message = "allow"
 
 loadVideo = (event) ->
@@ -63,7 +59,7 @@ loadVideo = (event) ->
     injectVideo event, playerId, meta
 
 updateVolume = (event) ->
-  safari.extension.settings.volume = event.message
+  setPreference 'volume', event.message
 
 safari.application.addEventListener "message", ((event) ->
   if event.name is "canLoad"

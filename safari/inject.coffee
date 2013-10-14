@@ -1,5 +1,5 @@
-canLoad = (event, message) ->
-  safari.self.tab.canLoad event, message
+canLoad = (event, requestInfo) ->
+  safari.self.tab.canLoad event, requestInfo
 
 loadVideo = (options) ->
   safari.self.tab.dispatchMessage "loadVideo", options

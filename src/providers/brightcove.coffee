@@ -2,7 +2,7 @@ newBrightcove = ->
   self = newProvider()
   self.videoUrlPatterns = [/brightcove\.com\/services\/viewer\//i]
   self.enabled = ->
-    safari.extension.settings.enableBrightcove
+    getPreference('enableBrightcove')
 
   self.loadVideo = (url, playerId, flashvars, event) ->
     url = event.message.url

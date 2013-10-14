@@ -7,7 +7,7 @@ newVimeo = ->
     /^https?:\/\/player.vimeo.com\/video\/(\d+)/i
   ]
   self.enabled = ->
-    safari.extension.settings.enableVimeo
+    getPreference('enableVimeo')
 
   self.loadVideo = (url, playerId, flashvars, event) ->
     url = event.message.url
@@ -32,7 +32,7 @@ newVimeo = ->
     data.config.video.files.h264.forEach (format) ->
       meta.formats[format.toUpperCase()] = "http://player.vimeo.com/play_redirect?quality=" + format + "&codecs=h264&clip_id=" + clipId + "&time=" + time + "&sig=" + sig + "&type=html5_desktop_local"
 
-    defaultFormat = safari.extension.settings.vimeoFormat
+    defaultFormat = getPreference('vimeoFormat')
     if meta.formats[defaultFormat]
       meta.useFormat = defaultFormat
     else
