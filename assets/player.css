@@ -13,6 +13,7 @@
 	font-size: inherit !important;
 	font-family: Helvetica, sans-serif !important;
 	box-sizing: content-box !important;
+	outline: none !important;
 }
 
 .youtube5placeholder {

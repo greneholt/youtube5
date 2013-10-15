@@ -1,5 +1,5 @@
 getPreference = (name) ->
-  100
+  '720p'
 
 setPreference = (name, value) ->
   null
@@ -9,7 +9,7 @@ checkResponseForRequest = (event, requestInfo) ->
 
 loadPlayer = (playerId, requestInfo) ->
   loadVideo requestInfo, (meta) ->
-    meta.volume = 100
+    meta.volume = 1
     injectVideo playerId, meta
 
 updateVolumeCallback = (volume) ->

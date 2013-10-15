@@ -150,7 +150,7 @@ class Player
     else
       @video.pause()
 
-    focusedPlayer = self # set the focused player to this one
+    focusedPlayer = this # set the focused player to this one
 
   popInOrOut: =>
     return if document.webkitIsFullScreen
@@ -258,12 +258,13 @@ class Player
     @video.removeEventListener "loadedmetadata", @initVideo, false
 
   videoReady: =>
+    @video.removeEventListener "canplay", @videoReady, false
     @createControls()
     @updatePosition()
     @updateLoaded()
     @setVolume @meta.volume
-    @video.removeEventListener "canplay", @videoReady, false
     @video.addEventListener "loadedmetadata", (=>
+      console.log 'loaded new video'
       @seek()
       @updateTime()
     ), false
@@ -405,6 +406,9 @@ class Player
     @volumeSlider.addEventListener "change", (=>
       @setVolume @volumeSlider.value / 100
     ), false
+    @volumeSlider.addEventListener "focus", => # prevent slider from keeping focus, messing up keyboard control
+      @volumeSlider.blur()
+    , false
     @volumeMax.addEventListener "click", (=>
       @setVolume 1
       @updateVolumeSlider()
@@ -414,6 +418,9 @@ class Player
       @updateVolumeSlider()
     ), false
     @position.addEventListener "change", @seek, false
+    @position.addEventListener "focus", => # prevent from keeping focus
+      @position.blur()
+    , false
     @video.addEventListener "progress", @updateLoaded, false
     @video.addEventListener "timeupdate", @updatePosition, false
     @video.addEventListener "volumechange", @updateVolumeSlider, false
@@ -434,7 +441,7 @@ class Player
 
     # keyboard shortcuts
     document.addEventListener "keypress", ((event) =>
-      if event.target is document.body and focusedPlayer is self and not event.shiftKey and not event.altKey and not event.ctrlKey and not event.metaKey
+      if event.target is document.body and focusedPlayer is this and not event.shiftKey and not event.altKey and not event.ctrlKey and not event.metaKey
         if event.keyCode is 32 # space = play/pause
           event.preventDefault()
           @playOrPause()
@@ -447,7 +454,7 @@ class Player
     ), false
 
     document.addEventListener "keydown", ((event) =>
-      if event.target is document.body and focusedPlayer is self and not event.altKey and not event.ctrlKey and not event.metaKey
+      if event.target is document.body and focusedPlayer is this and not event.altKey and not event.ctrlKey and not event.metaKey
         if event.keyCode is 37 # left arrow = back five seconds
           event.preventDefault()
           if event.shiftKey
@@ -476,7 +483,7 @@ class Player
 
     # timecode link handling
     document.addEventListener "click", ((event) =>
-      if event.target.nodeName.toLowerCase() is "a" and focusedPlayer is self
+      if event.target.nodeName.toLowerCase() is "a" and focusedPlayer is this
         seconds = parseTimeCode(event.target.textContent)
         if seconds
           @video.currentTime = seconds
