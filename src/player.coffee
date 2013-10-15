@@ -260,6 +260,7 @@ class Player
   videoReady: =>
     @createControls()
     @updatePosition()
+    @updateLoaded()
     @setVolume @meta.volume
     @video.removeEventListener "canplay", @videoReady, false
     @video.addEventListener "loadedmetadata", (=>
@@ -338,7 +339,7 @@ class Player
 
     unless @meta.autoplay
       @playLarge = create("div", @player, "youtube5play-large")
-      @playLarge.addEventListener "click", @playOrPause(), false
+      @playLarge.addEventListener "click", @playOrPause, false
 
     @video.addEventListener "loadedmetadata", @initVideo, false
     @video.addEventListener "canplay", @videoReady, false
