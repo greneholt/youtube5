@@ -6,7 +6,9 @@
 
   // Recommended
   "description": "Yup",
-  "icons": "Icon-64.png",
+  "icons": {
+    "64": "Icon-64.png"
+    },
 
   "author": "Connor McKay",
   "content_scripts": [

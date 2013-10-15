@@ -31,22 +31,22 @@ if task == 'safari'
 else if task == 'safariback'
   b.globCopy 'build/YouTube5.safariextension/*.plist', 'safari', callback
 else if task == 'chrome'
-  b.compile [
-      'src/util.js'
-      'chrome/inject.coffee'
-      'src/player.js'
-      'src/inject.js'
-    ]
-  , 'build/chrome/inject.js', callback
+  async.series [
+    (cb) ->
+      b.mkdirRecursive 'build/chrome', cb
 
-  b.compile [
-    'src/util.js'
-    'src/main.js'
-    'chrome/main.coffee'
-  ]
-  , 'build/chrome/main.js', callback
+    (cb) ->
+      async.parallel [
+        (cb) ->
+          b.compile '{src/*.coffee,src/providers/*.coffee,chrome/inject.coffee}', 'build/chrome/inject.js', cb
 
-  b.globCopy 'assets/*', 'build/chrome', callback
+        (cb) ->
+          b.globCopy 'assets/*', 'build/chrome', cb
+
+        (cb) ->
+          b.globCopy 'chrome/manifest.json', 'build/chrome', cb
+      ], cb
+    ], callback
 else if task == 'clean'
   b.globRm 'build/YouTube5.safariextension/*', callback
   b.globRm 'build/chrome/*', callback
