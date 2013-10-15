@@ -3,16 +3,50 @@
 <plist version="1.0">
 <array>
 	<dict>
+		<key>DefaultValue</key>
+		<real>1</real>
+		<key>Key</key>
+		<string>volume</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<real>1280</real>
+		<key>Key</key>
+		<string>preferredVideoWidth</string>
 		<key>Title</key>
-		<string>YouTube Options</string>
+		<string>Preferred video resolution</string>
+		<key>Titles</key>
+		<array>
+			<string>4k</string>
+			<string>1080p</string>
+			<string>720p</string>
+			<string>360p</string>
+		</array>
 		<key>Type</key>
-		<string>Group</string>
+		<string>PopUpButton</string>
+		<key>Values</key>
+		<array>
+			<real>3840</real>
+			<real>1920</real>
+			<real>1280</real>
+			<real>640</real>
+		</array>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>preventAutoplay</string>
+		<key>Title</key>
+		<string>Prevent videos from playing automatically</string>
+		<key>Type</key>
+		<string>CheckBox</string>
 	</dict>
 	<dict>
 		<key>DefaultValue</key>
 		<true/>
 		<key>Key</key>
-		<string>enableYoutube</string>
+		<string>youtubeEnabled</string>
 		<key>Title</key>
 		<string>Enable for YouTube videos</string>
 		<key>Type</key>
@@ -22,49 +56,7 @@
 		<key>DefaultValue</key>
 		<true/>
 		<key>Key</key>
-		<string>youtubeAutoplay</string>
-		<key>Title</key>
-		<string>Autoplay videos on YouTube.com?</string>
-		<key>Type</key>
-		<string>CheckBox</string>
-	</dict>
-	<dict>
-		<key>DefaultValue</key>
-		<string>720p</string>
-		<key>Key</key>
-		<string>youtubeFormat</string>
-		<key>Title</key>
-		<string>Default YouTube Format</string>
-		<key>Titles</key>
-		<array>
-			<string>Original (4k)</string>
-			<string>1080p</string>
-			<string>720p</string>
-			<string>360p</string>
-			<string>240p FLV</string>
-		</array>
-		<key>Type</key>
-		<string>PopUpButton</string>
-		<key>Values</key>
-		<array>
-			<string>Original (4k)</string>
-			<string>1080p</string>
-			<string>720p</string>
-			<string>360p</string>
-			<string>240p FLV</string>
-		</array>
-	</dict>
-	<dict>
-		<key>Title</key>
-		<string>Vimeo Options</string>
-		<key>Type</key>
-		<string>Group</string>
-	</dict>
-	<dict>
-		<key>DefaultValue</key>
-		<true/>
-		<key>Key</key>
-		<string>enableVimeo</string>
+		<string>vimeoEnabled</string>
 		<key>Title</key>
 		<string>Enable for Vimeo videos</string>
 		<key>Type</key>
@@ -72,35 +64,9 @@
 	</dict>
 	<dict>
 		<key>DefaultValue</key>
-		<string>HD</string>
-		<key>Key</key>
-		<string>vimeoFormat</string>
-		<key>Title</key>
-		<string>Default Vimeo Format</string>
-		<key>Titles</key>
-		<array>
-			<string>HD</string>
-			<string>SD</string>
-		</array>
-		<key>Type</key>
-		<string>PopUpButton</string>
-		<key>Values</key>
-		<array>
-			<string>HD</string>
-			<string>SD</string>
-		</array>
-	</dict>
-	<dict>
-		<key>Title</key>
-		<string>Facebook Video Options</string>
-		<key>Type</key>
-		<string>Group</string>
-	</dict>
-	<dict>
-		<key>DefaultValue</key>
 		<true/>
 		<key>Key</key>
-		<string>enableFacebook</string>
+		<string>facebookEnabled</string>
 		<key>Title</key>
 		<string>Enable for Facebook videos</string>
 		<key>Type</key>
@@ -108,43 +74,11 @@
 	</dict>
 	<dict>
 		<key>DefaultValue</key>
-		<string>HD</string>
-		<key>Key</key>
-		<string>facebookFormat</string>
-		<key>Title</key>
-		<string>Default Facebook Format</string>
-		<key>Titles</key>
-		<array>
-			<string>HD</string>
-			<string>SD</string>
-		</array>
-		<key>Type</key>
-		<string>PopUpButton</string>
-		<key>Values</key>
-		<array>
-			<string>HD</string>
-			<string>SD</string>
-		</array>
-	</dict>
-	<dict>
-		<key>DefaultValue</key>
-		<real>1</real>
-		<key>Key</key>
-		<string>volume</string>
-	</dict>
-	<dict>
-		<key>Title</key>
-		<string>Brightcove</string>
-		<key>Type</key>
-		<string>Group</string>
-	</dict>
-	<dict>
-		<key>DefaultValue</key>
 		<true/>
 		<key>Key</key>
-		<string>enableBrightcove</string>
+		<string>brightcoveEnabled</string>
 		<key>Title</key>
-		<string>Enable for Brightcove</string>
+		<string>Enable for Brightcove videos</string>
 		<key>Type</key>
 		<string>CheckBox</string>
 	</dict>

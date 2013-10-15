@@ -31,7 +31,7 @@ document.addEventListener "beforeload", ((event) ->
   #
   #	Some websites can have flash checking disabled by adding the following to the getRequestParameter function of swfobject.
   #
-  #	if(c=='detectflash')return'false';
+  #	if(cis'detectflash')return'false';
   #
   requestInfo.location = window.location.href
   requestInfo.url = event.url

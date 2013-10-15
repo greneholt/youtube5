@@ -2,7 +2,7 @@ newBrightcove = ->
   self = newProvider()
   self.videoUrlPatterns = [/brightcove\.com\/services\/viewer\//i]
   self.enabled = ->
-    getPreference('enableBrightcove')
+    isProviderEnabled 'brightcove'
 
   self.loadVideo = (requestInfo, callback) ->
     if self.videoUrlPatterns[0].test(requestInfo.url)
@@ -15,21 +15,22 @@ newBrightcove = ->
     meta = {}
     m = text.match(/experienceJSON = (\{.*\});/i)
     info = JSON.parse(m[1])
-    meta.formats = {}
     if not info.data.programmedContent.videoPlayer or not info.data.programmedContent.videoPlayer.mediaDTO
       meta = error: "Not a Brightcove video"
       return meta
     video = info.data.programmedContent.videoPlayer.mediaDTO
+
     meta.poster = video.videoStillURL
     meta.title = video.displayName
     meta.author = video.publisherName
     meta.from = "Brightcove"
-    lastFormat = undefined
-    video.renditions.forEach (format) ->
-      meta.formats[format.frameHeight + "p"] = format.defaultURL
-      lastFormat = format.frameHeight + "p"
 
-    meta.useFormat = lastFormat
+    meta.formats = for format in video.renditions
+      width: format.frameWidth
+      height: format.frameHeight
+      name: "#{format.frameHeight}p"
+      url: format.defaultURL
+
     meta
 
   self.startLoad = (url, callback) ->

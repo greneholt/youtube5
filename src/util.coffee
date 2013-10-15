@@ -7,6 +7,12 @@ parseUrlEncoded = (text) ->
       data[pair[0]] = decodeURIComponent(pair[1]).replace(/\+/g, " ")
   data
 
+shallowClone = (object) ->
+  clone = {}
+  for key, value of object
+    clone[key] = value
+  clone
+
 parseTimeCode = (text) ->
   match = /^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/.exec(text)
   if match

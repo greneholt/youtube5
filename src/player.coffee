@@ -240,15 +240,23 @@ class Player
 
   changeQuality: (event) =>
     event.preventDefault()
-    format = event.target.textContent
+    name = event.target.textContent
     paused = @video.paused
-    @video.src = @meta.formats[format]
+
+    for f in @meta.formats
+      if f.name is name
+        format = f
+        break
+
+    # assume it finds the format
+    @video.src = format.url
 
     # only load the video if its already been playing
     @video.preload = "auto" if @controls
     @video.play() unless paused
-    nodes = event.target.parentNode.parentNode.childNodes
-    for node in nodes
+
+    # update format list
+    for node in @formatList.childNodes
       node.className = ""
     event.target.parentNode.className = "youtube5current-format"
 
@@ -264,9 +272,9 @@ class Player
     @updateLoaded()
     @setVolume @meta.volume
     @video.addEventListener "loadedmetadata", (=>
-      console.log 'loaded new video'
       @seek()
       @updateTime()
+      @updateLoaded()
     ), false
 
   loadStartTime: =>
@@ -290,7 +298,20 @@ class Player
 
     @loadStartTime()
     @video = document.createElement("video")
-    @video.src = meta.formats[meta.useFormat]
+
+    # sort formats in order of decreasing width
+    @meta.formats.sort (a, b) ->
+      b.width - a.width
+
+    closestFormat = null
+    minWidthDelta = null
+    for format in @meta.formats
+      widthDelta = Math.abs(@meta.preferredVideoWidth - format.width)
+      if !closestFormat or widthDelta < minWidthDelta
+        closestFormat = format
+        minWidthDelta = widthDelta
+
+    @video.src = closestFormat.url
     @player.insertBefore @video, @topOverlay
 
     if @meta.autoplay
@@ -320,14 +341,14 @@ class Player
     @from = create("div", @formats, "youtube5from")
     @from.textContent = @meta.from
 
-    @formatList = create("ul", @formats)
-    for name, url of @meta.formats
-      format = create("li", @formatList)
-      link = create("a", format)
-      link.textContent = name
-      link.href = url
+    @formatList = create "ul", @formats
+    for format in @meta.formats
+      li = create "li", @formatList
+      link = create "a", li
+      link.textContent = format.name
+      link.href = format.url
       link.addEventListener "click", @changeQuality, false
-      format.className = "youtube5current-format" if meta.useFormat is name
+      li.className = "youtube5current-format" if closestFormat is format
 
     @replay = create("div", @info, "youtube5replay")
     @replay.innerHTML = "&larr; Replay"

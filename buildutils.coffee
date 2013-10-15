@@ -62,7 +62,7 @@ utils.globRm = (pattern, callback) ->
 
 utils.mkdirRecursive = (dir, mode, callback) ->
   dir = path.normalize(dir)
-  if typeof mode == 'function'
+  if typeof mode is 'function'
     callback = mode
     mode = null
 
@@ -76,12 +76,12 @@ utils.mkdirRecursive = (dir, mode, callback) ->
 mkdirRecursiveHelper = (dir, mode, callback) ->
   fs.mkdir dir, mode, (err) ->
     if err
-      if err.code == "ENOENT"
+      if err.code is "ENOENT"
         parentDir = path.dirname dir
         mkdirRecursiveHelper parentDir, mode, (err) ->
           return callback err if err
           mkdirRecursiveHelper dir, mode, callback
-      else if err.code == "EEXIST"
+      else if err.code is "EEXIST"
         callback()
       else
         callback err

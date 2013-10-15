@@ -6,7 +6,7 @@ newFacebook = ->
       pattern.test(requestInfo.url) and requestInfo.flashvars.indexOf("thumbnail_src") isnt -1
 
   self.enabled = ->
-    getPreference('enableFacebook')
+    isProviderEnabled 'facebook'
 
   self.loadVideo = (requestInfo, callback) ->
     if self.videoUrlPatterns[0].test(requestInfo.url)
@@ -18,14 +18,20 @@ newFacebook = ->
     meta = {}
     params = JSON.parse(data.params)
     video_data = params.video_data[0]
-    meta.formats = {}
-    meta.formats["HD"] = video_data.hd_src  if video_data.hd_src
-    meta.formats["SD"] = video_data.sd_src
-    defaultFormat = getPreference('facebookFormat')
-    if meta.formats[defaultFormat]
-      meta.useFormat = defaultFormat
-    else
-      meta.useFormat = "SD"
+
+    meta.formats = []
+    if video_data.hd_src
+      meta.formats.push
+        height: 720
+        width: 1280
+        name: 'HD'
+        url: video_data.hd_src
+    meta.formats.push
+      height: 360
+      width: 640
+      name: 'SD'
+      url: video_data.sd_src
+
     meta.title = "Facebook video"
     meta.poster = video_data.thumbnail_src
     meta.link = params.permalink_url

@@ -1,8 +1,5 @@
-getPreference = (name) ->
-  safari.extension.settings[name]
-
-setPreference = (name, value) ->
-  safari.extension.settings[name] = value
+isProviderEnabled = (name) ->
+  safari.extension.settings["#{name}Enabled"]
 
 safari.application.addEventListener "message", ((event) ->
   if event.name is "canLoad"
@@ -12,12 +9,14 @@ safari.application.addEventListener "message", ((event) ->
     requestInfo = event.message.requestInfo
 
     callback = (meta) ->
-      meta.volume = getPreference('volume')
+      meta.volume = safari.extension.settings.volume
+      meta.preferredVideoWidth = safari.extension.settings.preferredVideoWidth
+      meta.autoplay = false if safari.extension.settings.preventAutoplay
       event.target.page.dispatchMessage "injectVideo",
         playerId: playerId
         meta: meta
 
     loadVideo requestInfo, callback
   else if event.name is "updateVolume"
-    updateVolume event.message
+    safari.extension.settings.volume = event.message
 ), true

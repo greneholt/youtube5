@@ -10,10 +10,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-# This file expects the following functions to be defined:
-#   getPreference(name)
-#   setPreference(name, value)
-
 providers = []
 newProvider = ->
   self = {}
@@ -46,8 +42,5 @@ loadVideo = (requestInfo, callback) ->
     provider.enabled() and provider.loadVideo(requestInfo, callback)
   )
   unless loaded
-    meta = error: "Unknown video URL<br />#{url}"
+    meta = error: "Unknown video URL<br />#{requestInfo.url}"
     callback meta
-
-updateVolume = (level) ->
-  setPreference 'volume', level

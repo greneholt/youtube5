@@ -6,7 +6,7 @@ newYouTube = ->
   ]
   self.blockScriptUrlPatterns = [/^https?:\/\/s.ytimg.com\/yts?\/jsbin\/html5player-.+\.js$/]
   self.enabled = ->
-    getPreference('enableYoutube')
+    isProviderEnabled 'youtube'
 
   self.loadVideo = (requestInfo, callback) ->
     match = requestInfo.url.match(self.videoUrlPatterns[0])
@@ -17,27 +17,25 @@ newYouTube = ->
       true
     else if self.videoUrlPatterns[1].test(requestInfo.url)
       data = parseUrlEncoded(requestInfo.flashvars)
-      self.startLoad data.video_id, getPreference('youtubeAutoplay'), null, data, callback
+      self.startLoad data.video_id, true, null, data, callback
       true
     else
       false
 
   self.signatureDecipher =
-    timestamp: 15902
+    timestamp: 15992
     clone: (a, b) ->
       a.slice b
 
     decipher: (s) ->
-      t = s.split("")
+      t = s.split ""
+      t = @swap(t, 2)
+      t = @reverse(t)
+      t = @clone(t, 3)
+      t = @swap(t, 52)
       t = @clone(t, 2)
-      t = @reverse(t)
-      t = @clone(t, 3)
-      t = @swap(t, 9)
-      t = @clone(t, 3)
-      t = @swap(t, 43)
-      t = @clone(t, 3)
-      t = @reverse(t)
-      t = @swap(t, 23)
+      t = @swap(t, 63)
+      t = @clone(t, 2)
       t.join ""
 
     swap: (a, b) ->
@@ -71,36 +69,31 @@ newYouTube = ->
 		# 45 - WebM 720p (HD)
 
     youtubeFormats =
-      5: "240p FLV"
-      18: "360p"
-      22: "720p"
-      37: "1080p"
-      38: "Original (4k)"
+      18: {height: 360, width: 640, name: "360p"}
+      22: {height: 720, width: 1280, name: "720p"}
+      37: {height: 1080, width: 1920, name: "1080p"}
+      38: {height: 2160, width: 3840, name: "Original (4k)"}
 
-    meta.formats = {}
-    (data.url_encoded_fmt_stream_map or (flashvars and flashvars.url_encoded_fmt_stream_map)).split(",").forEach (format) ->
+    meta.formats = []
+    for format in (data.url_encoded_fmt_stream_map or (flashvars and flashvars.url_encoded_fmt_stream_map)).split(',')
       tmp = parseUrlEncoded(format)
-      if youtubeFormats[tmp.itag]
+      if format = youtubeFormats[tmp.itag]
         url = tmp.url + "&title=" + encodeURIComponent(data.title)
         if tmp.sig
           url += "&signature=" + encodeURIComponent(tmp.sig)
-        else url += "&signature=" + encodeURIComponent(self.signatureDecipher.decipher(tmp.s))  if tmp.s
-        meta.formats[youtubeFormats[tmp.itag]] = url
+        else if tmp.s
+          url += "&signature=" + encodeURIComponent(self.signatureDecipher.decipher(tmp.s))
+        format = shallowClone(format)
+        format.url = url
+        meta.formats.push format
 
-    defaultFormat = getPreference('youtubeFormat')
-    if meta.formats[defaultFormat]
-      meta.useFormat = defaultFormat
-    else
-      for format of meta.formats
-        if parseInt(format) < parseInt(defaultFormat) and (not meta.useFormat or parseInt(format) > parseInt(meta.useFormat))
-          meta.useFormat = format
-        else
-          break
     if data.iurlmaxres
       meta.poster = data.iurlmaxres
     else if data.iurlsd
       meta.poster = data.iurlsd
-    else meta.poster = data.thumbnail_url.replace(/default.jpg/, "hqdefault.jpg")  if data.thumbnail_url
+    else if data.thumbnail_url
+      meta.poster = data.thumbnail_url.replace(/default.jpg/, "hqdefault.jpg")
+
     meta.title = data.title
     meta.author = data.author
     meta.authorLink = "https://www.youtube.com/user/" + data.author
@@ -110,7 +103,7 @@ newYouTube = ->
 
   self.startLoad = (videoId, autoplay, startTime, flashvars, callback) ->
     req = new XMLHttpRequest()
-    req.open "GET", "https://www.youtube.com/get_video_info?&video_id=" + videoId + "&eurl=http%3A%2F%2Fwww%2Eyoutube%2Ecom%2F&asv=3&sts=" + self.signatureDecipher.timestamp, true
+    req.open "GET", "https://www.youtube.com/get_video_info?&video_id=#{videoId}&eurl=http%3A%2F%2Fwww%2Eyoutube%2Ecom%2F&asv=3&sts=#{self.signatureDecipher.timestamp}", true
     req.onreadystatechange = (ev) ->
       if req.readyState is 4 and req.status is 200
         meta = self.processMeta(req.responseText, flashvars)

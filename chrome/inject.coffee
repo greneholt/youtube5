@@ -1,8 +1,5 @@
-getPreference = (name) ->
-  '720p'
-
-setPreference = (name, value) ->
-  null
+isProviderEnabled = ->
+  true
 
 checkResponseForRequest = (event, requestInfo) ->
   getResponseForRequest requestInfo
@@ -10,7 +7,8 @@ checkResponseForRequest = (event, requestInfo) ->
 loadPlayer = (playerId, requestInfo) ->
   loadVideo requestInfo, (meta) ->
     meta.volume = 1
+    meta.preferredVideoWidth = 1280
     injectVideo playerId, meta
 
 updateVolumeCallback = (volume) ->
-  updateVolume volume
+  # do something eventually

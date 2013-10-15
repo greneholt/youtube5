@@ -8,7 +8,7 @@ task = process.argv[2]
 callback = (err) ->
   throw err if err
 
-if task == 'safari'
+if task is 'safari'
   async.series [
     (cb) ->
       b.mkdirRecursive 'build/YouTube5.safariextension', cb
@@ -28,9 +28,9 @@ if task == 'safari'
           b.globCopy 'safari/*.{html,plist}', 'build/YouTube5.safariextension', cb
       ], cb
     ], callback
-else if task == 'safariback'
+else if task is 'safariback'
   b.globCopy 'build/YouTube5.safariextension/*.plist', 'safari', callback
-else if task == 'chrome'
+else if task is 'chrome'
   async.series [
     (cb) ->
       b.mkdirRecursive 'build/chrome', cb
@@ -47,7 +47,7 @@ else if task == 'chrome'
           b.globCopy 'chrome/manifest.json', 'build/chrome', cb
       ], cb
     ], callback
-else if task == 'clean'
+else if task is 'clean'
   b.globRm 'build/YouTube5.safariextension/*', callback
   b.globRm 'build/chrome/*', callback
 else

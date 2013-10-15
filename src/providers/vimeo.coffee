@@ -7,7 +7,7 @@ newVimeo = ->
     /^https?:\/\/player.vimeo.com\/video\/(\d+)/i
   ]
   self.enabled = ->
-    getPreference('enableVimeo')
+    isProviderEnabled 'vimeo'
 
   self.loadVideo = (requestInfo, callback) ->
     if (m = requestInfo.url.match(self.videoUrlPatterns[1])) or (m = requestInfo.url.match(self.videoUrlPatterns[3]))
@@ -36,11 +36,6 @@ newVimeo = ->
     data.config.video.files.h264.forEach (format) ->
       meta.formats[format.toUpperCase()] = "http://player.vimeo.com/play_redirect?quality=" + format + "&codecs=h264&clip_id=" + clipId + "&time=" + time + "&sig=" + sig + "&type=html5_desktop_local"
 
-    defaultFormat = getPreference('vimeoFormat')
-    if meta.formats[defaultFormat]
-      meta.useFormat = defaultFormat
-    else
-      meta.useFormat = "SD"
     meta.poster = data.config.video.thumbnail
     meta.title = data.config.video.title
     meta.author = data.config.video.owner.name

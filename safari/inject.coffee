@@ -10,6 +10,6 @@ updateVolumeCallback = (volume) ->
   safari.self.tab.dispatchMessage "updateVolume", volume
 
 safari.self.addEventListener "message", (event) ->
-  if event.name == "injectVideo"
+  if event.name is "injectVideo"
     injectVideo event.message.playerId, event.message.meta
 , true
