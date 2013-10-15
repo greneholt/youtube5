@@ -24,7 +24,12 @@ newVimeo = ->
   self.processMeta = (clipId, text) ->
     meta = {}
     m = text.match(/clip[0-9_]+ = (\{[\s\S]*\});/i) # dotall doesn't exist in JS, so use [\s\S]
-    data = eval_("(" + m[1] + ")") # Vimeo doesn't use quotes always, so we can't use JSON.parse
+
+    unless m
+      meta.error = 'Invalid meta for Vimeo'
+      return meta
+
+    data = eval("(" + m[1] + ")") # Vimeo doesn't use quotes always, so we can't use JSON.parse
     meta.formats = {}
     sig = data.config.request.signature
     time = data.config.request.timestamp

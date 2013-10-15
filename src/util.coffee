@@ -8,13 +8,15 @@ parseUrlEncoded = (text) ->
   data
 
 parseTimeCode = (text) ->
-  seconds = 0
   match = /^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/.exec(text)
   if match
+    seconds = 0
     for multiplier, i in [3600, 60, 1]
       timeValue = parseInt(match[i + 1])
       seconds += multiplier * timeValue  if timeValue
-  seconds
+    seconds
+  else
+    null
 
 getStartTime = (params) ->
   if params.t
@@ -37,3 +39,33 @@ getDomain = (url) ->
     match[1]
   else
     ""
+
+create = (name, parent, className) ->
+  elem = document.createElement(name)
+  elem.className = className  if className
+  parent.appendChild elem
+  elem
+
+formatTime = (seconds) ->
+  m = Math.floor(seconds / 60)
+  s = Math.floor(seconds % 60)
+  m = "0" + m  if m < 10
+  s = "0" + s  if s < 10
+  m + ":" + s
+
+findPosition = (el) ->
+  left = top = 0
+  loop
+    left += el.offsetLeft
+    top += el.offsetTop
+    break unless el = el.offsetParent
+  [left, top]
+
+addClass = (el, className) ->
+  el.className += " " + className
+
+removeClass = (el, className) ->
+  el.className = el.className.replace(new RegExp("\\b" + className + "\\b"), "")
+
+hasClass = (el, className) ->
+  el.className.indexOf(className) isnt -1
