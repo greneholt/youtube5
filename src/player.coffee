@@ -505,8 +505,9 @@ class Player
     # timecode link handling
     document.addEventListener "click", ((event) =>
       if event.target.nodeName.toLowerCase() is "a" and focusedPlayer is this
-        seconds = parseTimeCode(event.target.textContent)
+        seconds = parseTimeCode(event.target.textContent, /^(?:(\d+):)?(\d{1,2}):(\d{2})$/)
         if seconds
+          event.preventDefault()
           @video.currentTime = seconds
           @container.scrollIntoView()
     ), false

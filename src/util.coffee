@@ -13,8 +13,8 @@ shallowClone = (object) ->
     clone[key] = value
   clone
 
-parseTimeCode = (text) ->
-  match = /^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/.exec(text)
+parseTimeCode = (text, regex = /^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/) ->
+  match = regex.exec(text)
   if match
     seconds = 0
     for multiplier, i in [3600, 60, 1]
