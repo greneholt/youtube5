@@ -23,24 +23,33 @@ newVimeo = ->
 
   self.processMeta = (clipId, text) ->
     meta = {}
-    m = text.match(/clip[0-9_]+ = (\{[\s\S]*\});/i) # dotall doesn't exist in JS, so use [\s\S]
+
+    m = text.match(/c=(\{"cdn_url"[\s\S]*?\});/i) # dotall doesn't exist in JS, so use [\s\S]
 
     unless m
       meta.error = 'Invalid meta for Vimeo'
       return meta
 
-    data = eval("(" + m[1] + ")") # Vimeo doesn't use quotes always, so we can't use JSON.parse
-    meta.formats = {}
-    sig = data.config.request.signature
-    time = data.config.request.timestamp
-    data.config.video.files.h264.forEach (format) ->
-      meta.formats[format.toUpperCase()] = "http://player.vimeo.com/play_redirect?quality=" + format + "&codecs=h264&clip_id=" + clipId + "&time=" + time + "&sig=" + sig + "&type=html5_desktop_local"
+    data = JSON.parse m[1]
+    meta.formats = []
+    for name, format of data.request.files.h264
+      meta.formats.push
+        name: name
+        width: format.width
+        height: format.height
+        url: format.url
 
-    meta.poster = data.config.video.thumbnail
-    meta.title = data.config.video.title
-    meta.author = data.config.video.owner.name
-    meta.authorLink = data.config.video.owner.url
-    meta.link = data.config.video.url
+    posterSize = null
+    for size, url of data.video.thumbs
+      size = parseInt size
+      if !posterSize or size > posterSize
+        meta.poster = url
+        posterSize = size
+
+    meta.title = data.video.title
+    meta.author = data.video.owner.name
+    meta.authorLink = data.video.owner.url
+    meta.link = data.video.url
     meta.from = "Vimeo"
     meta
 
