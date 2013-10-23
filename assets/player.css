@@ -14,6 +14,10 @@
 	font-family: Helvetica, sans-serif !important;
 	box-sizing: content-box !important;
 	outline: none !important;
+	background: none !important;
+	width: auto; /* cannot be important or it will override style attributes */
+	height: auto;
+	float: none !important;
 }
 
 .youtube5placeholder {
