@@ -2,7 +2,7 @@ newYouTube = ->
   self = newProvider()
   self.videoUrlPatterns = [
     /^https?:\/\/(?:www\.)?youtube(?:\-nocookie)?\.com\/(?:v|embed)\/([^\?&]+)(?:[\?&](.+))?/i
-    /^https?:\/\/s.ytimg.com\/yts?\/swf(?:bin)?\/watch/i
+    /^https?:\/\/s.ytimg.com\/yts?\/swfbin\/player-.*\/watch/i
   ]
   self.blockScriptUrlPatterns = [/^https?:\/\/s.ytimg.com\/yts?\/jsbin\/html5player-.+\.js$/]
   self.enabled = ->
@@ -13,11 +13,12 @@ newYouTube = ->
     if match
       videoId = match[1]
       params = parseUrlEncoded(match[2])
-      self.startLoad videoId, (params.autoplay and params.autoplay isnt "0"), getStartTime(params), requestInfo.flashvars, callback
+      flashvars = parseUrlEncoded(requestInfo.flashvars)
+      self.startLoad videoId, (params.autoplay and params.autoplay isnt "0"), getStartTime(params), flashvars, callback
       true
     else if self.videoUrlPatterns[1].test(requestInfo.url)
-      data = parseUrlEncoded(requestInfo.flashvars)
-      self.startLoad data.video_id, true, null, data, callback
+      flashvars = parseUrlEncoded(requestInfo.flashvars)
+      self.startLoad flashvars.video_id, true, null, flashvars, callback
       true
     else
       false
