@@ -29,7 +29,7 @@ class Player
 
     @info = create("div", @player, "youtube5info")
 
-    @useOriginal = create("div", @info, "youtube5use-original youtube5show-on-waiting")
+    @useOriginal = create("button", @info, "youtube5use-original youtube5show-on-waiting")
     @useOriginal.innerHTML = "&crarr; Use original player"
     @useOriginal.addEventListener "click", @revert, false
 
@@ -350,17 +350,17 @@ class Player
       link.addEventListener "click", @changeQuality, false
       li.className = "youtube5current-format" if closestFormat is format
 
-    @replay = create("div", @info, "youtube5replay")
+    @replay = create("button", @info, "youtube5replay")
     @replay.innerHTML = "&larr; Replay"
 
-    @closeOverlay = create("div", @info, "youtube5close-overlay")
+    @closeOverlay = create("button", @info, "youtube5close-overlay")
     @closeOverlay.textContent = "X"
 
-    @infoButton = create("div", @player, "youtube5info-button")
+    @infoButton = create("button", @player, "youtube5info-button")
     @infoButton.textContent = "i"
 
     unless @meta.autoplay
-      @playLarge = create("div", @player, "youtube5play-large")
+      @playLarge = create("button", @player, "youtube5play-large")
       @playLarge.addEventListener "click", @playOrPause, false
 
     @video.addEventListener "loadedmetadata", @initVideo, false
@@ -395,7 +395,7 @@ class Player
 
     # if the video is already playing, we need to set the right classname
     @controls.className = "youtube5controls youtube5play" unless @video.paused
-    @playPause = create("div", @controls, "youtube5play-pause")
+    @playPause = create("button", @controls, "youtube5play-pause")
     @timeElapsed = create("div", @controls, "youtube5time-elapsed")
     @progress = create("div", @controls, "youtube5progress")
     @nudge = create("div", @progress, "youtube5progressnudge")
@@ -410,15 +410,15 @@ class Player
     @volume = create("div", @controls, "youtube5volume")
     create "div", @volume, "youtube5volume-indicator"
     @volumePopup = create("div", @volume, "youtube5volume-popup")
-    @volumeMax = create("div", @volumePopup, "youtube5volume-max")
+    @volumeMax = create("button", @volumePopup, "youtube5volume-max")
     @volumeSlider = create("input", @volumePopup, "youtube5volume-slider")
     @volumeSlider.type = "range"
     @volumeSlider.min = 0
     @volumeSlider.max = 100
     @volumeSlider.value = 100
-    @volumeMute = create("div", @volumePopup, "youtube5volume-mute")
-    @popOut = create("div", @controls, "youtube5pop-out")
-    @fullscreen = create("div", @controls, "youtube5fullscreen")
+    @volumeMute = create("button", @volumePopup, "youtube5volume-mute")
+    @popOut = create("button", @controls, "youtube5pop-out")
+    @fullscreen = create("button", @controls, "youtube5fullscreen")
 
     # setup event listeners
     @playPause.addEventListener "click", @playOrPause, false
