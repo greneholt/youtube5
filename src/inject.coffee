@@ -31,7 +31,7 @@ document.addEventListener "beforeload", ((event) ->
   #
   #	Some websites can have flash checking disabled by adding the following to the getRequestParameter function of swfobject.
   #
-  #	if(cis'detectflash')return'false';
+  #	if(c=='detectflash')return'false';
   #
   requestInfo.location = window.location.href
   requestInfo.url = event.url
@@ -44,7 +44,8 @@ document.addEventListener "beforeload", ((event) ->
     return unless event.target.parentNode
 
     event.preventDefault()
-    playerId = Math.round(Math.random() * 1000000000)
+    playerId = event.target.id || Math.round(Math.random() * 1000000000)
+    return if players[playerId] # prevent creating a player for the same element twice
 
     # sometimes the scroll dimmensions of the video are zero, so fall back to the designated width and height
     width = event.target.scrollWidth
@@ -52,12 +53,21 @@ document.addEventListener "beforeload", ((event) ->
     if width is 0 or height is 0
       width = event.target.width
       height = event.target.height
-    event.target.youtube5allowedToLoad = true
     flashvars = getFlashvars event.target
     replace = event.target
 
-    # little hack to get around YouTube's flash detection. This moves the YouTube5 player one node up the dom tree, breaking their code and preventing it from being removed.
-    replace = replace.parentNode  if replace.parentNode.id is "player-api" or replace.parentNode.id is "player-api-legacy"
+    # Little(ish) hack to get around YouTube's flash detection. This places
+    # the player in the page outside the normal flow but in the same place as
+    # the original video. This prevents their code from removing it.
+    if getDomain(window.location.href) is "youtube.com"
+      position = findPosition replace
+      container = create 'div', document.body
+      container.style.position = 'absolute'
+      container.style.left = "#{position[0]}px"
+      container.style.top = "#{position[1]}px"
+      target = create 'div', container
+      replace.parentNode.removeChild replace
+      replace = target
 
     players[playerId] = new Player replace, width, height
     loadPlayer playerId, requestInfo
@@ -68,10 +78,13 @@ document.addEventListener "beforeload", ((event) ->
     event.target.youtube5allowedToLoad = true
 ), true
 
-# Make YouTube load a new page when navigating to a suggested video
+# Make YouTube truly reload pages rather than using history.pushState
 document.addEventListener "DOMContentLoaded", ((event) ->
   if getDomain(window.location.href) is "youtube.com"
-    script = document.createElement("script")
-    script.text = "history.pushState = null;"
-    document.body.appendChild script
+    historyLength = history.length
+    id = setInterval ->
+      if history.length != historyLength
+        clearInterval id
+        window.location.reload()
+    , 100
 ), true

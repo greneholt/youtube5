@@ -4,7 +4,9 @@ newYouTube = ->
     /^https?:\/\/(?:www\.)?youtube(?:\-nocookie)?\.com\/(?:v|embed)\/([^\?&]+)(?:[\?&](.+))?/i
     /^https?:\/\/s.ytimg.com\/yts?\/swfbin\/player-.*\/watch/i
   ]
-  self.blockScriptUrlPatterns = [/^https?:\/\/s.ytimg.com\/yts?\/jsbin\/html5player-.+\.js$/]
+  self.blockScriptUrlPatterns = [
+    /^https?:\/\/s\.ytimg\.com\/yts?\/jsbin\/html5player-.+\.js$/i
+  ]
   self.enabled = ->
     isProviderEnabled 'youtube'
 

@@ -11,7 +11,7 @@ path = require 'path'
 module.exports = utils = {}
 
 utils.compile = (pattern, dest, callback) ->
-  glob pattern, (err, matches) ->
+  glob pattern, {nosort: true}, (err, matches) ->
     return callback err if err
     async.map matches, (filePath, cb) ->
       fs.readFile filePath, FILE_ENCODING, cb

@@ -48,7 +48,7 @@ getDomain = (url) ->
 
 create = (name, parent, className) ->
   elem = document.createElement(name)
-  elem.className = className  if className
+  elem.className = className if className
   parent.appendChild elem
   elem
 
