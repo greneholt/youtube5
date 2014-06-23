@@ -80,17 +80,6 @@ class Player
       width = @width
       height = @height
 
-    realAspectRatio = width / height
-    nativeAspectRatio = @video.videoWidth / @video.videoHeight
-
-    # if the player is wider than necessary, fit by height
-    if realAspectRatio > nativeAspectRatio
-      width = Math.round(height * nativeAspectRatio)
-      height = height
-    else # taller than necessary
-      width = width
-      height = Math.round(width / nativeAspectRatio)
-
     @container.style.width = width + "px"
     @container.style.height = height + "px"
     return [width, height]
