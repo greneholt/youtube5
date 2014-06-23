@@ -15,8 +15,8 @@ class Player
     @placeholder.setAttribute "data-clean", "yes" # prevent Feedly from stripping style attributes
 
     @container = create("div", @placeholder, "youtube5container")
-    @container.style.width = @width + "px"
-    @container.style.height = @height + "px"
+    @container.style.width = "100%"
+    @container.style.height = "100%"
     @container.style.position = "relative"
     @container.style.margin = "0 auto"
 
@@ -91,8 +91,12 @@ class Player
       width = width
       height = Math.round(width / nativeAspectRatio)
 
-    @container.style.width = width + "px"
-    @container.style.height = height + "px"
+    if @floating
+      @container.style.width = width + "px"
+      @container.style.height = height + "px"
+    else
+      @container.style.width = "100%"
+      @container.style.height = "100%"
     return [width, height]
 
   updateTime: =>
